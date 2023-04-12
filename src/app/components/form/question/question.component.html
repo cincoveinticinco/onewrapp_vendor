@@ -1,0 +1,35 @@
+<div>
+
+  <label [ngClass]="{'full-label': question.size == 8}">{{ question.label }}</label>
+  <ng-container [ngSwitch]="question.type">
+    <ng-container *ngSwitchCase="TypeInputForm.Text">
+      <input  [formControl]="formQuestion" [placeholder]="(!question.readonly && !disabled) ? 'Inserte texto' : '-'" type="text" [readOnly]="question.readonly" [disabled]="disabled">
+    </ng-container>
+    <ng-container *ngSwitchCase="TypeInputForm.Date">
+      <input [formControl]="formQuestion" type="date" [disabled]="disabled">
+    </ng-container>
+    <ng-container *ngSwitchCase="TypeInputForm.SelectBox">
+      <input-select-box [formControl]="formQuestion"  [question]="question" [disabled]="disabled"></input-select-box>
+    </ng-container>
+    <ng-container *ngSwitchCase="TypeInputForm.Paragraph">
+      <input-paragraph [question]="question"></input-paragraph>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="TypeInputForm.ChooseOption">
+      <input-choose-option [formControl]="formQuestion"  [question]="question" [disabled]="disabled"></input-choose-option>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="TypeInputForm.ArrayGroup">
+      <input-array-group  [formControl]="formQuestion"   [question]="question" [disabled]="disabled"></input-array-group>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="TypeInputForm.File">
+      <input-file [formControl]="formQuestion"  [question]="question" [disabled]="disabled"></input-file>
+    </ng-container>
+
+
+
+  </ng-container>
+</div>
+
+

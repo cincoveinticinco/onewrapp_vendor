@@ -1,0 +1,18 @@
+footer{
+  display: flex;
+  justify-content: space-between;
+
+  border-top: 1px solid var(--font-color);
+  display: flex;
+  justify-content: space-between;
+  padding: 0.3rem 0 1rem 0;
+  font-size: var(--small-font-size);
+  max-width: 96%;
+  margin: 0 auto;
+
+  .logo-footer{
+    height: 11px;
+    vertical-align: middle;
+    margin-left: 4px;
+  }
+}

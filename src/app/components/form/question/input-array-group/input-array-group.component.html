@@ -1,0 +1,36 @@
+<div [ngClass]="{'content-row-array': !question?.fixElements}"  [formGroup]="form">
+  <ng-container formArrayName="rows">
+    <div class="content-row" *ngFor="let row of rows.controls; let i = index">
+      <ng-container [formGroupName]="i">
+        <div *ngIf="question?.title" class="form-title">
+          {{ question?.title }}
+        </div>
+        <ng-container *ngFor="let column of question?.children">
+          <div class="content-col" [ngClass]="'m-'+(column.size || 12)">
+            <ng-container *ngIf="column.data; else noFormField">
+              <app-question [formControlName]="column.data || ''" [question]="column"></app-question>
+            </ng-container>
+            <ng-template #noFormField>
+              <app-question [question]="column"></app-question>
+            </ng-template>
+
+          </div>
+          <div *ngIf="column.break" class="break-row"></div>
+        </ng-container>
+        <button *ngIf="!question?.fixElements" class="delete-button floating-element" (click)="deleteRow(i)">
+          <span class="material-symbols-outlined">
+            delete
+          </span>
+        </button>
+      </ng-container>
+
+
+    </div>
+  </ng-container>
+
+
+
+</div>
+<div *ngIf="question?.addButonText" class="content-row">
+  <button class="form-button" (click)="addRow()">{{ question?.addButonText }}</button>
+</div>

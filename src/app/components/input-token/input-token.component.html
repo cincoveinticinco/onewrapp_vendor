@@ -1,0 +1,11 @@
+<div class="token-content" [formGroup]="form">
+  <div *ngFor="let digit of token.controls; let i = index" class="input-token" >
+    <input
+      #tokenDigit
+      [formControl]="getControlByIndex(i)"
+      maxlength="1"
+      minlength="1"
+      (keydown)="goFordwardInput($event, i)"
+      (keydown.backspace)="goBackwardInput($event, i)">
+  </div>
+</div>

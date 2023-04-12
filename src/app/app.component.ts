@@ -6,5 +6,5 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  title = 'onewrapp-vendors';
+  title = 'Registro unico de proveedores';
 }

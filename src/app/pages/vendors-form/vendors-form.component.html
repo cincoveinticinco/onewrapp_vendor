@@ -1,0 +1,25 @@
+<ng-template #loader>
+  <div>Loading...</div>
+</ng-template>
+
+
+<div *ngIf="!loading; else loader" class="main-content">
+  <app-header [title]="titleForm"></app-header>
+  <h1>REGISTRO ÚNICO DE CONTRAPARTES</h1>
+
+  <ng-container [ngSwitch]="countryForm">
+    <app-colombia-form
+      *ngSwitchCase="CountyForm.Colombia"
+      [infoVendor]="inmutableData"
+      (submit)="submit($event)">
+    </app-colombia-form>
+
+    <app-mexico-form
+      *ngSwitchCase="CountyForm.Mexico"
+      [infoVendor]="inmutableData"
+      (submit)="submit($event)">
+    </app-mexico-form>
+  </ng-container>
+
+
+</div>

@@ -1,0 +1,31 @@
+<form (ngSubmit)="handleSubmit()">
+  <section class="content" [formGroup]="form">
+
+    <div *ngFor="let section of mainForm.sections">
+      <ng-container *ngIf="section.visible">
+        <div *ngIf="section.title" class="section-title">{{ section.title }}</div>
+        <div class="content-row">
+          <ng-container *ngFor="let question of section.inputs">
+            <div *ngIf="question.visible" class="content-col" [ngClass]="'m-'+(question.size || 8)">
+              <ng-container *ngIf="question.data; else noFormField">
+                <app-question [formControlName]="question.data || ''"  [question]="question" ></app-question>
+              </ng-container>
+              <ng-template #noFormField>
+                <app-question [question]="question"></app-question>
+              </ng-template>
+
+            </div>
+            <div *ngIf="question.break" class="break-row"></div>
+          </ng-container>
+        </div>
+      </ng-container>
+
+    </div>
+
+    <div class="content-buttons">
+      <button>ENVIAR FORMULARIO</button>
+    </div>
+  </section>
+</form>
+
+

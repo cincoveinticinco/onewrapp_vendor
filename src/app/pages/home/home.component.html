@@ -1,0 +1,40 @@
+<div class="center-content">
+  <div class="content" [ngClass]="{'full-width': view == 'home'}">
+
+    <img class="title-logo" src="assets/images/logotis.jpg">
+    <h2>REGISTRO ÚNICO DE CONTRAPARTES</h2>
+
+    <ng-container [ngSwitch]="view">
+
+
+    <ng-container *ngSwitchCase="'home'">
+
+      <p>TIS PRODUCTIONS COLOMBIA SAS (en adelante “TIS”) está comprometida con el respeto a las leyes y los negocios responsables, por lo que el apoyo de nuestros clientes, proveedores, contratistas y contrapartes en el cumplimiento de este compromiso es fundamental. Apreciada contraparte el diligenciamiento del presente formulario nos permite realizar el proceso de conocimiento de contrapartes y debida diligencia, de acuerdo con la normativa legal vigente en materia de prevención de Lavado de Activos, Financiación del Terrorismo, Financiamiento de la Proliferación de Armas de Destrucción Masiva, Corrupción, Soborno Trasnacional o Fraude (en adelante “LA/FT/FPADM/C/ST/F”), donde exige que toda persona natural o jurídica que quiera tener o tenga algún tipo de vinculo con la Compañía debe suministrar los datos personales y empresariales que permitan tener una identificación, clara, transparente, confiable y total de la contraparte.</p>
+      <button class="btn-center" (click)="requestToken()">Continuar</button>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="'token'">
+      <p class="align-center">Hemos enviado el token de acceso a {{ vendorEmail }}. Por favor ingrese este token para continuar</p>
+      <div class="bottom-gap">
+        <app-input-token
+          #tokenInput="ngModel"
+          [(ngModel)]="token"
+        ></app-input-token>
+      </div>
+      <button class="btn-center" [disabled]="tokenInput.invalid" (click)="sendToken()">Validar token</button>
+      <span class="lgl-content">Haga <a (click)="generateToken()">clic acá</a> para generar un nuevo token</span>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="'new-token'">
+      <p>Hemos enviado el token de acceso a {{ vendorEmail }}. Por favor ingrese este token pra continuar</p>
+      <button class="btn-center" (click)="setView('token')">Continuar</button>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="'invalid-link'">
+      <p>La página a la que intenta acceder no se encuentra disponible, comuniquese con el administrador</p>
+    </ng-container>
+
+  </ng-container>
+
+  </div>
+</div>
