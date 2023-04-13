@@ -19,7 +19,7 @@ export class ErrorInterceptor implements HttpInterceptor {
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     return next.handle(request).pipe(
-      retry({count: maxRetries, delay: (error) => this.notifyHandlerServerError$(error)}),
+      //retry({count: maxRetries, delay: (error) => this.notifyHandlerServerError$(error)}),
       catchError( error => this.handleUnauthorizedError(error))
     );
   }

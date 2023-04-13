@@ -14,4 +14,9 @@ export class VendorsService {
     return this.http.post(`${environment.API_URL}finance/getInfoVendor`, {})
     .pipe(map( response => response))
   }
+
+  updateVendorInfo(formData: any){
+    return this.http.post(`${environment.API_URL}finance/updateVendor`, {...formData})
+    .pipe(map( response => response))
+  }
 }

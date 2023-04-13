@@ -18,3 +18,21 @@
     cursor: pointer;
   }
 }
+
+
+.content-file-filled{
+  background: var(--background-light-color);
+  display: flex;
+  border: 1px solid var(--font-color);
+  align-items: center;
+  justify-content: space-between;
+  padding-left: 8px;
+  max-width: 270px;
+
+  span{
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}

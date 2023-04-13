@@ -1,4 +1,13 @@
-<label class="content-file-input">
+<label *ngIf="!value"class="content-file-input">
   <span>Arrastar y soltar o <a>buscar</a></span>
   <input type="file" (change)="onFileChange($event)">
 </label>
+
+<div *ngIf="value" class="content-file-filled">
+  <span>{{ value.name }}</span>
+  <button class="delete-button" (click)="clearFile()">
+    <span class="material-symbols-outlined">
+      delete
+    </span>
+  </button>
+</div>

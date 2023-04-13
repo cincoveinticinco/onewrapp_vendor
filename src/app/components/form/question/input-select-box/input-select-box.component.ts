@@ -40,6 +40,8 @@ export class InputSelectBoxComponent implements ControlValueAccessor, Validator{
   disabled = false;
 
   writeValue(value: any): void {
+    this.selectBoxControl.setValue(value || '')
+    this.selectSearchControl.setValue(value || '')
     this.value = value
   }
   registerOnChange(fn: any): void {

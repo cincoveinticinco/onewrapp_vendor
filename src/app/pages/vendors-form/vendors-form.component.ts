@@ -50,6 +50,17 @@ export class VendorsFormComponent {
   }
 
   submit(formData: any){
+
     console.log(formData)
+
+    const _data = {
+      ...formData,
+      info_additional: []
+    }
+
+    this.vendorService.updateVendorInfo(_data).subscribe( data => {
+      console.log(formData, data)
+    })
+
   }
 }

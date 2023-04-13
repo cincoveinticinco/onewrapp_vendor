@@ -32,6 +32,7 @@ export class InputChooseOptionComponent implements ControlValueAccessor, Validat
   disabled = false;
 
   writeValue(value: any): void {
+    this.control.setValue(value)
     this.value = value
   }
   registerOnChange(fn: any): void {

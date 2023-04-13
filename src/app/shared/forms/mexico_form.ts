@@ -88,7 +88,7 @@ export const MEXICO_FORM: IForm = {
           visible: true,
           type: TypeInputForm.SelectBox,
           size: 2,
-          data: 'tipo_persona',
+          data: 'f_person_type_id',
           options_key: 'tipo_persona',
           disabled: false
         },
@@ -138,7 +138,7 @@ export const MEXICO_FORM: IForm = {
           visible: true,
           type: TypeInputForm.Text,
           size: 8,
-          data: 'nombre_razon_social',
+          data: 'name',
           disabled: false
         },
         {
@@ -154,7 +154,7 @@ export const MEXICO_FORM: IForm = {
           visible: true,
           type: TypeInputForm.Text,
           size: 3,
-          data: 'direccion_complemento',
+          data: 'info_add_address',
           disabled: false
         },
         {
@@ -244,7 +244,7 @@ export const MEXICO_FORM: IForm = {
           visible: true,
           type: TypeInputForm.ChooseOption,
           size: 8,
-          data: 'pertenece_grupo_empresarial',
+          data: 'business_group',
           disabled: false
         },
         {

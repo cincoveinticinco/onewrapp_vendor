@@ -32,6 +32,15 @@ export class InputArrayGroupComponent implements ControlValueAccessor, Validator
   value: any;
 
   writeValue(value: any): void {
+    if(value && value.length > 0){
+      value.forEach( (item:any) => this.addRow(item))
+
+      const firstRow = this.rows.value[0];
+      if(firstRow && !firstRow['id']){
+        this.deleteRow(0)
+      }
+    }
+
     this.value = value
   }
   registerOnChange(fn: any): void {
@@ -56,18 +65,25 @@ export class InputArrayGroupComponent implements ControlValueAccessor, Validator
   }
 
   private buildForm(){
-    this.addRow()
+    if(!this.value){
+      this.addRow()
+    }
   }
 
-  createRow(){
+  createRow(rowValue: any = null){
     const form_fields:any = {}
     const children = this.question?.children
+
+    if(rowValue){
+      form_fields['id'] = [rowValue['id']];
+    }
 
     if(children){
       children.forEach( question => {
         if(question.data){
           const index: string = question.data
-          form_fields[index] = null
+
+          form_fields[index] = rowValue ? [rowValue[index]] : null
         }
       })
     }
@@ -75,8 +91,8 @@ export class InputArrayGroupComponent implements ControlValueAccessor, Validator
     return this._fB.group(form_fields);
   }
 
-  addRow(){
-    this.rows.push(this.createRow())
+  addRow(rowValue = null){
+    this.rows.push(this.createRow(rowValue))
   }
 
   deleteRow(rowIndex: number){

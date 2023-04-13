@@ -11,13 +11,15 @@
     <app-colombia-form
       *ngSwitchCase="CountyForm.Colombia"
       [infoVendor]="inmutableData"
-      (submit)="submit($event)">
+      (onSubmit)="submit($event)"
+      >
     </app-colombia-form>
 
     <app-mexico-form
       *ngSwitchCase="CountyForm.Mexico"
       [infoVendor]="inmutableData"
-      (submit)="submit($event)">
+      (onSubmit)="submit($event)"
+      >
     </app-mexico-form>
   </ng-container>
 

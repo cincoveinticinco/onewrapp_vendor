@@ -24,6 +24,7 @@ export class InputFileComponent implements ControlValueAccessor, Validator{
   control: FormControl = new FormControl('');
 
   value: any;
+  fileName: any;
 
   onChange = (token: string) => {}
   onTouched = () => {}
@@ -57,9 +58,16 @@ export class InputFileComponent implements ControlValueAccessor, Validator{
     if(files && files.length > 0){
       const file = files[0];
       this.control.patchValue(file);
+
+      this.value = { name: file.name, url: null};
     }
 
 
+  }
+
+  clearFile(){
+    this.control.setValue(null);
+    this.value = null;
   }
 
 

@@ -7,8 +7,8 @@ import { REPSE_FORM, SECTIONS_REPSE_FORM } from 'src/app/shared/forms/repse_form
 import { IForm } from 'src/app/shared/interfaces/form';
 
 enum CountryForm {
-  Colombia = 1,
-  Mexico = 2
+  Colombia = 34,
+  Mexico = 52
 }
 
 @Component({
@@ -47,17 +47,19 @@ export class RepseFormComponent {
         return;
       }
 
-      if(this.countryForm == CountryForm.Colombia){
-        this.router.navigate(['complete-form']);
-      }
-
       this.inmutableData = data;
-      this.titleForm = 'TIS Productions México S de RL de CV';
 
       this.vendorData = {
         ...data.vendor,
       };
 
+      this.countryForm = this.vendorData.country_id
+
+      if(this.countryForm == CountryForm.Colombia){
+        //this.router.navigate(['complete-form']);
+      }
+
+      this.titleForm = 'TIS Productions México S de RL de CV';
 
       this.buildForm();
       this.setValuesForm();
@@ -102,7 +104,9 @@ export class RepseFormComponent {
       control.setValue(this.vendorData[key]);
     });
 
+    this.setCheckboxInfo();
     this.setInputFilesForm();
+
     this.valuesLoaded = true;
   }
 
@@ -124,7 +128,55 @@ export class RepseFormComponent {
   }
 
   submit(){
-    this.router.navigate(['complete-form'])
+
+    const _data = {
+      ...this.inmutableData.vendor,
+      info_users: [],
+      info_additional: [
+        {
+          vendor_inf_add_type_id: 1,
+          value: this.form.value['servicios_actividades'] == '1' ? true : null,
+        },
+        {
+          vendor_inf_add_type_id: 2,
+          value: this.form.value['servicios_instalaciones'] == '1' ? true : null,
+        },
+        {
+          vendor_inf_add_type_id: 3,
+          value: this.form.value['visita_instalaciones'] == '1' ? true : null,
+        },
+        {
+          vendor_inf_add_type_id: 4,
+          value: this.form.value['registrado_repse'] == '1' ? true : null,
+        },
+      ]
+    }
+
+    this.vendorService.updateVendorInfo(_data).subscribe( data => {
+      console.log(this.form.value, data)
+      this.router.navigate(['complete-form'])
+
+    })
+
+  }
+
+  private setCheckboxInfo(){
+
+    const info_addtional_vendor = {
+      1: 'servicios_actividades',
+      2: 'servicios_instalaciones',
+      3: 'visita_instalaciones',
+      4: 'registrado_repse',
+    }
+
+    this.inmutableData.info_addtional_vendor.forEach( (info_user:any) => {
+      const value = info_user.value;
+      const input = info_addtional_vendor[info_user.id as keyof typeof info_addtional_vendor]
+
+      if(input)
+        this.form.controls[input].setValue(value == true ? '1': '2');
+    });
+
   }
 
   private setVisibleInput(inputKey: string, visible: boolean ){

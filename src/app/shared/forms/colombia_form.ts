@@ -18,6 +18,18 @@ export enum SECTIONS_COLOMBIA_FORM{
   ANEXOS = 'anexos',
 }
 
+export enum VENDORS_INFO_COLOMBIA{
+  Main = 'main',
+  INFORMACION_BASICA = 'informacion_basica',
+  INFORMACION_REPRESENTANTES_LEGALES = 'informacion_representantes_legales',
+  INFORMACION_JUNTA_DIRECTIVA = 'informacion_junta_directiva',
+  INFORMACION_ACCIONISTAS = 'informacion_accionistas',
+  INFORMACION_BENEFICIARIOS_FINALES = 'informacion_beneficiarios_finales',
+  INFORMACION_PERSONAS_EXPUESTAS = 'informacion_personas_expuestas',
+  DECLARACIONES = 'declaraciones',
+  ANEXOS = 'anexos',
+}
+
 export const COLOMBIA_FORM: IForm = {
   description: '',
   sections: [
@@ -88,7 +100,7 @@ export const COLOMBIA_FORM: IForm = {
           visible: true,
           type: TypeInputForm.SelectBox,
           size: 2,
-          data: 'tipo_persona',
+          data: 'f_person_type_id',
           options_key: 'tipo_persona',
           disabled: false
         },
@@ -131,7 +143,7 @@ export const COLOMBIA_FORM: IForm = {
           visible: true,
           type: TypeInputForm.Text,
           size: 8,
-          data: 'nombre_razon_social',
+          data: 'name',
           disabled: false
         },
         {
@@ -147,7 +159,7 @@ export const COLOMBIA_FORM: IForm = {
           visible: true,
           type: TypeInputForm.Text,
           size: 3,
-          data: 'direccion_complemento',
+          data: 'info_add_address',
           disabled: false
         },
         {
@@ -219,7 +231,7 @@ export const COLOMBIA_FORM: IForm = {
           visible: true,
           type: TypeInputForm.SelectBox,
           size: 2,
-          data: 'ciiu',
+          data: 'f_vendor_economic_act_id',
           options_key: 'ciiu',
           searching: false,
           disabled: false
@@ -238,7 +250,7 @@ export const COLOMBIA_FORM: IForm = {
           visible: true,
           type: TypeInputForm.ChooseOption,
           size: 8,
-          data: 'pertenece_grupo_empresarial',
+          data: 'business_group',
           disabled: false
         },
         {
@@ -261,7 +273,7 @@ export const COLOMBIA_FORM: IForm = {
               visible: true,
               type: TypeInputForm.Text,
               size: 4,
-              data: 'razon_social',
+              data: 'name',
               disabled: false
             },
             {
@@ -269,7 +281,8 @@ export const COLOMBIA_FORM: IForm = {
               visible: true,
               type: TypeInputForm.SelectBox,
               size: 1,
-              data: 'tipo_id',
+              data: 'f_document_type_id',
+              options_key: 'juridica_id',
               disabled: false
             },
             {
@@ -277,15 +290,16 @@ export const COLOMBIA_FORM: IForm = {
               visible: true,
               type: TypeInputForm.Text,
               size: 2,
-              data: 'numero_id',
+              data: 'document',
               disabled: false
             },
             {
               label: 'Calidad',
               visible: true,
-              type: TypeInputForm.Text,
+              type: TypeInputForm.SelectBox,
               size: 1,
-              data: 'calidad',
+              data: 'quantity',
+              options_key: 'calidad',
               disabled: false
             },
           ]
@@ -310,7 +324,7 @@ export const COLOMBIA_FORM: IForm = {
             visible: true,
             type: TypeInputForm.Text,
             size: 2,
-            data: 'nombres',
+            data: 'name',
             disabled: false
           },
           {
@@ -318,7 +332,7 @@ export const COLOMBIA_FORM: IForm = {
             visible: true,
             type: TypeInputForm.Text,
             size: 2,
-            data: 'apellidos',
+            data: 'last_name',
             disabled: false
           },
           {
@@ -326,7 +340,8 @@ export const COLOMBIA_FORM: IForm = {
             visible: true,
             type: TypeInputForm.SelectBox,
             size: 1,
-            data: 'tipo_id',
+            data: 'f_document_type_id',
+            options_key: 'natural_id',
             disabled: false
           },
           {
@@ -334,15 +349,15 @@ export const COLOMBIA_FORM: IForm = {
             visible: true,
             type: TypeInputForm.Text,
             size: 3,
-            data: 'numero_id',
+            data: 'document',
             disabled: false
           },
           {
             label: 'Fecha expedición ID',
             visible: true,
-            type: TypeInputForm.Text,
+            type: TypeInputForm.Date,
             size: 2,
-            data: 'fecha_expedicion',
+            data: 'expedition_date',
             disabled: false
           },
           {
@@ -350,7 +365,7 @@ export const COLOMBIA_FORM: IForm = {
             visible: true,
             type: TypeInputForm.Text,
             size: 2,
-            data: 'pais_domicilio',
+            data: 'country',
             disabled: false
           },
           {
@@ -358,7 +373,7 @@ export const COLOMBIA_FORM: IForm = {
             visible: true,
             type: TypeInputForm.Text,
             size: 2,
-            data: 'departamento_domicilio',
+            data: 'department',
             disabled: false
           },
           {
@@ -366,7 +381,7 @@ export const COLOMBIA_FORM: IForm = {
             visible: true,
             type: TypeInputForm.Text,
             size: 2,
-            data: 'ciudad_domicilio',
+            data: 'city',
             disabled: false
           },
           {
@@ -374,7 +389,7 @@ export const COLOMBIA_FORM: IForm = {
             visible: true,
             type: TypeInputForm.Text,
             size: 4,
-            data: 'correo_electronico',
+            data: 'email',
             break: true,
             disabled: false
           },
@@ -383,7 +398,7 @@ export const COLOMBIA_FORM: IForm = {
             visible: true,
             type: TypeInputForm.ChooseOption,
             size: 12,
-            data: 'persona_pep',
+            data: 'informacion_representantes_legales_pep',
             disabled: false
           },
         ]
@@ -407,7 +422,7 @@ export const COLOMBIA_FORM: IForm = {
             type: TypeInputForm.Text,
             size: 2,
             disabled: false,
-            data: 'nombres'
+            data: 'name'
           },
           {
             label: 'Apellidos',
@@ -415,7 +430,7 @@ export const COLOMBIA_FORM: IForm = {
             type: TypeInputForm.Text,
             size: 2,
             disabled: false,
-            data: 'apellidos'
+            data: 'last_name'
           },
           {
             label: 'Tipo ID',
@@ -423,7 +438,8 @@ export const COLOMBIA_FORM: IForm = {
             type: TypeInputForm.SelectBox,
             size: 1,
             disabled: false,
-            data: 'tipo_id',
+            options_key: 'natural_id',
+            data: 'f_document_type_id',
           },
           {
             label: 'Número de ID',
@@ -431,15 +447,15 @@ export const COLOMBIA_FORM: IForm = {
             type: TypeInputForm.Text,
             size: 3,
             disabled: false,
-            data: 'numero_id',
+            data: 'document',
           },
           {
             label: 'Fecha expedición ID',
             visible: true,
-            type: TypeInputForm.Text,
+            type: TypeInputForm.Date,
             size: 2,
             disabled: false,
-            data: 'fecha_expedicion',
+            data: 'expedition_date',
           },
           {
             label: 'Pais Domicilio',
@@ -447,7 +463,7 @@ export const COLOMBIA_FORM: IForm = {
             type: TypeInputForm.Text,
             size: 2,
             disabled: false,
-            data: 'pais_domicilio',
+            data: 'country',
           },
           {
             label: 'Departamento',
@@ -455,7 +471,7 @@ export const COLOMBIA_FORM: IForm = {
             type: TypeInputForm.Text,
             size: 2,
             disabled: false,
-            data: 'departamento_domicilio',
+            data: 'department',
           },
           {
             label: 'Ciudad',
@@ -463,7 +479,7 @@ export const COLOMBIA_FORM: IForm = {
             type: TypeInputForm.Text,
             size: 2,
             disabled: false,
-            data: 'ciudad_domicilio',
+            data: 'city',
           },
           {
             label: 'Correo electrónico',
@@ -471,7 +487,7 @@ export const COLOMBIA_FORM: IForm = {
             type: TypeInputForm.Text,
             size: 4,
             disabled: false,
-            data: 'correo_electronico',
+            data: 'email',
             break: true
           },
           {
@@ -480,7 +496,7 @@ export const COLOMBIA_FORM: IForm = {
             type: TypeInputForm.ChooseOption,
             size: 12,
             disabled: false,
-            data: 'info_juridica_persona_pep',
+            data: 'informacion_junta_directiva_pep',
           },
         ]
       }
@@ -504,6 +520,7 @@ export const COLOMBIA_FORM: IForm = {
           visible: true,
           addButonText: 'AGREGAR OTRO',
           disabled: false,
+          data: 'informacion_accionistas',
           children: [
             {
               label: 'Tipo persona',
@@ -511,7 +528,8 @@ export const COLOMBIA_FORM: IForm = {
               type: TypeInputForm.SelectBox,
               size: 2,
               disabled: false,
-              data: 'tipo_persona'
+              data: 'f_person_type_id',
+              options_key: 'tipo_persona',
             },
             {
               label: 'Nombre o Razón Social',
@@ -519,7 +537,7 @@ export const COLOMBIA_FORM: IForm = {
               type: TypeInputForm.Text,
               size: 4,
               disabled: false,
-              data: 'apellidos'
+              data: 'name'
             },
             {
               label: '% Participación',
@@ -527,7 +545,7 @@ export const COLOMBIA_FORM: IForm = {
               type: TypeInputForm.Text,
               size: 2,
               disabled: false,
-              data: 'tipo_id',
+              data: 'percente_participation',
             },
             {
               label: 'Tipo ID',
@@ -535,7 +553,8 @@ export const COLOMBIA_FORM: IForm = {
               type: TypeInputForm.SelectBox,
               size: 1,
               disabled: false,
-              data: 'tipo_id',
+              options_key: 'todos_tipo_id',
+              data: 'f_document_type_id',
             },
             {
               label: 'Número de ID',
@@ -543,7 +562,7 @@ export const COLOMBIA_FORM: IForm = {
               type: TypeInputForm.Text,
               size: 2,
               disabled: false,
-              data: 'numero_id',
+              data: 'document',
             },
             {
               label: 'DV',
@@ -551,15 +570,16 @@ export const COLOMBIA_FORM: IForm = {
               type: TypeInputForm.SelectBox,
               size: 1,
               disabled: false,
-              data: 'dv',
+              options_key: 'verification_digit',
+              data: 'verification_digit',
             },
             {
               label: 'Fecha matrícula o expedición ID',
               visible: true,
-              type: TypeInputForm.Text,
+              type: TypeInputForm.Date,
               size: 2,
               disabled: false,
-              data: 'fecha_expedicion',
+              data: 'expedition_date',
             },
             {
               label: 'Pais Domicilio',
@@ -567,7 +587,7 @@ export const COLOMBIA_FORM: IForm = {
               type: TypeInputForm.Text,
               size: 2,
               disabled: false,
-              data: 'pais_domicilio',
+              data: 'country',
             },
             {
               label: '¿Es una persona expuesta políticamente (PEP)?',
@@ -575,7 +595,7 @@ export const COLOMBIA_FORM: IForm = {
               type: TypeInputForm.ChooseOption,
               size: 12,
               disabled: false,
-              data: 'info_accionistas_persona_pep',
+              data: 'informacion_accionistas_pep',
             },
           ]
         }
