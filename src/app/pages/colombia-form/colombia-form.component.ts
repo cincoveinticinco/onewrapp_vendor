@@ -64,6 +64,7 @@ export class ColombiaFormComponent {
     });
 
     this.form.controls['business_group'].setValue(this.vendorData['business_group'] ? '1' : '2');
+    this.form.controls['pep'].setValue(this.vendorData['pep'] ? '1' : '2');
 
     this.setJuridicaSectionsVisible();
     this.setEconomyActivityByCIIU();

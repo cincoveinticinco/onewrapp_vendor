@@ -221,14 +221,6 @@ export const COLOMBIA_FORM: IForm = {
           disabled: false
         },
         {
-          label: 'PEP',
-          visible: true,
-          type: TypeInputForm.Text,
-          size: 1,
-          data: 'pep',
-          disabled: false
-        },
-        {
           label: 'CIIU Principal',
           visible: true,
           type: TypeInputForm.SelectBox,
@@ -245,6 +237,14 @@ export const COLOMBIA_FORM: IForm = {
           size: 5,
           data: 'actividad_economica',
           readonly: true,
+          disabled: false
+        },
+        {
+          label: '¿Es una persona expuesta políticamente (PEP)?',
+          visible: true,
+          type: TypeInputForm.ChooseOption,
+          size: 12,
+          data: 'pep',
           disabled: false
         },
         {

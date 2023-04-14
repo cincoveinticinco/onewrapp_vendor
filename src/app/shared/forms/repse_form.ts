@@ -21,6 +21,13 @@ export const REPSE_FORM: IForm = {
           disabled: false
         },
         {
+          type: TypeInputForm.Paragraph,
+          visible: true,
+          content: 'En caso que TIS determine que por los servicios prestados Usted (Proveedor) debe contar con REPSE, le solicitamos adjuntar la siguiente documentación.',
+          align: '',
+          disabled: false
+        },
+        {
           label: '¿Los Servicios los presta a través de sus empleados o trabajadores? Para el caso de arrendamiento de equipo ¿el equipo lo opera a través de sus empleados o trabajadores?',
           visible: true,
           type: TypeInputForm.ChooseOption,
