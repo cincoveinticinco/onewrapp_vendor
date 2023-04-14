@@ -1,6 +1,8 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import * as moment from 'moment';
+
+
 import { map, pairwise, startWith } from 'rxjs';
 import { VendorsService } from 'src/app/services/vendors.service';
 import { COLOMBIA_FORM, SECTIONS_COLOMBIA_FORM, TYPE_PERSON_COLOMBIA } from 'src/app/shared/forms/colombia_form';
@@ -44,7 +46,7 @@ export class ColombiaFormComponent {
     this.vendorData = {
       ...this.infoVendor.vendor,
       tipo_solicitud: 'Vinculación',
-      created_at: moment(this.infoVendor.vendor.created_at).format('YYYY-MM-DD'),
+      created_at: this.infoVendor.vendor.created_at ? moment(this.infoVendor.vendor.created_at).format('YYYY-MM-DD'): null,
       expedition_date: this.infoVendor.vendor.expedition_date ? moment(this.infoVendor.vendor.expedition_date).format('YYYY-MM-DD'): null
     };
 
@@ -66,6 +68,7 @@ export class ColombiaFormComponent {
     this.setJuridicaSectionsVisible();
     this.setEconomyActivityByCIIU();
     this.setVendorMultipleInfo();
+    this.setComplementInfoFinalBenefit();
 
     console.log(this.form.value)
 
@@ -86,12 +89,12 @@ export class ColombiaFormComponent {
 
     const juridica_tipo_id = data.person_types.find( (item:any) => item.id == TYPE_PERSON_COLOMBIA.Juridica);
     const juridica_id = juridica_tipo_id ? juridica_tipo_id.document_types.map( (item:any) =>
-    this.setSelectBoxOptions(item, 'f_person_type_id', 'document_type_esp')
+    this.setSelectBoxOptions(item, 'id', 'document_type_esp')
     ) : []
 
     const natural_tipo_id = data.person_types.find( (item:any) => item.id == TYPE_PERSON_COLOMBIA.Natural)
     const natural_id = natural_tipo_id ? natural_tipo_id.document_types.map( (item:any) =>
-    this.setSelectBoxOptions(item, 'f_person_type_id', 'document_type_esp')
+    this.setSelectBoxOptions(item, 'id', 'document_type_esp')
     ) : []
 
     const todos_tipo_id = [...natural_id, ...juridica_id]
@@ -142,6 +145,15 @@ export class ColombiaFormComponent {
             if(inputChild.options_key){
               inputChild.options = this.lists[inputChild.options_key]
             }
+
+            if(inputChild.children && inputChild.children.length){
+              inputChild.children.forEach( inputLast => {
+                if(inputLast.options_key){
+                  inputLast.options = this.lists[inputLast.options_key]
+                }
+              });
+            }
+
           });
         }
       })
@@ -210,13 +222,34 @@ export class ColombiaFormComponent {
         });
       }
 
+    const info_beneficiarios_finales = this.form.value['informacion_beneficiarios_finales'].rows ? this.form.value['informacion_beneficiarios_finales'].rows : this.form.value['informacion_beneficiarios_finales']
+      if(info_beneficiarios_finales){
+        info_beneficiarios_finales.forEach( (row:any) => {
+
+          const people_final = row['informacion_beneficiarios_finales_people'].rows ? row['informacion_beneficiarios_finales_people'].rows : row['informacion_beneficiarios_finales_people']
+          if(people_final){
+            people_final.forEach( (person:any) => {
+              console.log()
+              info_users.push(
+                {
+                  document_parent: row.document,
+                  f_document_parent_type_id: row.f_document_type_id,
+                  f_vendor_info_user_type_id: 5,
+                  ...person
+                })
+            })
+          }
+
+        });
+      }
+
 
       this.onSubmit.emit({
         ...this.form.value,
-        f_document_type_id: Number(this.form.value.f_document_type_id),
-        f_person_type_id: Number(this.form.value.f_person_type_id),
-        f_vendor_economic_act_id: Number(this.form.value.f_vendor_economic_act_id),
-        f_vendor_type_id: Number(this.form.value.f_vendor_type_id),
+        f_document_type_id: this.form.value.f_document_type_id ? Number(this.form.value.f_document_type_id) : null,
+        f_person_type_id: this.form.value.f_person_type_id ? Number(this.form.value.f_person_type_id) : null,
+        f_vendor_economic_act_id: this.form.value.f_vendor_economic_act_id ? Number(this.form.value.f_vendor_economic_act_id) : null,
+        f_vendor_type_id: this.form.value.f_vendor_type_id ? Number(this.form.value.f_vendor_type_id): null,
         business_group: this.form.value.business_group == '1' ? true : null,
         info_users
 
@@ -229,7 +262,8 @@ export class ColombiaFormComponent {
 
       const handlers = {
         'f_person_type_id': () => this.setTypeIdByTypePerson(value),
-        'f_vendor_economic_act_id': () => this.setEconomyActivityByCIIU()
+        'f_vendor_economic_act_id': () => this.setEconomyActivityByCIIU(),
+        'informacion_accionistas': () => this.addFinalBeneficiaryByActionist()
       }
 
       if( formControlName in handlers ){
@@ -305,6 +339,7 @@ export class ColombiaFormComponent {
         }
 
         if(info_user.id == 4){
+
           this.form.controls['informacion_accionistas'].setValue(
             info_user.user_person.map( (user:any) => ({
               f_person_type_id: user.f_person_type_id,
@@ -319,9 +354,49 @@ export class ColombiaFormComponent {
               id: user.id
             }))
           )
+
+
         }
 
       })
+    }
+
+    private setComplementInfoFinalBenefit(){
+      const informacion_accionistas = this.inmutableData.vendor_info_user.find( (info_user:any) => info_user.id == 4)
+      if(informacion_accionistas && informacion_accionistas.user_person){
+        const info_final = informacion_accionistas.user_person.filter( (person:any) => {
+          return person.f_person_type_id == 2 && person.percente_participation >= 5;
+        })
+
+        console.log(info_final)
+
+        this.form.controls['informacion_beneficiarios_finales'].setValue(
+          info_final.map( (user:any) => ({
+            id: user.id,
+            document: user.document,
+            f_document_type_id: user.f_document_type_id,
+            name: user.name,
+            informacion_beneficiarios_finales_people: user.childrent.map( (child:any) => ({
+              f_person_type_id: child.f_person_type_id,
+              name: child.name,
+              f_document_type_id: child.f_document_type_id,
+              document: child.document,
+              verification_digit: child.verification_digit,
+              expedition_date: child.expedition_date,
+              info_beneficiarios_persona_pep: child.pep == true ? '1' : '2',
+              id: child.id
+            }))
+          }))
+        );
+
+        /*const info_beneficiarios_finales_section = this.mainForm.sections.find( section => section.key == SECTIONS_COLOMBIA_FORM.INFORMACION_BENEFICIARIOS_FINALES )
+        if(info_beneficiarios_finales_section){
+          const group_array = info_beneficiarios_finales_section.inputs.find( input => input.data == 'informacion_beneficiarios_finales')
+          if(group_array){
+            group_array.startEmpty = false
+          }
+        }*/
+      }
     }
 
 
@@ -329,6 +404,28 @@ export class ColombiaFormComponent {
       this.inmutableData.vendor_info_user.forEach( (info_user:any) => {
 
       });
+    }
+
+    private addFinalBeneficiaryByActionist(){
+
+      const info_final = this.form.value['informacion_accionistas'].rows.filter( (person:any) => {
+        return person.f_person_type_id == 2 && person.percente_participation >= 5;
+      })
+
+      const currentValue = this.form.value['informacion_beneficiarios_finales'].rows ? this.form.value['informacion_beneficiarios_finales'].rows : this.form.value['informacion_beneficiarios_finales']
+
+      console.log(...currentValue)
+
+     this.form.controls['informacion_beneficiarios_finales'].setValue(
+        {rows: info_final.map( (user:any) => ({
+          id: 999,
+          document: user.document,
+          f_document_type_id: user.f_document_type_id,
+          name: user.name,
+          informacion_beneficiarios_finales_people: []
+        }))}
+      );
+
     }
 
     private setEconomyActivityByCIIU(){

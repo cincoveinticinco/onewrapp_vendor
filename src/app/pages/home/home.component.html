@@ -4,6 +4,8 @@
     <img class="title-logo" src="assets/images/logotis.jpg">
     <h2>REGISTRO ÚNICO DE CONTRAPARTES</h2>
 
+    <div *ngIf="error" class="alert-message">{{ error }}</div>
+
     <ng-container [ngSwitch]="view">
 
 
@@ -26,7 +28,7 @@
     </ng-container>
 
     <ng-container *ngSwitchCase="'new-token'">
-      <p>Hemos enviado el token de acceso a {{ vendorEmail }}. Por favor ingrese este token pra continuar</p>
+      <p class="align-center">Hemos enviado el token de acceso a {{ vendorEmail }}. Por favor ingrese este token pra continuar</p>
       <button class="btn-center" (click)="setView('token')">Continuar</button>
     </ng-container>
 

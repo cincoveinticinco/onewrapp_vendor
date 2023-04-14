@@ -62,6 +62,10 @@ export class InputSelectBoxComponent implements ControlValueAccessor, Validator{
 
   ngOnInit() {
 
+    if(this.question.disabled){
+      this.selectBoxControl.disable();
+    }
+
     this.options = this.question?.options || []
     this.optionValue = this.question?.option_value || 'value'
 

@@ -56,7 +56,7 @@ export class RepseFormComponent {
       this.countryForm = this.vendorData.country_id
 
       if(this.countryForm == CountryForm.Colombia){
-        //this.router.navigate(['complete-form']);
+        this.router.navigate(['complete-form']);
       }
 
       this.titleForm = 'TIS Productions México S de RL de CV';

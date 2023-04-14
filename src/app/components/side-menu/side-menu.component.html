@@ -1,0 +1,9 @@
+<nav>
+  <ul class="section-list">
+    <li class="section-item"><a (click)="goToSection()">Inicio</a></li>
+    <ng-container *ngFor="let section of sections">
+      <li class="section-item" *ngIf="section.label" ><a (click)="goToSection(section.key)">{{ section.label | lowercase }}</a></li>
+    </ng-container>
+
+  </ul>
+</nav>

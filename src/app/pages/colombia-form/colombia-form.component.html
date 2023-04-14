@@ -1,7 +1,8 @@
+<app-side-menu [sections]="mainForm.sections"></app-side-menu>
 <form (ngSubmit)="handleSubmit()">
   <section class="content" [formGroup]="form">
 
-    <div *ngFor="let section of mainForm.sections">
+    <div *ngFor="let section of mainForm.sections" [id]="section.key">
       <ng-container *ngIf="section.visible">
         <div *ngIf="section.title" class="section-title">{{ section.title }}</div>
         <div class="content-row">

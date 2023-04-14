@@ -37,7 +37,20 @@ export class HomeComponent implements OnInit {
   }
 
   generateToken(){
-    this.setView('new-token');
+
+    this.error = '';
+
+    this.auth.generateToken(this.vendorId).subscribe( (data:any) => {
+
+      if(data.error){
+        this.error = data.msg;
+        return;
+      }
+
+      this.vendorEmail = data.email;
+      this.setView('new-token');
+    });
+
   }
 
   sendToken(){

@@ -25,6 +25,7 @@ import { ErrorInterceptor } from './interceptors/error.interceptor';
 import { ColombiaFormComponent } from './pages/colombia-form/colombia-form.component';
 import { MexicoFormComponent } from './pages/mexico-form/mexico-form.component';
 import { RepseFormComponent } from './pages/repse-form/repse-form.component';
+import { SideMenuComponent } from './components/side-menu/side-menu.component';
 
 
 @NgModule({
@@ -46,6 +47,7 @@ import { RepseFormComponent } from './pages/repse-form/repse-form.component';
     ColombiaFormComponent,
     MexicoFormComponent,
     RepseFormComponent,
+    SideMenuComponent,
   ],
   imports: [
     BrowserModule,

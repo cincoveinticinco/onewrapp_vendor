@@ -7,7 +7,8 @@ export enum TypeInputForm{
   ChooseOption,
   ArrayGroup,
   Paragraph,
-  File
+  File,
+  Hidden
 }
 
 export interface ISelectBoxOption{
@@ -36,5 +37,6 @@ export interface IInputForm{
   back_translation?: boolean,
   searching?: boolean,
   required?: boolean,
-  visible: boolean
+  visible: boolean,
+  startEmpty?: boolean
 }

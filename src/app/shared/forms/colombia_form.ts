@@ -83,6 +83,7 @@ export const COLOMBIA_FORM: IForm = {
     {
       key: 'informacion_basica',
       title: 'INFORMACIÓN BÁSICA',
+      label: 'Información Básica',
       visible: true,
       inputs: [
         {
@@ -102,7 +103,8 @@ export const COLOMBIA_FORM: IForm = {
           size: 2,
           data: 'f_person_type_id',
           options_key: 'tipo_persona',
-          disabled: false
+          disabled: true,
+
         },
         {
           label: 'Tipo ID',
@@ -311,6 +313,7 @@ export const COLOMBIA_FORM: IForm = {
     {
       key: 'informacion_representantes_legales',
       title: 'INFORMACIÓN REPRESENTANTES LEGALES',
+      label: 'Información Representantes Legales',
       visible: true,
       inputs: [{
         type: TypeInputForm.ArrayGroup,
@@ -408,6 +411,7 @@ export const COLOMBIA_FORM: IForm = {
     {
       key: 'informacion_junta_directiva',
       title: 'INFORMACIÓN JUNTA DIRECTIVA, CONSEJO DE ADMINISTRACIÓN O EQUIVALENTE',
+      label: 'Información Junta Directiva',
       visible: true,
       inputs: [{
         type: TypeInputForm.ArrayGroup,
@@ -505,6 +509,7 @@ export const COLOMBIA_FORM: IForm = {
     {
       key: 'informacion_accionistas',
       title: 'INFORMACIÓN ACCIONISTAS Y/O SOCIOS',
+      label: 'Información Accionistas Y/O Socios',
       visible: true,
       inputs: [
         {
@@ -604,6 +609,7 @@ export const COLOMBIA_FORM: IForm = {
     {
       key: 'informacion_beneficiarios_finales',
       title: 'INFORMACIÓN COMPLEMENTARIA DE BENEFICIARIOS FINALES',
+      label: 'Información Complementaria Beneficiarios',
       visible: true,
       inputs: [
         {
@@ -619,13 +625,23 @@ export const COLOMBIA_FORM: IForm = {
           visible: true,
           fixElements: true,
           disabled: false,
+          data: 'informacion_beneficiarios_finales',
+          startEmpty: true,
           children: [
             {
               label: 'ID',
               visible: true,
               type: TypeInputForm.Text,
               size: 2,
-              data: 'id',
+              data: 'document',
+              disabled: true
+            },
+            {
+              label: 'Tipo ID',
+              visible: false,
+              type: TypeInputForm.Hidden,
+              size: 2,
+              data: 'f_document_type_id',
               disabled: true
             },
             {
@@ -633,13 +649,14 @@ export const COLOMBIA_FORM: IForm = {
               visible: true,
               type: TypeInputForm.Text,
               size: 6,
-              data: 'razon_social',
+              data: 'name',
               disabled: true
             },
             {
               type: TypeInputForm.ArrayGroup,
               visible: true,
               addButonText: 'AGREGAR BENIFICIARIO',
+              data: 'informacion_beneficiarios_finales_people',
               disabled: false,
               children: [
                 {
@@ -648,7 +665,8 @@ export const COLOMBIA_FORM: IForm = {
                   type: TypeInputForm.SelectBox,
                   size: 2,
                   disabled: false,
-                  data: 'tipo_persona'
+                  options_key: 'tipo_persona',
+                  data: 'f_person_type_id'
                 },
                 {
                   label: 'Nombre o Razón Social',
@@ -656,7 +674,7 @@ export const COLOMBIA_FORM: IForm = {
                   type: TypeInputForm.Text,
                   size: 6,
                   disabled: false,
-                  data: 'razon_social'
+                  data: 'name'
                 },
                 {
                   label: 'Tipo ID',
@@ -664,15 +682,16 @@ export const COLOMBIA_FORM: IForm = {
                   type: TypeInputForm.SelectBox,
                   size: 1,
                   disabled: false,
-                  data: 'tipo_id',
+                  options_key: 'todos_tipo_id',
+                  data: 'f_document_type_id',
                 },
                 {
                   label: 'Número de ID',
                   visible: true,
-                  type: TypeInputForm.SelectBox,
+                  type: TypeInputForm.Text,
                   size: 2,
                   disabled: false,
-                  data: 'numero_id',
+                  data: 'document',
                 },
                 {
                   label: 'DV',
@@ -680,15 +699,16 @@ export const COLOMBIA_FORM: IForm = {
                   type: TypeInputForm.SelectBox,
                   size: 1,
                   disabled: false,
-                  data: 'dv',
+                  options_key: 'verification_digit',
+                  data: 'verification_digit',
                 },
                 {
                   label: 'Fecha matrícula o expedición ID',
                   visible: true,
-                  type: TypeInputForm.Text,
+                  type: TypeInputForm.Date,
                   size: 3,
                   disabled: false,
-                  data: 'fecha_expedicion',
+                  data: 'expedition_date',
                 },
                 {
                   label: '¿Es una persona expuesta políticamente (PEP)?',
@@ -707,6 +727,7 @@ export const COLOMBIA_FORM: IForm = {
     {
       key: 'informacion_personas_expuestas',
       title: 'PERSONAS EXPUESTAS POLÍTICAMENTE',
+      label: 'Personas Expuestas Póliticamente',
       visible: true,
       inputs: [
         {
@@ -819,6 +840,7 @@ export const COLOMBIA_FORM: IForm = {
     {
       key: 'declaraciones',
       title: 'DECLARACIONES',
+      label: 'Declaraciones',
       visible: true,
       inputs: [
         {
@@ -946,6 +968,7 @@ export const COLOMBIA_FORM: IForm = {
     {
       key: 'anexos',
       title: 'ANEXOS',
+      label: 'Anexos',
       visible: true,
       inputs: [
         {
