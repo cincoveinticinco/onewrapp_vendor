@@ -25,8 +25,14 @@ export class AuthService {
   }
 
   logout(){
+    const vendorId = localStorage.getItem('id_vendor');
     localStorage.clear();
-    this.router.navigate(['/']);
+    if(vendorId){
+      this.router.navigate(['vendor',vendorId]);
+    }else{
+      this.router.navigate(['/']);
+    }
+
   }
 
   private setSession(authResult: any){

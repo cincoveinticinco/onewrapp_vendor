@@ -129,6 +129,12 @@ button, .button{
       background-color: transparent;
     }
   }
+
+  &.tiny-button{
+    padding: 0.4rem;
+    min-width: 109px;
+    font-size: var(--small-font-size);
+  }
 }
 
 .center-content{
