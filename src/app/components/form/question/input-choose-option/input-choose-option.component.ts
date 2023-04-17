@@ -1,6 +1,8 @@
 import { Component, Input } from '@angular/core';
 import { NG_VALUE_ACCESSOR, NG_VALIDATORS, ControlValueAccessor, Validator, AbstractControl, ValidationErrors, FormControl } from '@angular/forms';
 import { IInputForm } from 'src/app/shared/interfaces/input_form';
+import { v4 as uuidv4 } from 'uuid';
+
 
 @Component({
   selector: 'input-choose-option',
@@ -24,6 +26,7 @@ export class InputChooseOptionComponent implements ControlValueAccessor, Validat
   control: FormControl = new FormControl('');
 
   value: any;
+  nameInput:string = '' ;
 
   onChange = (token: string) => {}
   onTouched = () => {}
@@ -53,6 +56,8 @@ export class InputChooseOptionComponent implements ControlValueAccessor, Validat
 
 
   ngOnInit(): void {
+    this.nameInput = `${this.question.data}_${uuidv4()}` ;
+
     this.control.valueChanges.subscribe( values => {
       this.value = values
       this.onChange(this.value)

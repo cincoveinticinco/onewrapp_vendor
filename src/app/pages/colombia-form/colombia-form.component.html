@@ -1,7 +1,10 @@
 <app-side-menu [sections]="mainForm.sections"></app-side-menu>
-<form (ngSubmit)="handleSubmit()">
-  <section class="content" [formGroup]="form">
+<button (click)="handleSubmit('save')" class="save-button tiny-button" type="button" >Guardar</button>
 
+<form (ngSubmit)="handleSubmit('verify')">
+
+  <section class="content" [formGroup]="form">
+    <input formControlName="verify" type="hidden">
     <div *ngFor="let section of mainForm.sections" [id]="section.key">
       <ng-container *ngIf="section.visible">
         <div *ngIf="section.title" class="section-title">{{ section.title }}</div>

@@ -19,4 +19,19 @@ export class VendorsService {
     return this.http.post(`${environment.API_URL}finance/updateVendor`, {...formData})
     .pipe(map( response => response))
   }
+
+  verifyVendor(formData: any){
+    return this.http.post(`${environment.API_URL}finance/getsendVerification`, {...formData})
+    .pipe(map( response => response))
+  }
+
+  updateVendorDocument(formData: any){
+    return this.http.post(`${environment.API_URL}finance/addDocumentVendor`, {...formData})
+    .pipe(map( response => response))
+  }
+
+  deleteVendorDocument(formData: any){
+    return this.http.post(`${environment.API_URL}finance/deleteDocumentVendor`, {...formData})
+    .pipe(map( response => response))
+  }
 }

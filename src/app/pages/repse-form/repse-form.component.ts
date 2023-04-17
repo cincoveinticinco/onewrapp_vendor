@@ -1,7 +1,8 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { startWith, pairwise, map } from 'rxjs';
+import { startWith, pairwise, map, forkJoin, catchError, of, tap, mergeMap, switchMap } from 'rxjs';
+import { UploadS3Service } from 'src/app/services/upload-s3.service';
 import { VendorsService } from 'src/app/services/vendors.service';
 import { REPSE_FORM, SECTIONS_REPSE_FORM } from 'src/app/shared/forms/repse_form';
 import { IForm } from 'src/app/shared/interfaces/form';
@@ -33,7 +34,7 @@ export class RepseFormComponent {
   requiredFiles: boolean = false;
 
 
-  constructor(private _cD: ChangeDetectorRef, private _fB: FormBuilder, private vendorService: VendorsService, private router: Router){
+  constructor(private _cD: ChangeDetectorRef, private _fB: FormBuilder, private vendorService: VendorsService, private router: Router, private s3Service: UploadS3Service){
     this.form = this._fB.group({})
   }
 
@@ -129,6 +130,8 @@ export class RepseFormComponent {
 
   submit(){
 
+    this.loading = true
+
     const _data = {
       ...this.inmutableData.vendor,
       info_users: [],
@@ -152,11 +155,60 @@ export class RepseFormComponent {
       ]
     }
 
+    const filesSources = [{id: 1, file: this.form.value['inscripcion_repse_file']}, {id: 2, file: this.form.value['registro_IMSS']}]
+    .filter( (file:any) => file.file != null && file.file != undefined)
+    .map( (file:any) => this.s3Service.getPresignedPutURL(file.name, this.vendorData.id)
+      .pipe(
+        catchError( error => of({id: file.id, file:file.file, url: '' })),
+        tap( url => ({id: file.id, file:file.file, url: url }))
+      )
+    )
+
+
+
     this.vendorService.updateVendorInfo(_data).subscribe( data => {
-      console.log(this.form.value, data)
-      this.router.navigate(['complete-form'])
+
+      forkJoin(filesSources)
+      .subscribe(values => {
+        //console.log(values)
+
+        const uploadSources = values.map( value =>
+          this.s3Service.uploadFileUrlPresigned(value.file, value.url)
+          .pipe(
+            catchError( _ => of({...value, url: ''})),
+            map( _ => value)
+          )
+        );
+
+        forkJoin(uploadSources)
+          .subscribe( uploadImages => {
+
+            uploadImages.forEach( value => {
+              console.log(value)
+              this.vendorService.updateVendorDocument(
+                {
+                  vendor_document_type_id: value.id,
+                  link: value.url ? `${this.vendorData.id}/${value.file.name}` : ''
+                }
+              ).subscribe(data => {
+                console.log(data)
+              })
+            })
+
+
+          })
+
+        this.router.navigate(['complete-form'])
+
+      })
+
+
 
     })
+
+
+
+
 
   }
 

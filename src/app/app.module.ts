@@ -26,6 +26,7 @@ import { ColombiaFormComponent } from './pages/colombia-form/colombia-form.compo
 import { MexicoFormComponent } from './pages/mexico-form/mexico-form.component';
 import { RepseFormComponent } from './pages/repse-form/repse-form.component';
 import { SideMenuComponent } from './components/side-menu/side-menu.component';
+import { UploadFormComponent } from './pages/upload-form/upload-form.component';
 
 
 @NgModule({
@@ -48,6 +49,7 @@ import { SideMenuComponent } from './components/side-menu/side-menu.component';
     MexicoFormComponent,
     RepseFormComponent,
     SideMenuComponent,
+    UploadFormComponent,
   ],
   imports: [
     BrowserModule,

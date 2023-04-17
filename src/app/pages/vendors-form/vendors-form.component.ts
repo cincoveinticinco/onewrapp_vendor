@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 import { VendorsService } from 'src/app/services/vendors.service';
 
 enum CountryForm {
@@ -21,7 +22,7 @@ export class VendorsFormComponent {
   titleForm: string = '';
 
 
-  constructor(private vendorService: VendorsService){
+  constructor(private vendorService: VendorsService, private router: Router){
   }
 
   ngOnInit(): void {
@@ -51,16 +52,28 @@ export class VendorsFormComponent {
 
   submit(formData: any){
 
-    console.log(formData)
+    this.loading = true
 
     const _data = {
       ...formData,
-      info_additional: []
     }
 
     this.vendorService.updateVendorInfo(_data).subscribe( data => {
-      console.log(formData, data)
+      this.loading = false
     })
 
+  }
+
+  verifyVendor(formData: any){
+    this.loading = true
+
+    const _data = {
+      ...formData,
+    }
+
+    this.vendorService.verifyVendor(_data).subscribe( data => {
+      this.loading = false
+      this.router.navigate(['upload-form'])
+    })
   }
 }

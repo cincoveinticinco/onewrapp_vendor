@@ -69,7 +69,7 @@ export const REPSE_FORM: IForm = {
         },
         {
           type: TypeInputForm.File,
-          label: 'Adjuntar Inscripción REPSE',
+          label: 'Adjuntar Registro IMSS',
           visible: false,
           data: 'registro_IMSS',
           disabled: false,

@@ -742,14 +742,40 @@ export const COLOMBIA_FORM: IForm = {
           visible: true,
           fixElements: true,
           disabled: false,
+          startEmpty: true,
           data: 'informacion_personas_expuestas',
           children: [
+            {
+              label: 'Parent ID',
+              visible: false,
+              type: TypeInputForm.Text,
+              size: 1,
+              disabled: false,
+              data: 'parent_id',
+            },
+            {
+              label: 'Element ID',
+              visible: false,
+              type: TypeInputForm.Text,
+              size: 1,
+              disabled: false,
+              data: 'id',
+            },
+            {
+              label: 'Tipo ID',
+              visible: false,
+              type: TypeInputForm.SelectBox,
+              size: 1,
+              disabled: false,
+              options_key: 'todos_tipo_id',
+              data: 'f_document_parent_type_id',
+            },
             {
               label: 'ID',
               visible: true,
               type: TypeInputForm.Text,
               size: 2,
-              data: 'id',
+              data: 'document_parent',
               disabled: true
             },
             {
@@ -757,7 +783,7 @@ export const COLOMBIA_FORM: IForm = {
               visible: true,
               type: TypeInputForm.Text,
               size: 6,
-              data: 'nomber',
+              data: 'name_parent',
               disabled: true
             },
             {
@@ -765,7 +791,7 @@ export const COLOMBIA_FORM: IForm = {
               visible: true,
               type: TypeInputForm.Text,
               size: 4,
-              data: 'entidad',
+              data: 'entity',
               disabled: false
             },
             {
@@ -773,29 +799,30 @@ export const COLOMBIA_FORM: IForm = {
               visible: true,
               type: TypeInputForm.Text,
               size: 4,
-              data: 'cargo',
+              data: 'position',
               disabled: false
             },
             {
               label: 'Vinculación',
               visible: true,
-              type: TypeInputForm.Text,
+              type: TypeInputForm.Date,
               size: 2,
-              data: 'vinculacion',
+              data: 'binding_date',
               disabled: false
             },
             {
               label: 'Desvinculación',
               visible: true,
-              type: TypeInputForm.Text,
+              type: TypeInputForm.Date,
               size: 2,
-              data: 'desvinculacion',
+              data: 'termination_date',
               disabled: false
             },
             {
               type: TypeInputForm.ArrayGroup,
               visible: true,
               addButonText: 'AGREGAR BENIFICIARIO',
+              data: 'people_relationships',
               disabled: false,
               children: [
                 {
@@ -803,7 +830,8 @@ export const COLOMBIA_FORM: IForm = {
                   visible: true,
                   type: TypeInputForm.SelectBox,
                   size: 2,
-                  data: 'tipo_persona',
+                  options_key: 'parentesco',
+                  data: 'f_vendor_relationship_id',
                   disabled: false
                 },
                 {
@@ -811,7 +839,7 @@ export const COLOMBIA_FORM: IForm = {
                   visible: true,
                   type: TypeInputForm.Text,
                   size: 3,
-                  data: 'razon_social',
+                  data: 'name',
                   disabled: false
                 },
                 {
@@ -819,15 +847,16 @@ export const COLOMBIA_FORM: IForm = {
                   visible: true,
                   type: TypeInputForm.SelectBox,
                   size: 1,
-                  data: 'tipo_id',
+                  options_key: 'natural_id',
+                  data: 'f_document_type_id',
                   disabled: false
                 },
                 {
                   label: 'Número de ID',
                   visible: true,
-                  type: TypeInputForm.SelectBox,
+                  type: TypeInputForm.Text,
                   size: 2,
-                  data: 'numero_id',
+                  data: 'document',
                   disabled: false
                 },
               ]

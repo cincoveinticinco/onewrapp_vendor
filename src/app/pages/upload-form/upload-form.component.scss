@@ -1,0 +1,25 @@
+.center-content{
+
+  & > div{
+    width: 500px;
+    text-align: left !important;
+  }
+
+  img{
+    display: block;
+    margin: 0 auto;
+  }
+
+  button{
+    display: block;
+    margin: 0 auto 1rem;
+  }
+
+  .content{
+    max-width: none;
+  }
+
+  p{
+    text-align: center !important;
+  }
+}

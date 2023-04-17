@@ -33,7 +33,10 @@ export class InputArrayGroupComponent implements ControlValueAccessor, Validator
 
   writeValue(value: any): void {
 
-    if(!value) return;
+    if(!value) {
+      this.value = value
+      return;
+    }
 
     value = value.rows ? value.rows : value
 
@@ -43,6 +46,10 @@ export class InputArrayGroupComponent implements ControlValueAccessor, Validator
       const firstRow = this.rows.value[0];
       if(firstRow && !firstRow['id']){
         this.deleteRow(0)
+      }
+    }else{
+      if(this.question?.startEmpty){
+        this.rows.clear();
       }
     }
 
