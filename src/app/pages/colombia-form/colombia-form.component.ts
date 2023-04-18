@@ -12,6 +12,7 @@ import {
 } from 'src/app/shared/forms/colombia_form';
 import { IForm } from 'src/app/shared/interfaces/form';
 import { ISelectBoxOption } from 'src/app/shared/interfaces/input_form';
+import { info_files } from 'src/app/shared/forms/files_types';
 
 @Component({
   selector: 'app-colombia-form',
@@ -98,6 +99,7 @@ export class ColombiaFormComponent {
     this.addPoliticianPeople(this.inmutableData['exposed_peoploes']);
     this.setCheckboxInfo();
     this.setVisbleBussinesGroup();
+    this.setFilesValues();
 
     console.log(this.form.value);
 
@@ -389,8 +391,6 @@ export class ColombiaFormComponent {
         };
       }
     );
-
-    console.log(exposed_peoploe)
 
     const info_additional = [
       {
@@ -870,6 +870,28 @@ export class ColombiaFormComponent {
       );
     }
   }
+
+  private setFilesValues(){
+    this.inmutableData['document_vendor'].forEach( (document:any) => {
+
+      if(document.link == null || document.link == undefined){
+        return;
+      }
+
+      const file = { name: document.link, url: document.link}
+
+      Object.keys(info_files)
+      .map((key: string) => {
+        const file_key = info_files[key as unknown as keyof typeof info_files];
+
+        if(document.id == Number(key)){
+          this.form.get(file_key)?.setValue(file)
+        }
+
+      })
+    })
+  }
+
 
   private setJuridicaSectionsVisible() {
     const showJuridicaSections =

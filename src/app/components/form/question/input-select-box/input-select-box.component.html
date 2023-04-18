@@ -14,7 +14,7 @@
 </ng-component>
 
 <ng-template #normalSelectBox>
-  <select [formControl]="selectBoxControl" [disabled]="disabled"  [required]="question.required || false">
+  <select [ngClass]="{'label-select': question.readonly}" [formControl]="selectBoxControl" [disabled]="disabled"  [required]="question.required || false">
     <option value="">Selecione una opción</option>
     <option *ngFor="let option of options" [value]="option.key">{{ option.value }}</option>
   </select>

@@ -181,14 +181,6 @@ export const MEXICO_FORM: IForm = {
           data: 'city',
           disabled: false
         },
-        /*{
-          label: 'Código postal',
-          visible: true,
-          type: TypeInputForm.Text,
-          size: 2,
-          data: 'postal_code',
-          disabled: false
-        },*/
         {
           label: 'Teléfono',
           visible: true,

@@ -178,8 +178,6 @@ export class RepseFormComponent {
       )
     )
 
-
-
     this.vendorService.updateVendorInfo(_data).subscribe( data => {
 
       forkJoin(filesSources)

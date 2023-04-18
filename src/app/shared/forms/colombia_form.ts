@@ -189,14 +189,6 @@ export const COLOMBIA_FORM: IForm = {
           disabled: false
         },
         {
-          label: 'Código postal',
-          visible: true,
-          type: TypeInputForm.Text,
-          size: 2,
-          data: 'postal_code',
-          disabled: false
-        },
-        {
           label: 'Teléfono',
           visible: true,
           type: TypeInputForm.Text,
@@ -727,7 +719,7 @@ export const COLOMBIA_FORM: IForm = {
     {
       key: 'informacion_personas_expuestas',
       title: 'PERSONAS EXPUESTAS POLÍTICAMENTE',
-      label: 'Personas Expuestas Póliticamente',
+      label: 'Personas Expuestas Políticamente',
       visible: true,
       inputs: [
         {
@@ -763,10 +755,11 @@ export const COLOMBIA_FORM: IForm = {
             },
             {
               label: 'Tipo ID',
-              visible: false,
+              visible: true,
               type: TypeInputForm.SelectBox,
-              size: 1,
-              disabled: false,
+              size: 2,
+              disabled: true,
+              readonly: true,
               options_key: 'todos_tipo_id',
               data: 'f_document_parent_type_id',
             },
@@ -782,7 +775,7 @@ export const COLOMBIA_FORM: IForm = {
               label: 'Nombre',
               visible: true,
               type: TypeInputForm.Text,
-              size: 6,
+              size: 4,
               data: 'name_parent',
               disabled: true
             },
@@ -875,13 +868,13 @@ export const COLOMBIA_FORM: IForm = {
         {
           type: TypeInputForm.Paragraph,
           visible: true,
-          content: '“De manera voluntaria, obrando de buena fe y conforme a mi conocimiento actual declaro que:',
+          content: 'De manera voluntaria, obrando de buena fe y conforme a mi conocimiento actual declaro que:',
           disabled: false
         },
         {
           type: TypeInputForm.Paragraph,
           visible: true,
-          content: 'De manera voluntaria, obrando de buena fe realizo las siguiente declaraciones:”',
+          content: 'De manera voluntaria, obrando de buena fe realizo las siguiente declaraciones:',
           disabled: false
         },
         {
@@ -923,7 +916,13 @@ export const COLOMBIA_FORM: IForm = {
         {
           type: TypeInputForm.Paragraph,
           visible: true,
-          content: 'vii) a. Como persona natural o que la persona jurídica que represento, sus representante legales, miembros de junta directiva, empleados de cumplimiento, revisores fiscales, auditores externos, accionista y/o socios con participación igual o superior al cinco por ciento (5%) y beneficiarios finales, a la fecha de firma de este formulario, no tienen conflictos de intereses, y no poseen información que actualmente implique o que eventualmente pueda configurar una situación de conflicto de Intereses con TIS, de la siguiente manera: - Ninguno de los anteriomente mencionados tienen relación de parentesco dentro del tercer grado de consanguinidad, primero de afinidad o primero civil, con algún empleado, directivo, administrador o accionista de TIS. - Ninguno de los anteriormente mencionados han sido parte ni son parte, en proceso judicial, administrativo, disciplinario o arbitral alguno o de cualquier otra índole, en el cual TIS, sus empleados, directivos, administradores o accionistas también sean parte, bien sea en su calidad de demandantes, demandados o llamados en garantía. - No conozco cualquier otra situación que pueda generar una situación de conflicto de Intereses con TIS. además reconozco y acepto mi obligación de informar a TIS, cualquier situación que pueda configurar un conflicto de Intereses con posterioridad a la fecha de firma del presente formulario."',
+          content: 'vii)',
+          disabled: false
+        },
+        {
+          type: TypeInputForm.Paragraph,
+          visible: true,
+          content: 'a. Como persona natural o que la persona jurídica que represento, sus representante legales, miembros de junta directiva, empleados de cumplimiento, revisores fiscales, auditores externos, accionista y/o socios con participación igual o superior al cinco por ciento (5%) y beneficiarios finales, a la fecha de firma de este formulario, no tienen conflictos de intereses, y no poseen información que actualmente implique o que eventualmente pueda configurar una situación de conflicto de Intereses con TIS, de la siguiente manera: - Ninguno de los anteriomente mencionados tienen relación de parentesco dentro del tercer grado de consanguinidad, primero de afinidad o primero civil, con algún empleado, directivo, administrador o accionista de TIS. - Ninguno de los anteriormente mencionados han sido parte ni son parte, en proceso judicial, administrativo, disciplinario o arbitral alguno o de cualquier otra índole, en el cual TIS, sus empleados, directivos, administradores o accionistas también sean parte, bien sea en su calidad de demandantes, demandados o llamados en garantía. - No conozco cualquier otra situación que pueda generar una situación de conflicto de Intereses con TIS. además reconozco y acepto mi obligación de informar a TIS, cualquier situación que pueda configurar un conflicto de Intereses con posterioridad a la fecha de firma del presente formulario."',
           disabled: false
         },
         {
@@ -951,7 +950,13 @@ export const COLOMBIA_FORM: IForm = {
         {
           type: TypeInputForm.Paragraph,
           visible: true,
-          content: 'viii) a. Algún tipo de vinculo con entidades estatales o de gobierno',
+          content: 'viii)',
+          disabled: false
+        },
+        {
+          type: TypeInputForm.Paragraph,
+          visible: true,
+          content: 'a. Algún tipo de vinculo con entidades estatales o de gobierno',
           disabled: false
         },
         {
@@ -1040,6 +1045,13 @@ export const COLOMBIA_FORM: IForm = {
           label: 'Certificación Bancaria con fecha de expedición inferior a un mes',
           visible: true,
           data: 'certificacion_bancaria_file',
+          disabled: false
+        },
+        {
+          type: TypeInputForm.File,
+          label: 'Formulario de Declaración de Cumplimiento de Políticas, Autorización de Tratamiento de Datos Personales y Autorización de Consulta y Reporte de TIS.',
+          visible: true,
+          data: 'documento_politicas',
           disabled: false
         },
       ]
