@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { ChangeDetectorRef, Component, Input } from '@angular/core';
 import { AbstractControl, ControlValueAccessor, FormArray, FormBuilder, FormGroup, NG_VALIDATORS, NG_VALUE_ACCESSOR, ValidationErrors, Validator } from '@angular/forms';
 import { IInputForm } from 'src/app/shared/interfaces/input_form';
 
@@ -83,6 +83,7 @@ export class InputArrayGroupComponent implements ControlValueAccessor, Validator
   }
 
   createRow(rowValue: any = null){
+
     const form_fields:any = {}
     const children = this.question?.children
 
@@ -96,10 +97,18 @@ export class InputArrayGroupComponent implements ControlValueAccessor, Validator
           const index: string = question.data
 
           form_fields[index] = rowValue ? [rowValue[index]] : null
+          if(question.options_key){
+            form_fields[`${index}_list`] = rowValue ? [rowValue[`${index}_list`]] : []
+          }
+
+          if(rowValue && rowValue[`${index}_visible`] != undefined){
+            form_fields[`${index}_visible`] = rowValue ? [rowValue[`${index}_visible`]] : []
+          }
+
+
         }
       })
     }
-
     return this._fB.group(form_fields);
   }
 
@@ -116,7 +125,7 @@ export class InputArrayGroupComponent implements ControlValueAccessor, Validator
     this.rows.removeAt(rowIndex);
   }
 
-  constructor(private _fB: FormBuilder){
+  constructor(private _fB: FormBuilder, private _cD: ChangeDetectorRef){
     this.form = this._fB.group({
       rows: this._fB.array([])
     });

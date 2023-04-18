@@ -3,7 +3,7 @@ import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import * as moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
 
-import { map, pairwise, startWith } from 'rxjs';
+import { debounceTime, distinctUntilChanged, map, pairwise, startWith } from 'rxjs';
 import { VendorsService } from 'src/app/services/vendors.service';
 import {
   COLOMBIA_FORM,
@@ -37,6 +37,14 @@ export class ColombiaFormComponent {
 
   get personas_expuestas(): FormControl {
     return this.form.controls['informacion_personas_expuestas'] as FormControl;
+  }
+
+  get accionistas(): FormControl{
+    return this.form.controls['informacion_accionistas'] as FormControl;
+  }
+
+  get beneficiarios_finales(): FormControl{
+    return this.form.controls['informacion_beneficiarios_finales'] as FormControl;
   }
 
   get verify(): FormControl {
@@ -87,8 +95,9 @@ export class ColombiaFormComponent {
     this.setEconomyActivityByCIIU();
     this.setVendorMultipleInfo();
     this.setComplementInfoFinalBenefit();
-    this.addPoliticianPeople();
+    this.addPoliticianPeople(this.inmutableData['exposed_peoploes']);
     this.setCheckboxInfo();
+    this.setVisbleBussinesGroup();
 
     console.log(this.form.value);
 
@@ -195,6 +204,8 @@ export class ColombiaFormComponent {
       });
     });
 
+
+
     this.form = this._fB.group(fields_group);
 
     this.form.valueChanges
@@ -212,6 +223,65 @@ export class ColombiaFormComponent {
           this.handleChangeFormValues(formControlName);
         }
       });
+
+
+    this.accionistas.valueChanges
+      .pipe(
+        startWith(this.form.value),
+        pairwise(),
+        distinctUntilChanged(),
+      ).subscribe( ([oldValues, newValue]:any) => {
+
+      if(!newValue) return;
+
+      const rowsArray = newValue.rows ? newValue.rows : newValue;
+      rowsArray.forEach( (row:any, index:number) => {
+        const isJuridica = Number(row['f_person_type_id']) == TYPE_PERSON_COLOMBIA.Juridica;
+
+        row['verification_digit_visible'] = isJuridica;
+        row['informacion_accionistas_pep_visible'] = !isJuridica;
+        row['f_document_type_id_list'] = isJuridica ? this.lists.juridica_id : this.lists.natural_id;
+
+        const oldRowsArray = oldValues && oldValues.rows ? oldValues.rows : oldValues;
+        if(oldRowsArray && oldRowsArray[index]){
+
+
+          if(oldRowsArray[index]['f_document_type_id'] != null && row['f_document_type_id'] != oldRowsArray[index]['f_document_type_id']){
+            row['f_document_type_id'] = null;
+          }
+        }
+      });
+    });
+
+    this.beneficiarios_finales.valueChanges
+      .pipe(
+        startWith(this.beneficiarios_finales.value),
+        pairwise(),
+        distinctUntilChanged(),
+      ).subscribe( ([oldValues, newValue]:any) => {
+
+
+
+      if(!newValue) return;
+
+      const _newValue = newValue.rows ? newValue.rows : newValue;
+      _newValue.forEach( (newRowValue:any, indexRow: number) => {
+
+        const people_row = newRowValue.informacion_beneficiarios_finales_people
+        const rowsArray = people_row.rows ? people_row.rows : people_row;
+
+        rowsArray.forEach( (row:any, index:number) => {
+          const isJuridica = Number(row['f_person_type_id']) == TYPE_PERSON_COLOMBIA.Juridica;
+
+          row['verification_digit_visible'] = isJuridica;
+          row['info_beneficiarios_persona_pep_visible'] = !isJuridica;
+          row['f_document_type_id_list'] = isJuridica ? this.lists.juridica_id : this.lists.natural_id;
+         });
+      });
+
+
+    })
+
   }
 
   handleSubmit(action: string) {
@@ -260,6 +330,9 @@ export class ColombiaFormComponent {
     const info_accionistas = this.form.value['informacion_accionistas'].rows
       ? this.form.value['informacion_accionistas'].rows
       : this.form.value['informacion_accionistas'];
+
+      console.log(info_accionistas)
+
     if (info_accionistas) {
       info_accionistas.forEach((row: any) => {
         info_users.push({
@@ -312,10 +385,12 @@ export class ColombiaFormComponent {
           position,
           binding_date,
           termination_date,
-          people_relationships: people_relationships ? people_relationships.rows : [],
+          people_relationships: people_relationships ? (people_relationships.rows ? people_relationships.rows : people_relationships) : [],
         };
       }
     );
+
+    console.log(exposed_peoploe)
 
     const info_additional = [
       {
@@ -366,23 +441,41 @@ export class ColombiaFormComponent {
 
   }
 
-
-
   private handleChangeFormValues(formControlName: string) {
     const value = this.form.value[formControlName];
+
+
 
     const handlers = {
       f_person_type_id: () => this.setTypeIdByTypePerson(value),
       f_vendor_economic_act_id: () => this.setEconomyActivityByCIIU(),
       informacion_accionistas: () => this.addFinalBeneficiaryByActionist(),
+      informacion_junta_directiva: () => this.addPoliticianPeople(),
       informacion_representantes_legales: () => this.addPoliticianPeople(),
       informacion_beneficiarios_finales: () => this.addPoliticianPeople(),
+      business_group: () => this.setVisbleBussinesGroup(),
       pep: () => this.addPoliticianPeople(),
     };
 
     if (formControlName in handlers) {
       handlers[formControlName as keyof typeof handlers].call(this);
     }
+  }
+
+  private setVisbleBussinesGroup(){
+    const showBussiness = this.form.value['business_group'] == '1';
+
+    this.setVisibleInput(
+      'p_pertenece_grupo_empresarial',
+      showBussiness,
+      SECTIONS_COLOMBIA_FORM.INFORMACION_BASICA
+    );
+
+    this.setVisibleInput(
+      'otras_empresas',
+      showBussiness,
+      SECTIONS_COLOMBIA_FORM.INFORMACION_BASICA
+    );
   }
 
   private setTypeIdByTypePerson(typePerson: string) {
@@ -464,19 +557,27 @@ export class ColombiaFormComponent {
         }
 
         if (info_user.id == 4) {
+
           this.form.controls['informacion_accionistas'].setValue(
-            info_user.user_person.map((user: any) => ({
-              f_person_type_id: user.f_person_type_id,
-              name: user.name,
-              percente_participation: user.percente_participation,
-              f_document_type_id: user.f_document_type_id,
-              document: user.document,
-              verification_digit: user.verification_digit,
-              expedition_date: user.expedition_date,
-              country: user.country,
-              informacion_accionistas_pep: user.pep == true ? '1' : '2',
-              id: user.id,
-            }))
+            info_user.user_person.map((user: any) => {
+              const isJuridica = Number(user.f_person_type_id) == TYPE_PERSON_COLOMBIA.Juridica;
+              return {
+                f_person_type_id: user.f_person_type_id,
+                name: user.name,
+                percente_participation: user.percente_participation,
+                f_document_type_id: user.f_document_type_id,
+                f_document_type_id_list: isJuridica ? this.lists.juridica_id : this.lists.natural_id,
+                document: user.document,
+                verification_digit: user.verification_digit,
+                verification_digit_visible: isJuridica,
+                expedition_date: user.expedition_date,
+                country: user.country,
+                informacion_accionistas_pep_visible: !isJuridica,
+                informacion_accionistas_pep: user.pep == true ? '1' : '2',
+                id: user.id,
+
+              }
+            })
           );
         }
       }
@@ -504,7 +605,6 @@ export class ColombiaFormComponent {
 
   }
 
-
   private setComplementInfoFinalBenefit() {
     const informacion_accionistas = this.inmutableData.vendor_info_user.find(
       (info_user: any) => info_user.id == 4
@@ -517,8 +617,6 @@ export class ColombiaFormComponent {
           );
         }
       );
-
-      console.log(info_final);
 
       this.form.controls['informacion_beneficiarios_finales'].setValue(
         info_final.map((user: any) => ({
@@ -551,9 +649,8 @@ export class ColombiaFormComponent {
     }
   }
 
+  private addPoliticianPeople(initValues = []) {
 
-
-  private addPoliticianPeople() {
     const people: any = [];
     const current_people =
       (this.personas_expuestas.value && this.personas_expuestas.value.rows
@@ -592,6 +689,7 @@ export class ColombiaFormComponent {
             document_parent: item['document'],
             f_document_parent_type_id: item['f_document_type_id'],
             name_parent: item['name'],
+            people_relationships: []
           });
         }
       });
@@ -615,6 +713,7 @@ export class ColombiaFormComponent {
             document_parent: item['document'],
             f_document_parent_type_id: item['f_document_type_id'],
             name_parent: item['name'],
+            people_relationships: []
           });
         }
       });
@@ -637,6 +736,7 @@ export class ColombiaFormComponent {
             document_parent: item['document'],
             f_document_parent_type_id: item['f_document_type_id'],
             name_parent: item['name'],
+            people_relationships: []
           });
         }
       });
@@ -666,6 +766,7 @@ export class ColombiaFormComponent {
               document_parent: item['document'],
               f_document_parent_type_id: item['f_document_type_id'],
               name_parent: item['name'],
+              people_relationships: []
             });
           }
         });
@@ -682,7 +783,14 @@ export class ColombiaFormComponent {
     );
 
     if (!current_people.length) {
-      this.personas_expuestas.setValue({ rows: sort_people });
+
+      this.personas_expuestas.setValue({ rows: sort_people.map( (person: any) => {
+        const value:any = initValues.find( (initVal:any) => initVal.document_parent == person.document_parent && initVal.f_document_parent_type_id == person.f_document_parent_type_id)
+        if(value){
+          return {...person, ...value}
+        }
+        return person;
+      }) });
       return;
     }
 
@@ -725,6 +833,8 @@ export class ColombiaFormComponent {
   }
 
   private addFinalBeneficiaryByActionist() {
+
+
     const info_final = this.form.value['informacion_accionistas'].rows.filter(
       (person: any) => {
         return (
@@ -738,7 +848,6 @@ export class ColombiaFormComponent {
       ? this.form.value['informacion_beneficiarios_finales'].rows
       : this.form.value['informacion_beneficiarios_finales'];
 
-    console.log(...currentValue);
 
     this.form.controls['informacion_beneficiarios_finales'].setValue({
       rows: info_final.map((user: any) => ({
@@ -771,6 +880,12 @@ export class ColombiaFormComponent {
       TYPE_PERSON_COLOMBIA.Natural;
 
     this.setVisibleInput(
+      'verification_digit',
+      showJuridicaSections,
+      SECTIONS_COLOMBIA_FORM.INFORMACION_BASICA
+    );
+
+    this.setVisibleInput(
       'otras_empresas',
       showJuridicaSections,
       SECTIONS_COLOMBIA_FORM.INFORMACION_BASICA
@@ -783,6 +898,11 @@ export class ColombiaFormComponent {
     this.setVisibleInput(
       'p_pertenece_grupo_empresarial',
       showJuridicaSections,
+      SECTIONS_COLOMBIA_FORM.INFORMACION_BASICA
+    );
+    this.setVisibleInput(
+      'pep',
+      showNaturalSections,
       SECTIONS_COLOMBIA_FORM.INFORMACION_BASICA
     );
 

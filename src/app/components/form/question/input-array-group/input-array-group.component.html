@@ -7,9 +7,9 @@
           {{ question?.title }}
         </div>
         <ng-container *ngFor="let column of question?.children">
-          <div *ngIf="column.visible" class="content-col" [ngClass]="'m-'+(column.size || 12)">
+          <div [hidden]="rows.controls[i].value[column.data+'_visible'] != undefined ? !rows.controls[i].value[column.data+'_visible'] : !column.visible " class="content-col" [ngClass]="'m-'+(column.size || 12)">
             <ng-container *ngIf="column.data; else noFormField">
-              <app-question [formControlName]="column.data || ''" [question]="column"></app-question>
+              <app-question [formControlName]="column.data || ''" [options]="rows.controls[i].value[column.data+'_list']" [question]="column"></app-question>
             </ng-container>
             <ng-template #noFormField>
               <app-question [question]="column"></app-question>

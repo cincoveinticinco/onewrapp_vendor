@@ -4,7 +4,12 @@
 </label>
 
 <div *ngIf="value" class="content-file-filled">
-  <span>{{ value.name }}</span>
+  <span *ngIf="value.url; else noURL"><a [href]="value.url" target="_blank">{{ value.name }}</a></span>
+  <ng-template #noURL>
+    <span>{{ value.name }}</span>
+  </ng-template>
+
+
   <button class="delete-button" (click)="clearFile()">
     <span class="material-symbols-outlined">
       delete

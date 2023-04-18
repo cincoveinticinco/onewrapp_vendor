@@ -24,7 +24,7 @@ export class InputSelectBoxComponent implements ControlValueAccessor, Validator{
 
 
   @Input() question!: IInputForm;
-  options: ISelectBoxOption[] = [];
+  @Input() options: ISelectBoxOption[] = [];
   optionValue: string = '';
   filteredOptions?: Observable<ISelectBoxOption[]>;
 
@@ -66,7 +66,10 @@ export class InputSelectBoxComponent implements ControlValueAccessor, Validator{
       this.selectBoxControl.disable();
     }
 
-    this.options = this.question?.options || []
+    if(!this.options || (this.options && this.options.length == 0)){
+      this.options = this.question?.options || []
+    }
+
     this.optionValue = this.question?.option_value || 'value'
 
     this.filteredOptions = this.selectSearchControl.valueChanges.pipe(

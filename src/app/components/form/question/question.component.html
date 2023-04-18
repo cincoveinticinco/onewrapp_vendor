@@ -9,7 +9,7 @@
       <input [formControl]="formQuestion" type="date" [disabled]="disabled">
     </ng-container>
     <ng-container *ngSwitchCase="TypeInputForm.SelectBox">
-      <input-select-box [formControl]="formQuestion"  [question]="question" [disabled]="disabled"></input-select-box>
+      <input-select-box [formControl]="formQuestion" [options]="options"  [question]="question" [disabled]="disabled"></input-select-box>
     </ng-container>
     <ng-container *ngSwitchCase="TypeInputForm.Paragraph">
       <input-paragraph [question]="question"></input-paragraph>

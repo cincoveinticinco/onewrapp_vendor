@@ -105,11 +105,25 @@ export class RepseFormComponent {
       control.setValue(this.vendorData[key]);
     });
 
+    this.inmutableData['document_vendor'].forEach( (document:any) => {
+      const file = { name: document.link, url: document.link}
+
+      if(document.id == 1){
+        this.form.get('inscripcion_repse_file')?.setValue(file)
+      }
+
+      if(document.id == 2){
+        this.form.get('registro_IMSS')?.setValue(file)
+      }
+    })
+
     this.setCheckboxInfo();
     this.setInputFilesForm();
 
     this.valuesLoaded = true;
   }
+
+
 
   setInputFilesForm(){
       const servicios_actividades = this.form.value['servicios_actividades'];
@@ -157,10 +171,10 @@ export class RepseFormComponent {
 
     const filesSources = [{id: 1, file: this.form.value['inscripcion_repse_file']}, {id: 2, file: this.form.value['registro_IMSS']}]
     .filter( (file:any) => file.file != null && file.file != undefined)
-    .map( (file:any) => this.s3Service.getPresignedPutURL(file.name, this.vendorData.id)
+    .map( (file:any) => this.s3Service.getPresignedPutURL(file.file.name, this.vendorData.id)
       .pipe(
-        catchError( error => of({id: file.id, file:file.file, url: '' })),
-        tap( url => ({id: file.id, file:file.file, url: url }))
+        catchError( error => of({id: file.id, file:file.file, key: '', url: '' })),
+        map( (putUrl:any) => ({...putUrl, id: file.id, file: file.file}))
       )
     )
 
@@ -170,7 +184,7 @@ export class RepseFormComponent {
 
       forkJoin(filesSources)
       .subscribe(values => {
-        //console.log(values)
+        console.log(values)
 
         const uploadSources = values.map( value =>
           this.s3Service.uploadFileUrlPresigned(value.file, value.url)
@@ -201,8 +215,6 @@ export class RepseFormComponent {
         this.router.navigate(['complete-form'])
 
       })
-
-
 
     })
 

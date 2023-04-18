@@ -1,6 +1,6 @@
 import { Component, Input, OnChanges, SimpleChanges, forwardRef } from '@angular/core';
 import { NG_VALUE_ACCESSOR, NG_VALIDATORS, ControlValueAccessor, Validator, AbstractControl, ValidationErrors, FormControl, FormBuilder, FormGroup, NgControl } from '@angular/forms';
-import { IInputForm, TypeInputForm } from 'src/app/shared/interfaces/input_form';
+import { IInputForm, ISelectBoxOption, TypeInputForm } from 'src/app/shared/interfaces/input_form';
 
 
 @Component({
@@ -26,6 +26,7 @@ export class QuestionComponent implements ControlValueAccessor, Validator{
   readonly TypeInputForm = TypeInputForm;
   @Input() question!: IInputForm;
   @Input() disabled: boolean = false;
+  @Input() options: ISelectBoxOption[] = [];
 
   onChange = (token: string) => {}
   onTouched = () => {}
@@ -44,6 +45,9 @@ export class QuestionComponent implements ControlValueAccessor, Validator{
 
     if(this.question.disabled){
       this.formQuestion.disable();
+    }
+
+    if(this.options && this.options.length > 0){
     }
 
     this.formQuestion.valueChanges.subscribe( (value:any) => {

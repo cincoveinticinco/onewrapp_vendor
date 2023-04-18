@@ -3,8 +3,8 @@ import { Router } from '@angular/router';
 import { VendorsService } from 'src/app/services/vendors.service';
 
 enum CountryForm {
-  Colombia = 1,
-  Mexico = 2
+  Colombia = 34,
+  Mexico = 52
 }
 
 @Component({
@@ -35,7 +35,10 @@ export class VendorsFormComponent {
 
       this.inmutableData = data;
 
+      this.countryForm = this.inmutableData['vendor'].country_id
+
       this.titleForm = this.getTitleForm(this.countryForm);
+      console.log(this.countryForm)
 
       this.loading = false;
     })
