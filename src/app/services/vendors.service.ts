@@ -34,4 +34,9 @@ export class VendorsService {
     return this.http.post(`${environment.API_URL}finance/deleteDocumentVendor`, {...formData})
     .pipe(map( response => response))
   }
+
+  downloadVendorPDF(formData: any){
+    return this.http.post(`${environment.API_URL}workers/vendor_tyc`, {...formData})
+    .pipe(map( response => response))
+  }
 }

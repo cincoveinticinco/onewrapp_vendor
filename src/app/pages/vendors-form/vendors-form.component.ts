@@ -142,6 +142,7 @@ export class VendorsFormComponent {
       });
   }
 
+
   verifyVendor(formData: any) {
     this.loading = true;
 
@@ -149,7 +150,7 @@ export class VendorsFormComponent {
       ...formData,
     };
 
-    this.vendorService.verifyVendor(_data).subscribe((data) => {
+    this.vendorService.updateVendorInfo(_data).subscribe((data) => {
       this.loading = false;
       this.router.navigate(['upload-form']);
     });

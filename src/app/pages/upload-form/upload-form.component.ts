@@ -32,5 +32,20 @@ export class UploadFormComponent {
     })
   }
 
+  downloadVendorPDF(){
+    const vendor_id = localStorage.getItem('id_vendor');
+
+    if(vendor_id){
+      this.vendorService.downloadVendorPDF({vendor_id})
+        .subscribe( data => {
+          console.log(data);
+        })
+      return;
+    }
+
+    console.log('Error getting vendor ID');
+
+  }
+
   submit(){}
 }

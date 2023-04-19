@@ -1,7 +1,7 @@
 <app-side-menu [sections]="mainForm.sections"></app-side-menu>
 <button (click)="handleSubmit('save')" class="save-button tiny-button" type="button" >Guardar</button>
 
-<form (ngSubmit)="handleSubmit('save')">
+<form (ngSubmit)="handleSubmit('verify')">
 
   <section class="content" [formGroup]="form">
     <div *ngFor="let section of mainForm.sections" [id]="section.key">

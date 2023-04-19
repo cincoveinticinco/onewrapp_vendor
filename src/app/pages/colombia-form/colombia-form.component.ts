@@ -456,12 +456,12 @@ export class ColombiaFormComponent {
       informacion_beneficiarios_finales: () => this.addPoliticianPeople(),
       business_group: () => this.setVisbleBussinesGroup(),
       pep: () => this.addPoliticianPeople(),
-      cedula_file: () => this.uploadInputFile(value),
-      certificado_existencia_file: () => this.uploadInputFile(value),
-      cedula_representante_legal_file: () => this.uploadInputFile(value),
-      rut_file: () => this.uploadInputFile(value),
-      certificacion_bancaria_file: () => this.uploadInputFile(value),
-      documento_politicas: () => this.uploadInputFile(value),
+      cedula_file: () => this.uploadInputFile(value, formControlName),
+      certificado_existencia_file: () => this.uploadInputFile(value, formControlName),
+      cedula_representante_legal_file: () => this.uploadInputFile(value, formControlName),
+      rut_file: () => this.uploadInputFile(value, formControlName),
+      certificacion_bancaria_file: () => this.uploadInputFile(value, formControlName),
+      documento_politicas: () => this.uploadInputFile(value, formControlName),
 
     };
 
@@ -470,8 +470,8 @@ export class ColombiaFormComponent {
     }
   }
 
-  private uploadInputFile(value: File){
-    this.onFileSubmit.emit(value);
+  private uploadInputFile(value: File, formControlName: string){
+    this.onFileSubmit.emit({formControlName, value});
   }
 
   private setVisbleBussinesGroup(){
