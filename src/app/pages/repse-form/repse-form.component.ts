@@ -185,7 +185,7 @@ export class RepseFormComponent {
         console.log(values)
 
         const uploadSources = values.map( value =>
-          this.s3Service.uploadFileUrlPresigned(value.file, value.url)
+          this.s3Service.uploadFileUrlPresigned(value.file, value.url, value.file.type)
           .pipe(
             catchError( _ => of({...value, url: ''})),
             map( _ => value)
@@ -196,14 +196,12 @@ export class RepseFormComponent {
           .subscribe( uploadImages => {
 
             uploadImages.forEach( value => {
-              console.log(value)
               this.vendorService.updateVendorDocument(
                 {
                   vendor_document_type_id: value.id,
                   link: value.url ? `${this.vendorData.id}/${value.file.name}` : ''
                 }
               ).subscribe(data => {
-                console.log(data)
               })
             })
 

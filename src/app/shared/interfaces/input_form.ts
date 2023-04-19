@@ -38,5 +38,7 @@ export interface IInputForm{
   searching?: boolean,
   required?: boolean,
   visible: boolean,
-  startEmpty?: boolean
+  startEmpty?: boolean,
+  link?: string,
+  textlink?: string,
 }

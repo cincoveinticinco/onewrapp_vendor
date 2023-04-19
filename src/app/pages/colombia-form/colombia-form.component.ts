@@ -1,9 +1,9 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import * as moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
 
-import { debounceTime, distinctUntilChanged, map, pairwise, startWith } from 'rxjs';
+import { distinctUntilChanged, map, pairwise, startWith } from 'rxjs';
 import { VendorsService } from 'src/app/services/vendors.service';
 import {
   COLOMBIA_FORM,
@@ -22,6 +22,7 @@ import { info_files } from 'src/app/shared/forms/files_types';
 export class ColombiaFormComponent {
   @Output() onSubmit = new EventEmitter();
   @Output() onVerify = new EventEmitter();
+  @Output() onFileSubmit = new EventEmitter();
   @Input() infoVendor: any;
 
   readonly COLOMBIAN_FORM = COLOMBIA_FORM;
@@ -455,11 +456,22 @@ export class ColombiaFormComponent {
       informacion_beneficiarios_finales: () => this.addPoliticianPeople(),
       business_group: () => this.setVisbleBussinesGroup(),
       pep: () => this.addPoliticianPeople(),
+      cedula_file: () => this.uploadInputFile(value),
+      certificado_existencia_file: () => this.uploadInputFile(value),
+      cedula_representante_legal_file: () => this.uploadInputFile(value),
+      rut_file: () => this.uploadInputFile(value),
+      certificacion_bancaria_file: () => this.uploadInputFile(value),
+      documento_politicas: () => this.uploadInputFile(value),
+
     };
 
     if (formControlName in handlers) {
       handlers[formControlName as keyof typeof handlers].call(this);
     }
+  }
+
+  private uploadInputFile(value: File){
+    this.onFileSubmit.emit(value);
   }
 
   private setVisbleBussinesGroup(){

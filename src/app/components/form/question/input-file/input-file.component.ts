@@ -57,12 +57,22 @@ export class InputFileComponent implements ControlValueAccessor, Validator{
     const files = target.files
     if(files && files.length > 0){
       const file = files[0];
-      this.control.patchValue(file);
+      this.control.setValue(file);
 
       this.value = { name: file.name, url: null};
     }
 
 
+  }
+
+  onDragFileChange(files: any){
+
+    if(files && files.length > 0){
+      const file = files[0];
+      this.control.setValue(file);
+
+      this.value = { name: file.name, url: null};
+    }
   }
 
   clearFile(){
@@ -74,7 +84,6 @@ export class InputFileComponent implements ControlValueAccessor, Validator{
   ngOnInit(): void {
     this.control.valueChanges.subscribe( values => {
       this.value = values
-      console.log(values)
       this.onChange(this.value)
     })
 

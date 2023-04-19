@@ -18,17 +18,6 @@ export enum SECTIONS_COLOMBIA_FORM{
   ANEXOS = 'anexos',
 }
 
-export enum VENDORS_INFO_COLOMBIA{
-  Main = 'main',
-  INFORMACION_BASICA = 'informacion_basica',
-  INFORMACION_REPRESENTANTES_LEGALES = 'informacion_representantes_legales',
-  INFORMACION_JUNTA_DIRECTIVA = 'informacion_junta_directiva',
-  INFORMACION_ACCIONISTAS = 'informacion_accionistas',
-  INFORMACION_BENEFICIARIOS_FINALES = 'informacion_beneficiarios_finales',
-  INFORMACION_PERSONAS_EXPUESTAS = 'informacion_personas_expuestas',
-  DECLARACIONES = 'declaraciones',
-  ANEXOS = 'anexos',
-}
 
 export const COLOMBIA_FORM: IForm = {
   description: '',
@@ -1016,6 +1005,7 @@ export const COLOMBIA_FORM: IForm = {
           type: TypeInputForm.File,
           label: 'Cédula de ciudadanía o documento válido de identificación',
           visible: true,
+          size: 8,
           data: 'cedula_file',
           disabled: false
         },
@@ -1023,6 +1013,7 @@ export const COLOMBIA_FORM: IForm = {
           type: TypeInputForm.File,
           label: 'Certificado de Existencia y Representación Legal con fecha de expedición inferior a un mes o su equivalente',
           visible: true,
+          size: 8,
           data: 'certificado_existencia_file',
           disabled: false
         },
@@ -1030,6 +1021,7 @@ export const COLOMBIA_FORM: IForm = {
           type: TypeInputForm.File,
           label: 'Cédula de ciudadanía o documento válido de identificación del representante legal',
           visible: true,
+          size: 8,
           data: 'cedula_representante_legal_file',
           disabled: false
         },
@@ -1037,6 +1029,7 @@ export const COLOMBIA_FORM: IForm = {
           type: TypeInputForm.File,
           label: 'Registro Único Tributario - RUT',
           visible: true,
+          size: 8,
           data: 'rut_file',
           disabled: false
         },
@@ -1044,13 +1037,25 @@ export const COLOMBIA_FORM: IForm = {
           type: TypeInputForm.File,
           label: 'Certificación Bancaria con fecha de expedición inferior a un mes',
           visible: true,
+          size: 8,
           data: 'certificacion_bancaria_file',
+          disabled: false
+        },
+        {
+          type: TypeInputForm.Paragraph,
+          visible: true,
+          content: 'Descargue aquí el Formulario de Declaración de Cumplimiento de Políticas, Autorización de Tratamiento de Datos Personales y Autorización de Consulta y Reporte de TIS. Por favor fírmelo y luego súbalo.',
+          textlink: 'aquí',
+          data: 'documento_politicas_link',
+          link: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+          align: '',
           disabled: false
         },
         {
           type: TypeInputForm.File,
           label: 'Formulario de Declaración de Cumplimiento de Políticas, Autorización de Tratamiento de Datos Personales y Autorización de Consulta y Reporte de TIS.',
           visible: true,
+          size: 8,
           data: 'documento_politicas',
           disabled: false
         },

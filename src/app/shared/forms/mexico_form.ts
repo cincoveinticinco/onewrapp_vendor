@@ -13,7 +13,6 @@ export enum SECTIONS_MEXICO_FORM{
   INFORMACION_JUNTA_DIRECTIVA = 'informacion_junta_directiva',
   INFORMACION_ACCIONISTAS = 'informacion_accionistas',
   INFORMACION_BENEFICIARIOS_FINALES = 'informacion_beneficiarios_finales',
-  INFORMACION_PERSONAS_EXPUESTAS = 'informacion_personas_expuestas',
   DECLARACIONES = 'declaraciones',
   ANEXOS = 'anexos',
 }
@@ -90,7 +89,7 @@ export const MEXICO_FORM: IForm = {
           size: 2,
           data: 'f_person_type_id',
           options_key: 'tipo_persona',
-          disabled: false
+          disabled: true,
         },
         {
           label: 'Tipo ID',
@@ -109,22 +108,23 @@ export const MEXICO_FORM: IForm = {
           data: 'document',
           disabled: false
         },
-        {
+        /*{
           label: 'Folio',
           visible: true,
           type: TypeInputForm.Text,
           size: 1,
           data: 'folio',
           disabled: false
-        },
-        /*{
+        },*/
+        {
           label: 'DV',
           visible: true,
-          type: TypeInputForm.Text,
+          type: TypeInputForm.SelectBox,
+          options_key: 'verification_digit',
           size: 1,
           data: 'verification_digit',
           disabled: false
-        },*/
+        },
         {
           label: 'Fecha matrícula o expedición ID',
           visible: true,
@@ -170,7 +170,7 @@ export const MEXICO_FORM: IForm = {
           visible: true,
           type: TypeInputForm.Text,
           size: 2,
-          data: 'estado',
+          data: 'department',
           disabled: false
         },
         {
@@ -242,8 +242,9 @@ export const MEXICO_FORM: IForm = {
         {
           type: TypeInputForm.Paragraph,
           visible: true,
+          data: 'p_pertenece_grupo_empresarial',
           content: 'Indicar las empresas que lo conforman y la calidad que ostentan dentro del grupo, esto es, si es matriz (M), filial (F) o subsidiaria (S):',
-          align: 'center',
+          align: '',
           disabled: false
         },
         {
@@ -258,7 +259,7 @@ export const MEXICO_FORM: IForm = {
               visible: true,
               type: TypeInputForm.Text,
               size: 4,
-              data: 'razon_social',
+              data: 'name',
               disabled: false
             },
             {
@@ -266,7 +267,8 @@ export const MEXICO_FORM: IForm = {
               visible: true,
               type: TypeInputForm.SelectBox,
               size: 1,
-              data: 'tipo_id',
+              data: 'f_document_type_id',
+              options_key: 'juridica_id',
               disabled: false
             },
             {
@@ -274,15 +276,16 @@ export const MEXICO_FORM: IForm = {
               visible: true,
               type: TypeInputForm.Text,
               size: 2,
-              data: 'numero_id',
+              data: 'document',
               disabled: false
             },
             {
               label: 'Calidad',
               visible: true,
-              type: TypeInputForm.Text,
+              type: TypeInputForm.SelectBox,
               size: 1,
-              data: 'calidad',
+              data: 'quantity',
+              options_key: 'calidad',
               disabled: false
             },
           ]
@@ -294,6 +297,7 @@ export const MEXICO_FORM: IForm = {
     {
       key: 'informacion_representantes_legales',
       title: 'INFORMACIÓN REPRESENTANTES LEGALES',
+      label: 'Información Representantes Legales',
       visible: true,
       inputs: [{
         type: TypeInputForm.ArrayGroup,
@@ -307,7 +311,7 @@ export const MEXICO_FORM: IForm = {
             visible: true,
             type: TypeInputForm.Text,
             size: 2,
-            data: 'nombres',
+            data: 'name',
             disabled: false
           },
           {
@@ -315,7 +319,7 @@ export const MEXICO_FORM: IForm = {
             visible: true,
             type: TypeInputForm.Text,
             size: 2,
-            data: 'apellidos',
+            data: 'last_name',
             disabled: false
           },
           {
@@ -323,7 +327,8 @@ export const MEXICO_FORM: IForm = {
             visible: true,
             type: TypeInputForm.SelectBox,
             size: 1,
-            data: 'tipo_id',
+            data: 'f_document_type_id',
+            options_key: 'natural_id',
             disabled: false
           },
           {
@@ -331,15 +336,15 @@ export const MEXICO_FORM: IForm = {
             visible: true,
             type: TypeInputForm.Text,
             size: 3,
-            data: 'numero_id',
+            data: 'document',
             disabled: false
           },
           {
             label: 'Fecha expedición ID',
             visible: true,
-            type: TypeInputForm.Text,
+            type: TypeInputForm.Date,
             size: 2,
-            data: 'fecha_expedicion',
+            data: 'expedition_date',
             disabled: false
           },
           {
@@ -347,7 +352,7 @@ export const MEXICO_FORM: IForm = {
             visible: true,
             type: TypeInputForm.Text,
             size: 2,
-            data: 'pais_domicilio',
+            data: 'country',
             disabled: false
           },
           {
@@ -355,7 +360,7 @@ export const MEXICO_FORM: IForm = {
             visible: true,
             type: TypeInputForm.Text,
             size: 2,
-            data: 'estado_domicilio',
+            data: 'department',
             disabled: false
           },
           {
@@ -363,7 +368,7 @@ export const MEXICO_FORM: IForm = {
             visible: true,
             type: TypeInputForm.Text,
             size: 2,
-            data: 'ciudad_domicilio',
+            data: 'city',
             disabled: false
           },
           {
@@ -371,18 +376,10 @@ export const MEXICO_FORM: IForm = {
             visible: true,
             type: TypeInputForm.Text,
             size: 4,
-            data: 'correo_electronico',
+            data: 'email',
             break: true,
             disabled: false
-          },
-          /*{
-            label: '¿Es una persona expuesta políticamente (PEP)?',
-            visible: true,
-            type: TypeInputForm.ChooseOption,
-            size: 12,
-            data: 'persona_pep',
-            disabled: false
-          },*/
+          }
         ]
       }
     ]
@@ -390,6 +387,7 @@ export const MEXICO_FORM: IForm = {
     {
       key: 'informacion_junta_directiva',
       title: 'INFORMACIÓN JUNTA DIRECTIVA, CONSEJO DE ADMINISTRACIÓN O EQUIVALENTE',
+      label: 'Información Junta Directiva',
       visible: true,
       inputs: [{
         type: TypeInputForm.ArrayGroup,
@@ -404,7 +402,7 @@ export const MEXICO_FORM: IForm = {
             type: TypeInputForm.Text,
             size: 2,
             disabled: false,
-            data: 'nombres'
+            data: 'name'
           },
           {
             label: 'Apellidos',
@@ -412,7 +410,7 @@ export const MEXICO_FORM: IForm = {
             type: TypeInputForm.Text,
             size: 2,
             disabled: false,
-            data: 'apellidos'
+            data: 'last_name'
           },
           {
             label: 'Tipo ID',
@@ -420,7 +418,8 @@ export const MEXICO_FORM: IForm = {
             type: TypeInputForm.SelectBox,
             size: 1,
             disabled: false,
-            data: 'tipo_id',
+            options_key: 'natural_id',
+            data: 'f_document_type_id',
           },
           {
             label: 'Número de ID',
@@ -428,15 +427,15 @@ export const MEXICO_FORM: IForm = {
             type: TypeInputForm.Text,
             size: 3,
             disabled: false,
-            data: 'numero_id',
+            data: 'document',
           },
           {
             label: 'Fecha expedición ID',
             visible: true,
-            type: TypeInputForm.Text,
+            type: TypeInputForm.Date,
             size: 2,
             disabled: false,
-            data: 'fecha_expedicion',
+            data: 'expedition_date',
           },
           {
             label: 'Pais Domicilio',
@@ -444,7 +443,7 @@ export const MEXICO_FORM: IForm = {
             type: TypeInputForm.Text,
             size: 2,
             disabled: false,
-            data: 'pais_domicilio',
+            data: 'country',
           },
           {
             label: 'Estado',
@@ -452,7 +451,7 @@ export const MEXICO_FORM: IForm = {
             type: TypeInputForm.Text,
             size: 2,
             disabled: false,
-            data: 'estado_domicilio',
+            data: 'department',
           },
           {
             label: 'Ciudad',
@@ -460,7 +459,7 @@ export const MEXICO_FORM: IForm = {
             type: TypeInputForm.Text,
             size: 2,
             disabled: false,
-            data: 'ciudad_domicilio',
+            data: 'city',
           },
           {
             label: 'Correo electrónico',
@@ -468,17 +467,10 @@ export const MEXICO_FORM: IForm = {
             type: TypeInputForm.Text,
             size: 4,
             disabled: false,
-            data: 'correo_electronico',
+            data: 'email',
             break: true
           },
-          /*{
-            label: '¿Es una persona expuesta políticamente (PEP)?',
-            visible: true,
-            type: TypeInputForm.ChooseOption,
-            size: 12,
-            disabled: false,
-            data: 'persona_pep',
-          },*/
+
         ]
       }
     ]
@@ -486,6 +478,7 @@ export const MEXICO_FORM: IForm = {
     {
       key: 'informacion_accionistas',
       title: 'INFORMACIÓN ACCIONISTAS Y/O SOCIOS',
+      label: 'Información Accionistas Y/O Socios',
       visible: true,
       inputs: [
         {
@@ -494,13 +487,14 @@ export const MEXICO_FORM: IForm = {
           content: 'Personas físicas y morales con participación igual o superior al cinco por ciento (5%)',
           disabled: false,
           data: 'informacion_accionistas',
-          align: 'center'
+          align: ''
         },
         {
           type: TypeInputForm.ArrayGroup,
           visible: true,
           addButonText: 'AGREGAR OTRO',
           disabled: false,
+          data: 'informacion_accionistas',
           children: [
             {
               label: 'Tipo persona',
@@ -508,7 +502,8 @@ export const MEXICO_FORM: IForm = {
               type: TypeInputForm.SelectBox,
               size: 2,
               disabled: false,
-              data: 'tipo_persona'
+              data: 'f_person_type_id',
+              options_key: 'tipo_persona',
             },
             {
               label: 'Nombre o Razón Social',
@@ -516,7 +511,7 @@ export const MEXICO_FORM: IForm = {
               type: TypeInputForm.Text,
               size: 4,
               disabled: false,
-              data: 'apellidos'
+              data: 'name'
             },
             {
               label: '% Participación',
@@ -524,7 +519,7 @@ export const MEXICO_FORM: IForm = {
               type: TypeInputForm.Text,
               size: 2,
               disabled: false,
-              data: 'tipo_id',
+              data: 'percente_participation',
             },
             {
               label: 'Tipo ID',
@@ -532,15 +527,16 @@ export const MEXICO_FORM: IForm = {
               type: TypeInputForm.SelectBox,
               size: 1,
               disabled: false,
-              data: 'tipo_id',
+              options_key: 'todos_tipo_id',
+              data: 'f_document_type_id',
             },
             {
               label: 'Número de ID',
               visible: true,
-              type: TypeInputForm.SelectBox,
+              type: TypeInputForm.Text,
               size: 2,
               disabled: false,
-              data: 'numero_id',
+              data: 'document',
             },
             {
               label: 'DV',
@@ -548,15 +544,16 @@ export const MEXICO_FORM: IForm = {
               type: TypeInputForm.SelectBox,
               size: 1,
               disabled: false,
-              data: 'dv',
+              options_key: 'verification_digit',
+              data: 'verification_digit',
             },
             {
               label: 'Fecha matrícula o expedición ID',
               visible: true,
-              type: TypeInputForm.Text,
+              type: TypeInputForm.Date,
               size: 2,
               disabled: false,
-              data: 'fecha_expedicion',
+              data: 'expedition_date',
             },
             {
               label: 'Pais Domicilio',
@@ -564,15 +561,7 @@ export const MEXICO_FORM: IForm = {
               type: TypeInputForm.Text,
               size: 2,
               disabled: false,
-              data: 'pais_domicilio',
-            },
-            {
-              label: '¿Es una persona expuesta políticamente (PEP)?',
-              visible: true,
-              type: TypeInputForm.ChooseOption,
-              size: 12,
-              disabled: false,
-              data: 'persona_pep',
+              data: 'country',
             },
           ]
         }
@@ -581,6 +570,7 @@ export const MEXICO_FORM: IForm = {
     {
       key: 'informacion_beneficiarios_finales',
       title: 'INFORMACIÓN COMPLEMENTARIA DE BENEFICIARIOS FINALES',
+      label: 'Información Complementaria Beneficiarios',
       visible: true,
       inputs: [
         {
@@ -596,13 +586,23 @@ export const MEXICO_FORM: IForm = {
           visible: true,
           fixElements: true,
           disabled: false,
+          data: 'informacion_beneficiarios_finales',
+          startEmpty: true,
           children: [
             {
               label: 'ID',
               visible: true,
               type: TypeInputForm.Text,
               size: 2,
-              data: 'id',
+              data: 'document',
+              disabled: true
+            },
+            {
+              label: 'Tipo ID',
+              visible: false,
+              type: TypeInputForm.Hidden,
+              size: 2,
+              data: 'f_document_type_id',
               disabled: true
             },
             {
@@ -610,13 +610,14 @@ export const MEXICO_FORM: IForm = {
               visible: true,
               type: TypeInputForm.Text,
               size: 6,
-              data: 'razon_social',
+              data: 'name',
               disabled: true
             },
             {
               type: TypeInputForm.ArrayGroup,
               visible: true,
               addButonText: 'AGREGAR BENIFICIARIO',
+              data: 'informacion_beneficiarios_finales_people',
               disabled: false,
               children: [
                 {
@@ -625,7 +626,8 @@ export const MEXICO_FORM: IForm = {
                   type: TypeInputForm.SelectBox,
                   size: 2,
                   disabled: false,
-                  data: 'tipo_persona'
+                  options_key: 'tipo_persona',
+                  data: 'f_person_type_id'
                 },
                 {
                   label: 'Nombre o Razón Social',
@@ -633,7 +635,7 @@ export const MEXICO_FORM: IForm = {
                   type: TypeInputForm.Text,
                   size: 6,
                   disabled: false,
-                  data: 'razon_social'
+                  data: 'name'
                 },
                 {
                   label: 'Tipo ID',
@@ -641,15 +643,16 @@ export const MEXICO_FORM: IForm = {
                   type: TypeInputForm.SelectBox,
                   size: 1,
                   disabled: false,
-                  data: 'tipo_id',
+                  options_key: 'todos_tipo_id',
+                  data: 'f_document_type_id',
                 },
                 {
                   label: 'Número de ID',
                   visible: true,
-                  type: TypeInputForm.SelectBox,
+                  type: TypeInputForm.Text,
                   size: 2,
                   disabled: false,
-                  data: 'numero_id',
+                  data: 'document',
                 },
                 {
                   label: 'DV',
@@ -657,23 +660,16 @@ export const MEXICO_FORM: IForm = {
                   type: TypeInputForm.SelectBox,
                   size: 1,
                   disabled: false,
-                  data: 'dv',
+                  options_key: 'verification_digit',
+                  data: 'verification_digit',
                 },
                 {
                   label: 'Fecha matrícula o expedición ID',
                   visible: true,
-                  type: TypeInputForm.Text,
+                  type: TypeInputForm.Date,
                   size: 3,
                   disabled: false,
-                  data: 'fecha_expedicion',
-                },
-                {
-                  label: '¿Es una persona expuesta políticamente (PEP)?',
-                  visible: true,
-                  type: TypeInputForm.ChooseOption,
-                  size: 12,
-                  disabled: false,
-                  data: 'persona_pep',
+                  data: 'expedition_date',
                 },
               ]
             }
@@ -681,133 +677,22 @@ export const MEXICO_FORM: IForm = {
         }
       ]
     },
-  /*  {
-      key: 'informacion_personas_expuestas',
-      title: 'PERSONAS EXPUESTAS POLÍTICAMENTE',
-      visible: true,
-      inputs: [
-        {
-          type: TypeInputForm.Paragraph,
-          visible: true,
-          content: 'Diligenciar la información de las personas que indicó, en apartados anteriores, ostentan la calidad de PEP “(…) Se considerarán como Personas Expuestas Políticamente (PEP) los servidores públicos de cualquier sistema de nomenclatura y clasificación de empleos de la administración pública nacional y territorial, cuando tengan asignadas o delegadas funciones de: expedición de normas o regulaciones, dirección general, formulación de políticas institucionales y adopción de planes, programas y proyectos, manejo directo de bienes, dineros o valores del Estado, administración de justicia o facultades administrativo sancionatorias, y los articulares que tengan a su cargo la dirección o manejo de recursos en los movimientos o partidos políticos. Estas funciones podrán ser ejercidas a través de ordenación de gasto, contratación pública, gerencia de proyectos de inversión, pagos, liquidaciones, administración de bienes muebles e inmuebles (…)La calidad de Personas Expuestas Políticamente (PEP) se mantendrá en el tiempo durante el ejercicio del cargo y por dos (2) años más desde la dejación, renuncia, despido o declaración de insubsistencia del nombramiento, o de cualquier otra forma de desvinculación, o terminación del contrato(…)”.',
-          align: 'center',
-          disabled: false
-        },
-        {
-          type: TypeInputForm.ArrayGroup,
-          visible: true,
-          fixElements: true,
-          disabled: false,
-          data: 'informacion_personas_expuestas',
-          children: [
-            {
-              label: 'ID',
-              visible: true,
-              type: TypeInputForm.Text,
-              size: 2,
-              data: 'id',
-              disabled: true
-            },
-            {
-              label: 'Nombre',
-              visible: true,
-              type: TypeInputForm.Text,
-              size: 6,
-              data: 'nomber',
-              disabled: true
-            },
-            {
-              label: 'Entidad',
-              visible: true,
-              type: TypeInputForm.Text,
-              size: 4,
-              data: 'entidad',
-              disabled: false
-            },
-            {
-              label: 'Cargo',
-              visible: true,
-              type: TypeInputForm.Text,
-              size: 4,
-              data: 'cargo',
-              disabled: false
-            },
-            {
-              label: 'Vinculación',
-              visible: true,
-              type: TypeInputForm.Text,
-              size: 2,
-              data: 'vinculacion',
-              disabled: false
-            },
-            {
-              label: 'Desvinculación',
-              visible: true,
-              type: TypeInputForm.Text,
-              size: 2,
-              data: 'desvinculacion',
-              disabled: false
-            },
-            {
-              type: TypeInputForm.ArrayGroup,
-              visible: true,
-              addButonText: 'AGREGAR BENIFICIARIO',
-              disabled: false,
-              children: [
-                {
-                  label: 'Tipo parentesco',
-                  visible: true,
-                  type: TypeInputForm.SelectBox,
-                  size: 2,
-                  data: 'tipo_persona',
-                  disabled: false
-                },
-                {
-                  label: 'Nombre',
-                  visible: true,
-                  type: TypeInputForm.Text,
-                  size: 3,
-                  data: 'razon_social',
-                  disabled: false
-                },
-                {
-                  label: 'Tipo ID',
-                  visible: true,
-                  type: TypeInputForm.SelectBox,
-                  size: 1,
-                  data: 'tipo_id',
-                  disabled: false
-                },
-                {
-                  label: 'Número de ID',
-                  visible: true,
-                  type: TypeInputForm.SelectBox,
-                  size: 2,
-                  data: 'numero_id',
-                  disabled: false
-                },
-              ]
-            }
-          ]
-        },
-
-      ]
-    },*/
     {
       key: 'declaraciones',
       title: 'DECLARACIONES',
+      label: 'Declaraciones',
       visible: true,
       inputs: [
         {
           type: TypeInputForm.Paragraph,
           visible: true,
-          content: '“De manera voluntaria, obrando de buena fe y conforme a mi conocimiento actual declaro que:',
+          content: 'De manera voluntaria, obrando de buena fe y conforme a mi conocimiento actual declaro que:',
           disabled: false
         },
         {
           type: TypeInputForm.Paragraph,
           visible: true,
-          content: 'De manera voluntaria, obrando de buena fe realizo las siguiente declaraciones:”',
+          content: 'De manera voluntaria, obrando de buena fe realizo las siguiente declaraciones:',
           disabled: false
         },
         {
@@ -849,7 +734,13 @@ export const MEXICO_FORM: IForm = {
         {
           type: TypeInputForm.Paragraph,
           visible: true,
-          content: 'vii)  a. Como persona física o que la persona moral que represento, sus representante legales, miembros de junta directiva, empleados de cumplimiento, revisores fiscales, auditores externos, accionista y/o socios y beneficiarios finales, a la fecha de firma de este formulario, no tienen conflictos de intereses, y no poseen información que actualmente implique o que eventualmente pueda configurar una situación de conflicto de intereses con TIS, de la siguiente manera: - Ninguno de los anteriomente mencionados tienen relación de parentesco dentro del tercer grado de consanguinidad, primero de afinidad o primero civil, con algún empleado, directivo, administrador o accionista de TIS. - Ninguno de los anteriormente mencionados han sido parte ni son parte, en proceso judicial, administrativo, disciplinario o arbitral alguno o de cualquier otra índole, en el cual TIS, sus empleados, directivos, administradores o accionistas también sean parte, bien sea en su calidad de demandantes, demandados o llamados en garantía. - No conozco cualquier otra situación que pueda generar una situación de conflicto de intereses con TIS, además reconozco y acepto mi obligación de informar a TIS, cualquier situación que pueda configurar un conflicto de intereses con posterioridad a la fecha de firma del presente formulario.',
+          content: 'vii)',
+          disabled: false
+        },
+        {
+          type: TypeInputForm.Paragraph,
+          visible: true,
+          content: 'a. Como persona física o que la persona moral que represento, sus representante legales, miembros de junta directiva, empleados de cumplimiento, revisores fiscales, auditores externos, accionista y/o socios y beneficiarios finales, a la fecha de firma de este formulario, no tienen conflictos de intereses, y no poseen información que actualmente implique o que eventualmente pueda configurar una situación de conflicto de intereses con TIS, de la siguiente manera: - Ninguno de los anteriomente mencionados tienen relación de parentesco dentro del tercer grado de consanguinidad, primero de afinidad o primero civil, con algún empleado, directivo, administrador o accionista de TIS. - Ninguno de los anteriormente mencionados han sido parte ni son parte, en proceso judicial, administrativo, disciplinario o arbitral alguno o de cualquier otra índole, en el cual TIS, sus empleados, directivos, administradores o accionistas también sean parte, bien sea en su calidad de demandantes, demandados o llamados en garantía. - No conozco cualquier otra situación que pueda generar una situación de conflicto de intereses con TIS, además reconozco y acepto mi obligación de informar a TIS, cualquier situación que pueda configurar un conflicto de intereses con posterioridad a la fecha de firma del presente formulario.',
           disabled: false
         },
         {
@@ -877,7 +768,13 @@ export const MEXICO_FORM: IForm = {
         {
           type: TypeInputForm.Paragraph,
           visible: true,
-          content: 'viii) a. Algún tipo de vinculo con entidades estatales o de gobierno',
+          content: 'viii)',
+          disabled: false
+        },
+        {
+          type: TypeInputForm.Paragraph,
+          visible: true,
+          content: 'a. Algún tipo de vinculo con entidades estatales o de gobierno',
           disabled: false
         },
         {
@@ -951,6 +848,7 @@ export const MEXICO_FORM: IForm = {
     {
       key: 'anexos',
       title: 'ANEXOS',
+      label: 'Anexos',
       visible: true,
       inputs: [
         {
@@ -1000,6 +898,24 @@ export const MEXICO_FORM: IForm = {
           label: 'Comprobante de domicilio, con fecha de emisión no mayor a 1 mes (persona física y moral).',
           visible: true,
           data: 'comprobante_domicilio_file',
+          disabled: false
+        },
+        {
+          type: TypeInputForm.Paragraph,
+          visible: true,
+          content: 'Descargue aquí el Formulario de Declaración de Cumplimiento de Políticas, Autorización de Tratamiento de Datos Personales y Autorización de Consulta y Reporte de TIS. Por favor fírmelo y luego súbalo.',
+          textlink: 'aquí',
+          data: 'documento_politicas_link',
+          link: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+          align: '',
+          disabled: false
+        },
+        {
+          type: TypeInputForm.File,
+          label: 'Formulario de Declaración de Cumplimiento de Políticas, Autorización de Tratamiento de Datos Personales y Autorización de Consulta y Reporte de TIS.',
+          visible: true,
+          size: 8,
+          data: 'documento_politicas',
           disabled: false
         },
     ]

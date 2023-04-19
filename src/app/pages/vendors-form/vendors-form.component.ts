@@ -1,7 +1,7 @@
 import { formatDate } from '@angular/common';
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { catchError, of, map, forkJoin } from 'rxjs';
+import { catchError, of, map, forkJoin, mergeMap, switchMap } from 'rxjs';
 import { UploadS3Service } from 'src/app/services/upload-s3.service';
 import { VendorsService } from 'src/app/services/vendors.service';
 import { info_files } from 'src/app/shared/forms/files_types';
@@ -31,6 +31,10 @@ export class VendorsFormComponent {
   ) {}
 
   ngOnInit(): void {
+    this.loadInfo();
+  }
+
+  loadInfo() {
     this.loading = true;
     this.vendorService.getVendorInfo().subscribe((data: any) => {
       if (data.error) {
@@ -42,7 +46,6 @@ export class VendorsFormComponent {
       this.countryForm = this.inmutableData['vendor'].country_id;
 
       this.titleForm = this.getTitleForm(this.countryForm);
-      console.log(this.countryForm);
 
       this.loading = false;
     });
@@ -64,11 +67,79 @@ export class VendorsFormComponent {
     };
 
     this.vendorService.updateVendorInfo(_data).subscribe((data) => {
-      this.submitFiles(formData).then((filesData) => {
-        console.log(filesData);
-        this.loading = false;
-      });
+      this.loading = false;
     });
+  }
+
+  submitFile(fileObject: any) {
+    this.loading = true;
+
+    const { value, formControlName } = fileObject;
+    const fileIdDocument = Object.keys(info_files).find(
+      (key) =>
+        info_files[key as unknown as keyof typeof info_files] == formControlName
+    );
+
+    if (!value) {
+      const document = this.inmutableData['document_vendor'].find(
+        (document: any) => document.id == fileIdDocument
+      );
+      if (document) {
+        this.vendorService
+          .deleteVendorDocument({ document_id: document.document_id })
+          .subscribe((data) => this.loadInfo());
+      }
+      return;
+    }
+
+
+
+    this.s3Service
+      .getPresignedPutURL(value.name, this.inmutableData['vendor'].id)
+      .pipe(
+        catchError((error) =>
+          of({ id: fileIdDocument, file: value, key: '', url: '' })
+        ),
+        map((putUrl: any) => ({
+          ...putUrl,
+          id: fileIdDocument,
+          file: value,
+        })),
+        switchMap(
+          async (uploadFile: any) => {
+            if (!uploadFile.url) {
+              return of(uploadFile);
+            }
+
+            const blobFile = await uploadFile.file.arrayBuffer();
+
+            return this.s3Service.uploadFileUrlPresigned(<File>blobFile, uploadFile.url, uploadFile.file.type)
+            .pipe(
+              catchError((_) => of({ ...value, url: '' })),
+              map(() => uploadFile)
+            );
+
+          }
+        ),
+        switchMap( response => response.pipe(map( value => value))),
+        switchMap(
+          (uploadFile: any) =>{
+            console.log(uploadFile)
+
+
+            return this.vendorService.updateVendorDocument({
+              vendor_document_type_id: Number(uploadFile.id),
+              link: uploadFile.url
+                ? `${this.inmutableData['vendor'].id}/${uploadFile.file.name}`
+                : '',
+            })
+          }
+        ),
+        map((response) => response)
+      )
+      .subscribe((value) => {
+        this.loadInfo();
+      });
   }
 
   verifyVendor(formData: any) {
@@ -85,15 +156,18 @@ export class VendorsFormComponent {
   }
 
   submitFiles(formatData: any) {
-
     return new Promise((resolve) => {
       const filesSources = Object.keys(info_files)
         .map((key: string) => {
           const file_key =
             info_files[key as unknown as keyof typeof info_files];
-          return { id: key, file: formatData[file_key] };
+          return formatData[file_key] && formatData[file_key].url
+            ? { id: key, file: formatData[file_key] }
+            : null;
         })
-        .filter((file: any) => file.file != null && file.file != undefined)
+        .filter(
+          (file: any) => file && file.file != null && file.file != undefined
+        )
         .map((file: any) =>
           this.s3Service
             .getPresignedPutURL(file.file.name, this.inmutableData['vendor'].id)
@@ -116,7 +190,7 @@ export class VendorsFormComponent {
 
       forkJoin(filesSources).subscribe((values) => {
         const uploadSources = values.map((value) =>
-          this.s3Service.uploadFileUrlPresigned(value.file, value.url).pipe(
+          this.s3Service.uploadFileUrlPresigned(value.file, value.url, value.file.type).pipe(
             catchError((_) => of({ ...value, url: '' })),
             map((_) => value)
           )

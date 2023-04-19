@@ -11,7 +11,7 @@ export class UploadS3Service {
   getPresignedPutURL(filename: string, folder: string, extraParams?: any): Observable<any> {
 		let params = {
 			'filename': filename,
-			'folder': folder
+			'vendor_id': folder
 		};
 		if (extraParams) {
 			params = Object.assign(params, extraParams);
@@ -24,7 +24,7 @@ export class UploadS3Service {
   getPresignedUrl(filename: string, folder: string, urlRequest: string, extraParams?:any): Observable<any> {
 		let params = {
 			'filename': filename,
-			'folder': folder
+			'vendor_id': folder
 		};
 		if (extraParams) {
 			params = Object.assign(params, extraParams);
@@ -34,29 +34,20 @@ export class UploadS3Service {
 			.pipe(map(response => response));
 	}
 
-  uploadFileUrlPresigned(file: File, uploadUrl: string): Observable<any> {
-		const contentType = file.type;
-		const headers = new HttpHeaders({ 'Content-Type': contentType });
+  uploadFileUrlPresigned(file: any, uploadUrl: string, contentType:string): Observable<any> {
+
+		const headers = new HttpHeaders({'Content-Type': contentType, 'Accept': '*/*'});
 		const req = new HttpRequest(
 			'PUT', uploadUrl, file, {
 			headers: headers
 		}
 		);
+    console.log(req)
 		return this.http.request(req);
 	}
 
-  async uploadFileUrlPresignedWithProgress(file: File, folder: string, extraParams:any): Promise<Observable<any> | null> {
-
-		let upload$ = null;
-		try {
-			const urlSigned = await this.getPresignedPutURL(file.name, folder, extraParams).toPromise()
-			upload$ = this.progressExternalUpload(file, urlSigned.url, urlSigned.key);
-		} catch (error) {
-			console.log('Error in signed url:', error)
-		}
-
-
-		return upload$;
+  uploadFileUrlPresignedWithProgress(file: File, url: string, key:string): Observable<any>{
+		return this.progressExternalUpload(file, url, key);
 	}
 
   private progressExternalUpload(file:File, url:string, nameFile:string): Observable<any> {
@@ -80,7 +71,7 @@ export class UploadS3Service {
 			};
 			xhr.open('put', url, true);
 			xhr.setRequestHeader("Content-Type", file.type);
-			xhr.send(file);
+			xhr.send( file);
 		}).pipe(map(response => response));
 
 	}

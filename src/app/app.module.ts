@@ -27,6 +27,7 @@ import { MexicoFormComponent } from './pages/mexico-form/mexico-form.component';
 import { RepseFormComponent } from './pages/repse-form/repse-form.component';
 import { SideMenuComponent } from './components/side-menu/side-menu.component';
 import { UploadFormComponent } from './pages/upload-form/upload-form.component';
+import { ArrastarnsoltarDirective } from './shared/directives/arrastarnsoltar.directive';
 
 
 @NgModule({
@@ -50,6 +51,7 @@ import { UploadFormComponent } from './pages/upload-form/upload-form.component';
     RepseFormComponent,
     SideMenuComponent,
     UploadFormComponent,
+    ArrastarnsoltarDirective,
   ],
   imports: [
     BrowserModule,

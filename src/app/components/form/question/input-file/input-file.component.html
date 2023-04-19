@@ -1,4 +1,8 @@
-<label *ngIf="!value"class="content-file-input">
+<label
+  *ngIf="!value"class="content-file-input"
+  appArrastarnsoltar
+  (onChangeFile)="onDragFileChange($event)"
+  >
   <span>Arrastar y soltar o <a>buscar</a></span>
   <input type="file" (change)="onFileChange($event)">
 </label>
