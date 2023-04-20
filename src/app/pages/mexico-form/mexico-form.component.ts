@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import * as moment from 'moment';
 
 import { distinctUntilChanged, map, pairwise, startWith } from 'rxjs';
@@ -10,8 +10,9 @@ import {
   TYPE_PERSON_MEXICO
 } from 'src/app/shared/forms/mexico_form';
 import { IForm } from 'src/app/shared/interfaces/form';
-import { ISelectBoxOption } from 'src/app/shared/interfaces/input_form';
+import { IInputForm, ISelectBoxOption, TypeInputForm } from 'src/app/shared/interfaces/input_form';
 import { info_files } from 'src/app/shared/forms/files_types';
+import { VALIDATORS_PATTERNS } from 'src/app/shared/interfaces/validators';
 
 @Component({
   selector: 'app-mexico-form',
@@ -94,7 +95,9 @@ export class MexicoFormComponent {
     this.setVisbleBussinesGroup();
     this.setFilesValues();
 
-    console.log(this.form.value);
+    this.setValidators();
+    this.setValidationByTypeDocuent();
+    this.setValidationsDeclaraciones();
 
     this.valuesLoaded = true;
   }
@@ -167,9 +170,7 @@ export class MexicoFormComponent {
   }
 
   buildForm() {
-    const fields_group: any = {
-      'verify': ['']
-    };
+    const fields_group: any = {};
 
     this.mainForm.sections.forEach((section) => {
       section.inputs.forEach((input) => {
@@ -322,8 +323,6 @@ export class MexicoFormComponent {
       ? this.form.value['informacion_accionistas'].rows
       : this.form.value['informacion_accionistas'];
 
-      console.log(info_accionistas)
-
     if (info_accionistas) {
       info_accionistas.forEach((row: any) => {
         info_users.push({
@@ -373,6 +372,14 @@ export class MexicoFormComponent {
         value: this.form.value['vinculo_familiar_estatal'] == '1' ? true : null,
         description: this.form.value['desc_vinculo_familiar_estatal']
       },
+      {
+        vendor_inf_add_type_id: 8,
+        value: this.form.value['servicios_actividades_prestados'] == '1' ? true : null,
+      },
+      {
+        vendor_inf_add_type_id: 9,
+        value: this.form.value['incluido_sat'] == '1' ? true : null,
+      },
     ]
 
 
@@ -407,8 +414,6 @@ export class MexicoFormComponent {
   private handleChangeFormValues(formControlName: string) {
     const value = this.form.value[formControlName];
 
-    console.log(formControlName)
-
     const handlers = {
       f_person_type_id: () => this.setTypeIdByTypePerson(value),
       informacion_accionistas: () => this.addFinalBeneficiaryByActionist(),
@@ -417,7 +422,7 @@ export class MexicoFormComponent {
       inscripcion_registro_fed_file: () => this.uploadInputFile(value, formControlName),
       cumplimiento_obligaciones_file: () => this.uploadInputFile(value, formControlName),
       acta_constitutiva_file: () => this.uploadInputFile(value, formControlName),
-      certificacion_bancaria_file: () => this.uploadInputFile(value, formControlName),
+      estado_cuenta_bancaria_file: () => this.uploadInputFile(value, formControlName),
       comprobante_domicilio_file: () => this.uploadInputFile(value, formControlName),
       documento_politicas: () => this.uploadInputFile(value, formControlName),
     };
@@ -425,10 +430,94 @@ export class MexicoFormComponent {
     if (formControlName in handlers) {
       handlers[formControlName as keyof typeof handlers].call(this);
     }
+
+    this.setValidators();
   }
 
   private uploadInputFile(value: File, formControlName: string){
     this.onFileSubmit.emit({formControlName, value});
+  }
+
+  private setValidators(){
+
+
+    this.mainForm.sections.forEach((section) => {
+      section.inputs.forEach((input) => {
+        const validators: ValidatorFn[] = [];
+
+        if(input.visible){
+          if(input.required){
+            validators.push(Validators.required)
+          }
+
+          if(input.type == TypeInputForm.Email){
+            validators.push(Validators.pattern(VALIDATORS_PATTERNS.email))
+          }
+
+          if (input.data) {
+            const control = this.form.controls[input.data]
+
+            if(validators.length > 0)
+              control.setValidators(validators);
+          }
+        }
+      })
+    })
+
+    this.setValidationByTypeDocuent()
+    this.setValidationsDeclaraciones()
+
+  }
+
+  private setValidationsDeclaraciones(){
+
+    const info_addtional_vendor = [
+      'conflicto_intereses',
+      'vinculo_estatal',
+      'vinculo_familiar_estatal',
+      'servicios_actividades_prestados',
+      'incluido_sat',
+    ]
+
+      info_addtional_vendor.forEach( (input:any) => {
+      const value = this.form.value[input];
+
+      if(input){
+        if(this.form.controls[`desc_${input}`]){
+          if(value == '1'){
+            this.form.controls[`desc_${input}`].setValidators(Validators.required);
+            this.form.controls[`desc_${input}`].enable()
+            this.setVisibleInput(`desc_${input}`, true, SECTIONS_MEXICO_FORM.DECLARACIONES)
+          }else{
+            this.form.controls[`desc_${input}`].removeValidators(Validators.required);
+            this.form.controls[`desc_${input}`].disable()
+            this.setVisibleInput(`desc_${input}`, false, SECTIONS_MEXICO_FORM.DECLARACIONES)
+          }
+        }
+
+      }
+
+
+    });
+
+  }
+
+  private setValidationByTypeDocuent(formControlName: string = 'f_document_type_id'){
+    const value = this.form.value[formControlName];
+    const control = this.form.controls['document'];
+
+    if(Number(value) == 7){
+      control.setValidators([Validators.minLength(14), Validators.maxLength(14), Validators.pattern(VALIDATORS_PATTERNS.numbers)]);
+      return;
+    }
+
+    if(Number(value) == 10){
+      control.setValidators([Validators.minLength(13), Validators.maxLength(13), Validators.pattern(VALIDATORS_PATTERNS.numbers)]);
+      return;
+    }
+
+    control.setValidators(Validators.required);
+    control.updateValueAndValidity()
   }
 
   private setVisbleBussinesGroup(){
@@ -554,6 +643,8 @@ export class MexicoFormComponent {
       5: 'conflicto_intereses',
       6: 'vinculo_estatal',
       7: 'vinculo_familiar_estatal',
+      8: 'servicios_actividades_prestados',
+      9: 'incluido_sat',
     }
 
     this.inmutableData.info_addtional_vendor.forEach( (info_user:any) => {
@@ -561,7 +652,10 @@ export class MexicoFormComponent {
       const input = info_addtional_vendor[info_user.id as keyof typeof info_addtional_vendor]
 
       if(input){
-        this.form.controls[`desc_${input}`].setValue(info_user.description);
+        if(this.form.controls[`desc_${input}`]){
+          this.form.controls[`desc_${input}`].setValue(info_user.description);
+        }
+
         this.form.controls[input].setValue(value == true ? '1': '2');
       }
 
@@ -607,18 +701,13 @@ export class MexicoFormComponent {
   private addFinalBeneficiaryByActionist() {
 
 
-    const info_final = this.form.value['informacion_accionistas'].rows.filter(
+    const info_final = this.form.value['informacion_accionistas']?.rows ? this.form.value['informacion_accionistas'].rows.filter(
       (person: any) => {
         return (
           person.f_person_type_id == 4 && person.percente_participation >= 5
         );
       }
-    );
-
-    const currentValue = this.form.value['informacion_beneficiarios_finales']
-      .rows
-      ? this.form.value['informacion_beneficiarios_finales'].rows
-      : this.form.value['informacion_beneficiarios_finales'];
+    ): [];
 
 
     this.form.controls['informacion_beneficiarios_finales'].setValue({
@@ -715,6 +804,8 @@ export class MexicoFormComponent {
       showMoralSections,
       SECTIONS_MEXICO_FORM.INFORMACION_BENEFICIARIOS_FINALES
     );
+
+
   }
 
   private setVisibleInput(

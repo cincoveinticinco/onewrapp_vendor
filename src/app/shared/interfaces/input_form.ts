@@ -8,7 +8,10 @@ export enum TypeInputForm{
   ArrayGroup,
   Paragraph,
   File,
-  Hidden
+  Hidden,
+  Email,
+  Percentage,
+  Document
 }
 
 export interface ISelectBoxOption{
@@ -41,4 +44,5 @@ export interface IInputForm{
   startEmpty?: boolean,
   link?: string,
   textlink?: string,
+  documentValue?: string
 }

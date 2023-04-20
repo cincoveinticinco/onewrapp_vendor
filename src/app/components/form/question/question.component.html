@@ -1,22 +1,29 @@
 <div>
-
-  <label [ngClass]="{'full-label': question.size == 8}">{{ question.label }}</label>
+  <label [ngClass]="{'full-label': question.size == 8}">
+    {{ question.label }}
+  </label>
   <ng-container [ngSwitch]="question.type">
-    <ng-container *ngSwitchCase="TypeInputForm.Text">
-      <input  [formControl]="formQuestion" [placeholder]="(!question.readonly && !disabled) ? 'Inserte texto' : '-'" type="text" [readOnly]="question.readonly" [disabled]="disabled">
+    <ng-container *ngSwitchDefault>
+      <input [required]="question.required!"  [formControl]="formQuestion" [placeholder]="(!question.readonly && !disabled) ? 'Inserte texto' : '-'" type="text" [readOnly]="question.readonly" [disabled]="disabled">
+    </ng-container>
+    <ng-container *ngSwitchCase="TypeInputForm.Document">
+      <app-input-document [conditionValue]="documentValue" [question]="question" [required]="question.required!"  [formControl]="formQuestion" [disabled]="disabled"></app-input-document>
+    </ng-container>
+    <ng-container *ngSwitchCase="TypeInputForm.Email">
+      <input [required]="question.required!"  [formControl]="formQuestion" [placeholder]="(!question.readonly && !disabled) ? 'Inserte texto' : '-'" type="email" [readOnly]="question.readonly" [disabled]="disabled">
     </ng-container>
     <ng-container *ngSwitchCase="TypeInputForm.Date">
-      <input [formControl]="formQuestion" type="date" [disabled]="disabled">
+      <input [required]="question.required!" [formControl]="formQuestion" type="date" [disabled]="disabled">
     </ng-container>
     <ng-container *ngSwitchCase="TypeInputForm.SelectBox">
-      <input-select-box [formControl]="formQuestion" [options]="options"  [question]="question" [disabled]="disabled"></input-select-box>
+      <input-select-box  [required]="question.required!" [formControl]="formQuestion" [options]="options"  [question]="question" [disabled]="disabled"></input-select-box>
     </ng-container>
     <ng-container *ngSwitchCase="TypeInputForm.Paragraph">
       <input-paragraph [question]="question"></input-paragraph>
     </ng-container>
 
     <ng-container *ngSwitchCase="TypeInputForm.ChooseOption">
-      <input-choose-option [formControl]="formQuestion"  [question]="question" [disabled]="disabled"></input-choose-option>
+      <input-choose-option  [required]="question.required!" [formControl]="formQuestion"  [question]="question" [disabled]="disabled"></input-choose-option>
     </ng-container>
 
     <ng-container *ngSwitchCase="TypeInputForm.ArrayGroup">
@@ -24,7 +31,7 @@
     </ng-container>
 
     <ng-container *ngSwitchCase="TypeInputForm.File">
-      <input-file [formControl]="formQuestion"  [question]="question" [disabled]="disabled"></input-file>
+      <input-file  [required]="question.required!" [formControl]="formQuestion"  [question]="question" [disabled]="disabled"></input-file>
     </ng-container>
 
 

@@ -9,7 +9,7 @@
         <ng-container *ngFor="let column of question?.children">
           <div [hidden]="rows.controls[i].value[column.data+'_visible'] != undefined ? !rows.controls[i].value[column.data+'_visible'] : !column.visible " class="content-col" [ngClass]="'m-'+(column.size || 12)">
             <ng-container *ngIf="column.data; else noFormField">
-              <app-question [formControlName]="column.data || ''" [options]="rows.controls[i].value[column.data+'_list']" [question]="column"></app-question>
+              <app-question [formValue]="column.type == TypeInputForm.Document ?  rows.value[i] : null" [formControlName]="column.data || ''" [options]="rows.controls[i].value[column.data+'_list']" [question]="column"></app-question>
             </ng-container>
             <ng-template #noFormField>
               <app-question [question]="column"></app-question>

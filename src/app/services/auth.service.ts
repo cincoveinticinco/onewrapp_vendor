@@ -24,9 +24,12 @@ export class AuthService {
     )
   }
 
-  logout(){
+  logout(noRedirect = false){
     const vendorId = localStorage.getItem('id_vendor');
     localStorage.clear();
+
+    if(noRedirect) return;
+
     if(vendorId){
       this.router.navigate(['vendor',vendorId]);
     }else{

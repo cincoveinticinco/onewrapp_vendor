@@ -55,7 +55,8 @@ export const MEXICO_FORM: IForm = {
           type: TypeInputForm.Text,
           disabled: true,
           size: 3,
-          data: 'tipo_solicitud'
+          data: 'tipo_solicitud',
+          required: true,
         },
         {
           label: 'Fecha de Solicitud',
@@ -63,7 +64,8 @@ export const MEXICO_FORM: IForm = {
           type: TypeInputForm.Date,
           disabled: true,
           size: 3,
-          data: 'created_at'
+          data: 'created_at',
+          required: true,
         }
       ]
     },
@@ -79,6 +81,7 @@ export const MEXICO_FORM: IForm = {
           size: 4,
           break: true,
           data: 'f_vendor_type_id',
+          required: true,
           options_key: 'tipo_contraparte',
           disabled: false
         },
@@ -88,6 +91,7 @@ export const MEXICO_FORM: IForm = {
           type: TypeInputForm.SelectBox,
           size: 2,
           data: 'f_person_type_id',
+          required: true,
           options_key: 'tipo_persona',
           disabled: true,
         },
@@ -95,8 +99,9 @@ export const MEXICO_FORM: IForm = {
           label: 'Tipo ID',
           visible: true,
           type: TypeInputForm.SelectBox,
-          size: 1,
+          size: 2,
           data: 'f_document_type_id',
+          required: true,
           options_key: 'tipo_id',
           disabled: false
         },
@@ -106,6 +111,7 @@ export const MEXICO_FORM: IForm = {
           type: TypeInputForm.Text,
           size: 2,
           data: 'document',
+          required: true,
           disabled: false
         },
         /*{
@@ -114,23 +120,26 @@ export const MEXICO_FORM: IForm = {
           type: TypeInputForm.Text,
           size: 1,
           data: 'folio',
+          required: true,
           disabled: false
         },*/
-        {
+        /*{
           label: 'DV',
           visible: true,
           type: TypeInputForm.SelectBox,
           options_key: 'verification_digit',
           size: 1,
           data: 'verification_digit',
+          required: true,
           disabled: false
-        },
+        },*/
         {
           label: 'Fecha matrícula o expedición ID',
           visible: true,
           type: TypeInputForm.Date,
           size: 2,
           data: 'expedition_date',
+          required: true,
           disabled: false
         },
         {
@@ -139,6 +148,7 @@ export const MEXICO_FORM: IForm = {
           type: TypeInputForm.Text,
           size: 8,
           data: 'name',
+          required: true,
           disabled: false
         },
         {
@@ -147,6 +157,7 @@ export const MEXICO_FORM: IForm = {
           type: TypeInputForm.Text,
           size: 5,
           data: 'address',
+          required: true,
           disabled: false
         },
         {
@@ -155,6 +166,7 @@ export const MEXICO_FORM: IForm = {
           type: TypeInputForm.Text,
           size: 3,
           data: 'info_add_address',
+          required: false,
           disabled: false
         },
         {
@@ -163,6 +175,7 @@ export const MEXICO_FORM: IForm = {
           type: TypeInputForm.Text,
           size: 2,
           data: 'country',
+          required: true,
           disabled: false
         },
         {
@@ -171,6 +184,7 @@ export const MEXICO_FORM: IForm = {
           type: TypeInputForm.Text,
           size: 2,
           data: 'department',
+          required: true,
           disabled: false
         },
         {
@@ -179,6 +193,7 @@ export const MEXICO_FORM: IForm = {
           type: TypeInputForm.Text,
           size: 2,
           data: 'city',
+          required: true,
           disabled: false
         },
         {
@@ -187,48 +202,34 @@ export const MEXICO_FORM: IForm = {
           type: TypeInputForm.Text,
           size: 2,
           data: 'telephone',
+          required: true,
           disabled: false
         },
         {
           label: 'Correo electrónico',
           visible: true,
-          type: TypeInputForm.Text,
+          type: TypeInputForm.Email,
           size: 3,
           data: 'email',
+          required: true,
           disabled: false
         },
         {
-          label: 'Pagina web',
+          label: 'Página web',
           visible: true,
           type: TypeInputForm.Text,
           size: 3,
           data: 'web_site',
+          required: true,
           disabled: false
         },
-        /*{
-          label: 'PEP',
-          visible: true,
-          type: TypeInputForm.Text,
-          size: 2,
-          data: 'pep',
-          disabled: false
-        },
-        {
-          label: 'CIIU Principal',
-          visible: true,
-          type: TypeInputForm.SelectBox,
-          size: 3,
-          data: 'ciiu',
-          options_key: 'ciiu',
-          searching: false,
-          disabled: false
-        },*/
         {
           label: 'Actividad economica',
           visible: true,
           type: TypeInputForm.Text,
           size: 3,
           data: 'actividad_economica',
+          required: true,
           disabled: false
         },
         {
@@ -237,6 +238,7 @@ export const MEXICO_FORM: IForm = {
           type: TypeInputForm.ChooseOption,
           size: 8,
           data: 'business_group',
+          required: true,
           disabled: false
         },
         {
@@ -252,6 +254,7 @@ export const MEXICO_FORM: IForm = {
           visible: true,
           addButonText: 'AGREGAR OTRA EMPRESA',
           data: 'otras_empresas',
+          required: true,
           disabled: false,
           children: [
             {
@@ -260,6 +263,7 @@ export const MEXICO_FORM: IForm = {
               type: TypeInputForm.Text,
               size: 4,
               data: 'name',
+              required: true,
               disabled: false
             },
             {
@@ -268,7 +272,8 @@ export const MEXICO_FORM: IForm = {
               type: TypeInputForm.SelectBox,
               size: 1,
               data: 'f_document_type_id',
-              options_key: 'juridica_id',
+              required: true,
+              options_key: 'moral_id',
               disabled: false
             },
             {
@@ -277,6 +282,7 @@ export const MEXICO_FORM: IForm = {
               type: TypeInputForm.Text,
               size: 2,
               data: 'document',
+              required: true,
               disabled: false
             },
             {
@@ -285,6 +291,7 @@ export const MEXICO_FORM: IForm = {
               type: TypeInputForm.SelectBox,
               size: 1,
               data: 'quantity',
+              required: true,
               options_key: 'calidad',
               disabled: false
             },
@@ -303,6 +310,7 @@ export const MEXICO_FORM: IForm = {
         type: TypeInputForm.ArrayGroup,
         visible: true,
         data: 'informacion_representantes_legales',
+        required: true,
         addButonText: 'AGREGAR REPRESENTANTE',
         disabled: false,
         children: [
@@ -312,6 +320,7 @@ export const MEXICO_FORM: IForm = {
             type: TypeInputForm.Text,
             size: 2,
             data: 'name',
+            required: true,
             disabled: false
           },
           {
@@ -320,6 +329,7 @@ export const MEXICO_FORM: IForm = {
             type: TypeInputForm.Text,
             size: 2,
             data: 'last_name',
+            required: true,
             disabled: false
           },
           {
@@ -328,7 +338,8 @@ export const MEXICO_FORM: IForm = {
             type: TypeInputForm.SelectBox,
             size: 1,
             data: 'f_document_type_id',
-            options_key: 'natural_id',
+            required: true,
+            options_key: 'fisica_id',
             disabled: false
           },
           {
@@ -337,7 +348,8 @@ export const MEXICO_FORM: IForm = {
             type: TypeInputForm.Text,
             size: 3,
             data: 'document',
-            disabled: false
+            required: true,
+            disabled: false,
           },
           {
             label: 'Fecha expedición ID',
@@ -345,6 +357,7 @@ export const MEXICO_FORM: IForm = {
             type: TypeInputForm.Date,
             size: 2,
             data: 'expedition_date',
+            required: true,
             disabled: false
           },
           {
@@ -353,6 +366,7 @@ export const MEXICO_FORM: IForm = {
             type: TypeInputForm.Text,
             size: 2,
             data: 'country',
+            required: true,
             disabled: false
           },
           {
@@ -361,6 +375,7 @@ export const MEXICO_FORM: IForm = {
             type: TypeInputForm.Text,
             size: 2,
             data: 'department',
+            required: true,
             disabled: false
           },
           {
@@ -369,14 +384,16 @@ export const MEXICO_FORM: IForm = {
             type: TypeInputForm.Text,
             size: 2,
             data: 'city',
+            required: true,
             disabled: false
           },
           {
             label: 'Correo electrónico',
             visible: true,
-            type: TypeInputForm.Text,
+            type: TypeInputForm.Email,
             size: 4,
             data: 'email',
+            required: true,
             break: true,
             disabled: false
           }
@@ -395,6 +412,7 @@ export const MEXICO_FORM: IForm = {
         addButonText: 'AGREGAR MIEMBRO',
         disabled: false,
         data: 'informacion_junta_directiva',
+        required: true,
         children: [
           {
             label: 'Nombres',
@@ -402,7 +420,8 @@ export const MEXICO_FORM: IForm = {
             type: TypeInputForm.Text,
             size: 2,
             disabled: false,
-            data: 'name'
+            data: 'name',
+            required: true,
           },
           {
             label: 'Apellidos',
@@ -410,7 +429,8 @@ export const MEXICO_FORM: IForm = {
             type: TypeInputForm.Text,
             size: 2,
             disabled: false,
-            data: 'last_name'
+            data: 'last_name',
+            required: true,
           },
           {
             label: 'Tipo ID',
@@ -418,8 +438,9 @@ export const MEXICO_FORM: IForm = {
             type: TypeInputForm.SelectBox,
             size: 1,
             disabled: false,
-            options_key: 'natural_id',
+            options_key: 'fisica_id',
             data: 'f_document_type_id',
+            required: true,
           },
           {
             label: 'Número de ID',
@@ -428,6 +449,7 @@ export const MEXICO_FORM: IForm = {
             size: 3,
             disabled: false,
             data: 'document',
+            required: true,
           },
           {
             label: 'Fecha expedición ID',
@@ -436,6 +458,7 @@ export const MEXICO_FORM: IForm = {
             size: 2,
             disabled: false,
             data: 'expedition_date',
+            required: true,
           },
           {
             label: 'Pais Domicilio',
@@ -444,6 +467,7 @@ export const MEXICO_FORM: IForm = {
             size: 2,
             disabled: false,
             data: 'country',
+            required: true,
           },
           {
             label: 'Estado',
@@ -452,6 +476,7 @@ export const MEXICO_FORM: IForm = {
             size: 2,
             disabled: false,
             data: 'department',
+            required: true,
           },
           {
             label: 'Ciudad',
@@ -460,14 +485,16 @@ export const MEXICO_FORM: IForm = {
             size: 2,
             disabled: false,
             data: 'city',
+            required: true,
           },
           {
             label: 'Correo electrónico',
             visible: true,
-            type: TypeInputForm.Text,
+            type: TypeInputForm.Email,
             size: 4,
             disabled: false,
             data: 'email',
+            required: true,
             break: true
           },
 
@@ -487,6 +514,7 @@ export const MEXICO_FORM: IForm = {
           content: 'Personas físicas y morales con participación igual o superior al cinco por ciento (5%)',
           disabled: false,
           data: 'informacion_accionistas',
+          required: true,
           align: ''
         },
         {
@@ -495,6 +523,7 @@ export const MEXICO_FORM: IForm = {
           addButonText: 'AGREGAR OTRO',
           disabled: false,
           data: 'informacion_accionistas',
+          required: true,
           children: [
             {
               label: 'Tipo persona',
@@ -503,6 +532,7 @@ export const MEXICO_FORM: IForm = {
               size: 2,
               disabled: false,
               data: 'f_person_type_id',
+              required: true,
               options_key: 'tipo_persona',
             },
             {
@@ -511,24 +541,27 @@ export const MEXICO_FORM: IForm = {
               type: TypeInputForm.Text,
               size: 4,
               disabled: false,
-              data: 'name'
+              data: 'name',
+              required: true,
             },
             {
               label: '% Participación',
               visible: true,
-              type: TypeInputForm.Text,
+              type: TypeInputForm.Percentage,
               size: 2,
               disabled: false,
               data: 'percente_participation',
+              required: true,
             },
             {
               label: 'Tipo ID',
               visible: true,
               type: TypeInputForm.SelectBox,
-              size: 1,
+              size: 2,
               disabled: false,
               options_key: 'todos_tipo_id',
               data: 'f_document_type_id',
+              required: true,
             },
             {
               label: 'Número de ID',
@@ -537,8 +570,9 @@ export const MEXICO_FORM: IForm = {
               size: 2,
               disabled: false,
               data: 'document',
+              required: true,
             },
-            {
+            /*{
               label: 'DV',
               visible: true,
               type: TypeInputForm.SelectBox,
@@ -546,7 +580,8 @@ export const MEXICO_FORM: IForm = {
               disabled: false,
               options_key: 'verification_digit',
               data: 'verification_digit',
-            },
+              required: true,
+            },*/
             {
               label: 'Fecha matrícula o expedición ID',
               visible: true,
@@ -554,6 +589,7 @@ export const MEXICO_FORM: IForm = {
               size: 2,
               disabled: false,
               data: 'expedition_date',
+              required: true,
             },
             {
               label: 'Pais Domicilio',
@@ -562,6 +598,7 @@ export const MEXICO_FORM: IForm = {
               size: 2,
               disabled: false,
               data: 'country',
+              required: true,
             },
           ]
         }
@@ -579,6 +616,7 @@ export const MEXICO_FORM: IForm = {
           content: 'Si alguno de los accionistas y/o socios con participación superior o igual al cinco por ciento (5%) es una persona moral, indicar en el presente capitulo la información de la persona o personas físicas (Beneficiario Final). Se considerará Beneficiario Final: 1) Persona física que, actuando individual o conjuntamente, sea titular, directa o indirectamente, del cinco por ciento (5%), o más del capital o los derechos de voto de la persona moral y/o se beneficie en cinco por ciento (5%), o más de los activos, rendimientos o utilidades de la persona moral; y 2) Persona física que, actuando individual o conjuntamente, ejerza control sobre la persona moral, por cualquier otro medio diferente a los establecidos en el numeral anterior.',
           disabled: false,
           data: 'informacion_beneficiarios_finales',
+          required: true,
           align: ''
         },
         {
@@ -587,6 +625,7 @@ export const MEXICO_FORM: IForm = {
           fixElements: true,
           disabled: false,
           data: 'informacion_beneficiarios_finales',
+          required: true,
           startEmpty: true,
           children: [
             {
@@ -595,6 +634,7 @@ export const MEXICO_FORM: IForm = {
               type: TypeInputForm.Text,
               size: 2,
               data: 'document',
+              required: true,
               disabled: true
             },
             {
@@ -603,6 +643,7 @@ export const MEXICO_FORM: IForm = {
               type: TypeInputForm.Hidden,
               size: 2,
               data: 'f_document_type_id',
+              required: true,
               disabled: true
             },
             {
@@ -611,6 +652,7 @@ export const MEXICO_FORM: IForm = {
               type: TypeInputForm.Text,
               size: 6,
               data: 'name',
+              required: true,
               disabled: true
             },
             {
@@ -618,6 +660,7 @@ export const MEXICO_FORM: IForm = {
               visible: true,
               addButonText: 'AGREGAR BENIFICIARIO',
               data: 'informacion_beneficiarios_finales_people',
+              required: true,
               disabled: false,
               children: [
                 {
@@ -627,7 +670,8 @@ export const MEXICO_FORM: IForm = {
                   size: 2,
                   disabled: false,
                   options_key: 'tipo_persona',
-                  data: 'f_person_type_id'
+                  data: 'f_person_type_id',
+                  required: true,
                 },
                 {
                   label: 'Nombre o Razón Social',
@@ -635,7 +679,8 @@ export const MEXICO_FORM: IForm = {
                   type: TypeInputForm.Text,
                   size: 6,
                   disabled: false,
-                  data: 'name'
+                  data: 'name',
+                  required: true,
                 },
                 {
                   label: 'Tipo ID',
@@ -645,6 +690,7 @@ export const MEXICO_FORM: IForm = {
                   disabled: false,
                   options_key: 'todos_tipo_id',
                   data: 'f_document_type_id',
+                  required: true,
                 },
                 {
                   label: 'Número de ID',
@@ -653,8 +699,9 @@ export const MEXICO_FORM: IForm = {
                   size: 2,
                   disabled: false,
                   data: 'document',
+                  required: true,
                 },
-                {
+                /*{
                   label: 'DV',
                   visible: true,
                   type: TypeInputForm.SelectBox,
@@ -662,7 +709,8 @@ export const MEXICO_FORM: IForm = {
                   disabled: false,
                   options_key: 'verification_digit',
                   data: 'verification_digit',
-                },
+                  required: true,
+                },*/
                 {
                   label: 'Fecha matrícula o expedición ID',
                   visible: true,
@@ -670,6 +718,7 @@ export const MEXICO_FORM: IForm = {
                   size: 3,
                   disabled: false,
                   data: 'expedition_date',
+                  required: true,
                 },
               ]
             }
@@ -755,6 +804,7 @@ export const MEXICO_FORM: IForm = {
           type: TypeInputForm.ChooseOption,
           size: 1,
           data: 'conflicto_intereses',
+          required: true,
           disabled: false
         },
         {
@@ -763,6 +813,7 @@ export const MEXICO_FORM: IForm = {
           type: TypeInputForm.Text,
           size: 7,
           data: 'desc_conflicto_intereses',
+          required: true,
           disabled: false
         },
         {
@@ -783,6 +834,7 @@ export const MEXICO_FORM: IForm = {
           type: TypeInputForm.ChooseOption,
           size: 1,
           data: 'vinculo_estatal',
+          required: true,
           disabled: false
         },
         {
@@ -791,6 +843,7 @@ export const MEXICO_FORM: IForm = {
           type: TypeInputForm.Text,
           size: 7,
           data: 'desc_vinculo_estatal',
+          required: true,
           disabled: false
         },
         {
@@ -805,6 +858,7 @@ export const MEXICO_FORM: IForm = {
           type: TypeInputForm.ChooseOption,
           size: 1,
           data: 'vinculo_familiar_estatal',
+          required: true,
           disabled: false
         },
         {
@@ -813,6 +867,7 @@ export const MEXICO_FORM: IForm = {
           type: TypeInputForm.Text,
           size: 7,
           data: 'desc_vinculo_familiar_estatal',
+          required: true,
           disabled: false
         },
         {
@@ -826,7 +881,8 @@ export const MEXICO_FORM: IForm = {
           visible: true,
           type: TypeInputForm.ChooseOption,
           size: 1,
-          data: 'servicios_actividades',
+          data: 'servicios_actividades_prestados',
+          required: true,
           disabled: false
         },
         {
@@ -841,6 +897,7 @@ export const MEXICO_FORM: IForm = {
           type: TypeInputForm.ChooseOption,
           size: 1,
           data: 'incluido_sat',
+          required: true,
           disabled: false
         },
       ]
@@ -860,44 +917,50 @@ export const MEXICO_FORM: IForm = {
         },
         {
           type: TypeInputForm.File,
-          label: 'Identificación oficial de la persona física o apoderado de persona moral (persona física y moral)',
+          label: 'Identificación oficial de la persona física o apoderado de persona moral.',
           visible: true,
           data: 'identificacion_oficial_file',
+          required: true,
           disabled: false
         },
         {
           type: TypeInputForm.File,
-          label: 'Copia de la inscripción al Registro Federal de Contribuyentes (persona física y moral).',
+          label: 'Copia de la inscripción al Registro Federal de Contribuyentes.',
           visible: true,
           data: 'inscripcion_registro_fed_file',
+          required: true,
           disabled: false
         },
         {
           type: TypeInputForm.File,
-          label: 'Constancia de cumplimiento de obligaciones fiscales (32D) con fecha de emisión no mayor a 1 mes (persona física y moral).',
+          label: 'Constancia de cumplimiento de obligaciones fiscales (32D) con fecha de emisión no mayor a 1 mes.',
           visible: true,
           data: 'cumplimiento_obligaciones_file',
+          required: true,
           disabled: false
         },
         {
           type: TypeInputForm.File,
-          label: 'Acta constitutiva y poder notarial (persona moral)',
+          label: 'Acta constitutiva y poder notarial.',
           visible: true,
           data: 'acta_constitutiva_file',
+          required: true,
           disabled: false
         },
         {
           type: TypeInputForm.File,
-          label: 'Estado de cuenta bancario con fecha de emisión no mayor a 1 mes (persona física y moral).',
+          label: 'Estado de cuenta bancario con fecha de emisión no mayor a 1 mes.',
           visible: true,
-          data: 'certificacion_bancaria_file',
+          data: 'estado_cuenta_bancaria_file',
+          required: true,
           disabled: false
         },
         {
           type: TypeInputForm.File,
-          label: 'Comprobante de domicilio, con fecha de emisión no mayor a 1 mes (persona física y moral).',
+          label: 'Comprobante de domicilio, con fecha de emisión no mayor a 1 mes.',
           visible: true,
           data: 'comprobante_domicilio_file',
+          required: true,
           disabled: false
         },
         {
@@ -916,6 +979,7 @@ export const MEXICO_FORM: IForm = {
           visible: true,
           size: 8,
           data: 'documento_politicas',
+          required: true,
           disabled: false
         },
     ]

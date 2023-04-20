@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import * as moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -11,8 +11,9 @@ import {
   TYPE_PERSON_COLOMBIA,
 } from 'src/app/shared/forms/colombia_form';
 import { IForm } from 'src/app/shared/interfaces/form';
-import { ISelectBoxOption } from 'src/app/shared/interfaces/input_form';
+import { ISelectBoxOption, TypeInputForm } from 'src/app/shared/interfaces/input_form';
 import { info_files } from 'src/app/shared/forms/files_types';
+import { VALIDATORS_PATTERNS } from 'src/app/shared/interfaces/validators';
 
 @Component({
   selector: 'app-colombia-form',
@@ -58,6 +59,8 @@ export class ColombiaFormComponent {
   }
 
   ngOnInit(): void {
+
+    this.loading = true;
     this.mainForm = { ...COLOMBIA_FORM };
 
     if (!this.infoVendor) return;
@@ -94,6 +97,7 @@ export class ColombiaFormComponent {
     this.form.controls['pep'].setValue(this.vendorData['pep'] ? '1' : '2');
 
     this.setJuridicaSectionsVisible();
+    this.setVerificationCodeVisible()
     this.setEconomyActivityByCIIU();
     this.setVendorMultipleInfo();
     this.setComplementInfoFinalBenefit();
@@ -101,6 +105,10 @@ export class ColombiaFormComponent {
     this.setCheckboxInfo();
     this.setVisbleBussinesGroup();
     this.setFilesValues();
+
+    this.setValidators();
+    this.setValidationsDeclaraciones();
+
 
     console.log(this.form.value);
 
@@ -182,7 +190,7 @@ export class ColombiaFormComponent {
     this.mainForm.sections.forEach((section) => {
       section.inputs.forEach((input) => {
         if (input.data) {
-          fields_group[input.data] = [''];
+          fields_group[input.data] = ['', Validators.required];
         }
 
         if (input.options_key) {
@@ -210,6 +218,8 @@ export class ColombiaFormComponent {
 
 
     this.form = this._fB.group(fields_group);
+
+    console.log(this.form)
 
     this.form.valueChanges
       .pipe(
@@ -449,6 +459,7 @@ export class ColombiaFormComponent {
 
     const handlers = {
       f_person_type_id: () => this.setTypeIdByTypePerson(value),
+      f_document_type_id: () => this.setVerificationCodeVisible(),
       f_vendor_economic_act_id: () => this.setEconomyActivityByCIIU(),
       informacion_accionistas: () => this.addFinalBeneficiaryByActionist(),
       informacion_junta_directiva: () => this.addPoliticianPeople(),
@@ -468,10 +479,43 @@ export class ColombiaFormComponent {
     if (formControlName in handlers) {
       handlers[formControlName as keyof typeof handlers].call(this);
     }
+
+    this.setValidators();
   }
 
   private uploadInputFile(value: File, formControlName: string){
     this.onFileSubmit.emit({formControlName, value});
+  }
+
+  private setValidators(){
+
+
+    this.mainForm.sections.forEach((section) => {
+      section.inputs.forEach((input) => {
+        const validators: ValidatorFn[] = [];
+
+        if(input.visible){
+          if(input.required){
+            validators.push(Validators.required)
+          }
+
+          if(input.type == TypeInputForm.Email){
+            validators.push(Validators.pattern(VALIDATORS_PATTERNS.email))
+          }
+
+          if (input.data) {
+            const control = this.form.controls[input.data]
+
+            if(validators.length > 0)
+              control.setValidators(validators);
+          }
+        }
+      })
+    })
+
+
+    this.setValidationsDeclaraciones()
+
   }
 
   private setVisbleBussinesGroup(){
@@ -514,6 +558,37 @@ export class ColombiaFormComponent {
     );
 
     this.setJuridicaSectionsVisible();
+  }
+
+  private setValidationsDeclaraciones(){
+
+    const info_addtional_vendor = [
+      'conflicto_intereses',
+      'vinculo_estatal',
+      'vinculo_familiar_estatal',
+    ]
+
+      info_addtional_vendor.forEach( (input:any) => {
+      const value = this.form.value[input];
+
+      if(input){
+        if(this.form.controls[`desc_${input}`]){
+          if(value == '1'){
+            this.form.controls[`desc_${input}`].setValidators(Validators.required);
+            this.form.controls[`desc_${input}`].enable()
+            this.setVisibleInput(`desc_${input}`, true, SECTIONS_COLOMBIA_FORM.DECLARACIONES)
+          }else{
+            this.form.controls[`desc_${input}`].removeValidators(Validators.required);
+            this.form.controls[`desc_${input}`].disable()
+            this.setVisibleInput(`desc_${input}`, false, SECTIONS_COLOMBIA_FORM.DECLARACIONES)
+          }
+        }
+
+      }
+
+
+    });
+
   }
 
   private setVendorMultipleInfo() {
@@ -685,7 +760,7 @@ export class ColombiaFormComponent {
 
     const informacion_representantes_legales = this.form.value[
       'informacion_representantes_legales'
-    ].rows
+    ]?.rows
       ? this.form.value['informacion_representantes_legales'].rows
       : this.form.value['informacion_representantes_legales'];
     if (informacion_representantes_legales) {
@@ -709,7 +784,7 @@ export class ColombiaFormComponent {
 
     const informacion_junta_directiva = this.form.value[
       'informacion_junta_directiva'
-    ].rows
+    ]?.rows
       ? this.form.value['informacion_junta_directiva'].rows
       : this.form.value['informacion_junta_directiva'];
     if (informacion_junta_directiva) {
@@ -731,8 +806,7 @@ export class ColombiaFormComponent {
       });
     }
 
-    const informacion_accionistas = this.form.value['informacion_accionistas']
-      .rows
+    const informacion_accionistas = this.form.value['informacion_accionistas']?.rows
       ? this.form.value['informacion_accionistas'].rows
       : this.form.value['informacion_accionistas'];
     if (informacion_accionistas) {
@@ -847,16 +921,15 @@ export class ColombiaFormComponent {
   private addFinalBeneficiaryByActionist() {
 
 
-    const info_final = this.form.value['informacion_accionistas'].rows.filter(
+    const info_final = this.form.value['informacion_accionistas']?.rows ? this.form.value['informacion_accionistas'].rows.filter(
       (person: any) => {
         return (
           person.f_person_type_id == 2 && person.percente_participation >= 5
         );
       }
-    );
+    ): [];
 
-    const currentValue = this.form.value['informacion_beneficiarios_finales']
-      .rows
+    const currentValue = this.form.value['informacion_beneficiarios_finales']?.rows
       ? this.form.value['informacion_beneficiarios_finales'].rows
       : this.form.value['informacion_beneficiarios_finales'];
 
@@ -904,6 +977,17 @@ export class ColombiaFormComponent {
     })
   }
 
+  private setVerificationCodeVisible(){
+    const showJuridicaSections =
+    Number(this.form.value['f_person_type_id']) ==
+    TYPE_PERSON_COLOMBIA.Juridica;
+
+    this.setVisibleInput(
+      'verification_digit',
+      showJuridicaSections && Number(this.form.value['f_document_type_id']) == 5,
+      SECTIONS_COLOMBIA_FORM.INFORMACION_BASICA
+    );
+  }
 
   private setJuridicaSectionsVisible() {
     const showJuridicaSections =
@@ -915,7 +999,7 @@ export class ColombiaFormComponent {
 
     this.setVisibleInput(
       'verification_digit',
-      showJuridicaSections,
+      showJuridicaSections && Number(this.form.value['f_document_type_id']) == 5,
       SECTIONS_COLOMBIA_FORM.INFORMACION_BASICA
     );
 

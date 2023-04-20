@@ -2,6 +2,7 @@ import { formatDate } from '@angular/common';
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, of, map, forkJoin, mergeMap, switchMap } from 'rxjs';
+import { AuthInterceptor } from 'src/app/interceptors/auth-interceptor';
 import { UploadS3Service } from 'src/app/services/upload-s3.service';
 import { VendorsService } from 'src/app/services/vendors.service';
 import { info_files } from 'src/app/shared/forms/files_types';
@@ -42,7 +43,6 @@ export class VendorsFormComponent {
       }
 
       this.inmutableData = data;
-
       this.countryForm = this.inmutableData['vendor'].country_id;
 
       this.titleForm = this.getTitleForm(this.countryForm);
@@ -67,7 +67,7 @@ export class VendorsFormComponent {
     };
 
     this.vendorService.updateVendorInfo(_data).subscribe((data) => {
-      this.loading = false;
+      this.loadInfo()
     });
   }
 

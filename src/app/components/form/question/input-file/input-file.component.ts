@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { AbstractControl, ControlValueAccessor, FormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, ValidationErrors, Validator } from '@angular/forms';
+import { AbstractControl, ControlValueAccessor, FormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, ValidationErrors, Validator, Validators } from '@angular/forms';
 import { IInputForm } from 'src/app/shared/interfaces/input_form';
 
 @Component({
@@ -25,6 +25,7 @@ export class InputFileComponent implements ControlValueAccessor, Validator{
 
   value: any;
   fileName: any;
+  required: boolean = false;
 
   onChange = (token: string) => {}
   onTouched = () => {}
@@ -48,7 +49,8 @@ export class InputFileComponent implements ControlValueAccessor, Validator{
   }
 
   validate(control: AbstractControl<any, any>): ValidationErrors | null {
-    return null
+    if(!this.required) return null;
+    return this.value == "" || this.value == null || this.value == undefined ? {required: true} :  null ;
   }
 
   onFileChange(event: Event){
@@ -82,6 +84,13 @@ export class InputFileComponent implements ControlValueAccessor, Validator{
 
 
   ngOnInit(): void {
+
+    if(this.question.required){
+      this.required = this.question.required;
+
+      this.control.setValidators(Validators.required)
+    }
+
     this.control.valueChanges.subscribe( values => {
       this.value = values
       this.onChange(this.value)

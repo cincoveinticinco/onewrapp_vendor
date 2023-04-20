@@ -95,6 +95,25 @@ export class RepseFormComponent {
     ).subscribe( formControlName => {
       if(this.valuesLoaded && formControlName){
         this.setInputFilesForm();
+
+        if(formControlName == 'inscripcion_repse_file'){
+          if(!this.form.value['inscripcion_repse_file']){
+            this.vendorService
+            .deleteVendorDocument({ document_id: 1 })
+            .subscribe((data) => data);
+          }
+
+
+        }
+
+        if(formControlName == 'registro_IMSS'){
+          if(!this.form.value['registro_IMSS']){
+            this.vendorService
+              .deleteVendorDocument({ document_id: 2 })
+              .subscribe((data) => data);
+          }
+        }
+
       }
     });
   }
@@ -106,7 +125,7 @@ export class RepseFormComponent {
     });
 
     this.inmutableData['document_vendor'].forEach( (document:any) => {
-      const file = { name: document.link, url: document.link}
+      const file = document.link ? { name: document.link, url: document.link} : null
 
       if(document.id == 1){
         this.form.get('inscripcion_repse_file')?.setValue(file)
@@ -138,7 +157,6 @@ export class RepseFormComponent {
 
       this.setVisibleInput('inscripcion_repse_file', this.requiredFiles);
       this.setVisibleInput('registro_IMSS', this.requiredFiles);
-
 
   }
 
@@ -179,6 +197,10 @@ export class RepseFormComponent {
     )
 
     this.vendorService.updateVendorInfo(_data).subscribe( data => {
+
+      if(!filesSources.length){
+        this.router.navigate(['complete-form'])
+      }
 
       forkJoin(filesSources)
       .subscribe(values => {

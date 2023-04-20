@@ -1,6 +1,7 @@
 import { ChangeDetectorRef, Component, Input } from '@angular/core';
-import { AbstractControl, ControlValueAccessor, FormArray, FormBuilder, FormGroup, NG_VALIDATORS, NG_VALUE_ACCESSOR, ValidationErrors, Validator } from '@angular/forms';
-import { IInputForm } from 'src/app/shared/interfaces/input_form';
+import { AbstractControl, ControlValueAccessor, FormArray, FormBuilder, FormGroup, NG_VALIDATORS, NG_VALUE_ACCESSOR, ValidationErrors, Validator, ValidatorFn, Validators } from '@angular/forms';
+import { IInputForm, TypeInputForm } from 'src/app/shared/interfaces/input_form';
+import { VALIDATORS_PATTERNS } from 'src/app/shared/interfaces/validators';
 
 @Component({
   selector: 'input-array-group',
@@ -22,6 +23,8 @@ import { IInputForm } from 'src/app/shared/interfaces/input_form';
 export class InputArrayGroupComponent implements ControlValueAccessor, Validator{
   @Input() question?: IInputForm;
   form: FormGroup;
+
+  readonly TypeInputForm = TypeInputForm;
 
   onChange = (token: string) => {}
   onTouched = () => {}
@@ -53,7 +56,11 @@ export class InputArrayGroupComponent implements ControlValueAccessor, Validator
       }
     }
 
-    this.value = value
+    setTimeout( () => {
+      this.value = this.form.valid ? value : null
+    }, 1)
+
+
   }
   registerOnChange(fn: any): void {
     this.onChange = fn;
@@ -68,9 +75,36 @@ export class InputArrayGroupComponent implements ControlValueAccessor, Validator
   }
 
   validate(control: AbstractControl<any, any>): ValidationErrors | null {
-    return null
+    return control.invalid ? {nonCompleteArray: true}: null
   }
 
+  private setValidators(formGroup: FormGroup){
+
+    const children = this.question?.children
+    const validators: ValidatorFn[] = [];
+
+    children?.forEach( input => {
+
+      if(input.visible){
+        if(input.required){
+          validators.push(Validators.required)
+        }
+
+        if(input.type == TypeInputForm.Email){
+          validators.push(Validators.pattern(VALIDATORS_PATTERNS.email))
+        }
+
+        if (input.data) {
+          const control = formGroup.controls[input.data]
+
+          if(validators.length > 0)
+            control.setValidators(validators);
+        }
+      }
+    })
+
+
+  }
 
   get rows(): FormArray{
     return this.form.controls['rows'] as FormArray;
@@ -109,7 +143,10 @@ export class InputArrayGroupComponent implements ControlValueAccessor, Validator
         }
       })
     }
-    return this._fB.group(form_fields);
+    const formGroup = this._fB.group(form_fields);
+
+    this.setValidators(formGroup)
+    return formGroup
   }
 
   addRows(valuesRows:any){
@@ -119,6 +156,7 @@ export class InputArrayGroupComponent implements ControlValueAccessor, Validator
 
   addRow(rowValue = null){
     this.rows.push(this.createRow(rowValue))
+    this.form.updateValueAndValidity();
   }
 
   deleteRow(rowIndex: number){
@@ -136,8 +174,12 @@ export class InputArrayGroupComponent implements ControlValueAccessor, Validator
     this.buildForm()
 
     this.form.valueChanges.subscribe((value: any) => {
-      this.value = value
-      this.onChange(this.value)
+      setTimeout( () => {
+        this.value = this.form.valid ? value : null
+        this.onChange(this.value)
+      }, 1)
+
+
     })
   }
 }

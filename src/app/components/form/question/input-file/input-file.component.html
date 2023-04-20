@@ -4,7 +4,7 @@
   (onChangeFile)="onDragFileChange($event)"
   >
   <span>Arrastar y soltar o <a>buscar</a></span>
-  <input type="file" (change)="onFileChange($event)">
+  <input [required]="required" type="file" (change)="onFileChange($event)">
 </label>
 
 <div *ngIf="value" class="content-file-filled">

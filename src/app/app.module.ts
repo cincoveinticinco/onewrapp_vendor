@@ -28,6 +28,8 @@ import { RepseFormComponent } from './pages/repse-form/repse-form.component';
 import { SideMenuComponent } from './components/side-menu/side-menu.component';
 import { UploadFormComponent } from './pages/upload-form/upload-form.component';
 import { ArrastarnsoltarDirective } from './shared/directives/arrastarnsoltar.directive';
+import { GraciasComponent } from './pages/gracias/gracias.component';
+import { InputDocumentComponent } from './components/form/question/input-document/input-document.component';
 
 
 @NgModule({
@@ -52,6 +54,8 @@ import { ArrastarnsoltarDirective } from './shared/directives/arrastarnsoltar.di
     SideMenuComponent,
     UploadFormComponent,
     ArrastarnsoltarDirective,
+    GraciasComponent,
+    InputDocumentComponent,
   ],
   imports: [
     BrowserModule,

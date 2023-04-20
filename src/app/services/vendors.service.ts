@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { map } from 'rxjs';
 
@@ -20,8 +20,8 @@ export class VendorsService {
     .pipe(map( response => response))
   }
 
-  verifyVendor(formData: any){
-    return this.http.post(`${environment.API_URL}finance/getsendVerification`, {...formData})
+  verifyVendor(){
+    return this.http.post(`${environment.API_URL}finance/getsendVerification`, {})
     .pipe(map( response => response))
   }
 
@@ -35,8 +35,16 @@ export class VendorsService {
     .pipe(map( response => response))
   }
 
-  downloadVendorPDF(formData: any){
-    return this.http.post(`${environment.API_URL}workers/vendor_tyc`, {...formData})
+  getVendorPDF(formData: any){
+
+    const params = new HttpParams().set('vendor_id', formData.vendor_id)
+    return this.http.get(`${environment.API_URL}finance/resumeVendorPdf`, {params})
     .pipe(map( response => response))
+  }
+
+  downloadVendorPDF(urlPDF: string){
+    let headers = new HttpHeaders();
+    headers = headers.set('Accept', 'application/pdf');
+    return this.http.get(urlPDF, { headers: headers, responseType: 'blob' });
   }
 }

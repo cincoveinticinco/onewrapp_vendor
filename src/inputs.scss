@@ -12,7 +12,15 @@ input:is([type="text"],[type="date"],[type="password"],[type="email"]), select{
   text-transform: uppercase;
 
 
+
 }
+
+input.ng-invalid, select.ng-invalid, .ng-invalid > div > input{
+  border-color: var(--alert-color) !important;
+  background-color: var(--alert-background) !important;
+}
+
+
 
 input:disabled{
   background-color: transparent;

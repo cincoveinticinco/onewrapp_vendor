@@ -1,5 +1,5 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { AbstractControl, ControlValueAccessor, FormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, ValidationErrors, Validator } from '@angular/forms';
+import { Component, Input, OnChanges, Optional, Self, SimpleChanges } from '@angular/core';
+import { AbstractControl, ControlValueAccessor, FormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, NgControl, ValidationErrors, Validator, Validators } from '@angular/forms';
 import { Observable, map, startWith } from 'rxjs';
 import { IInputForm, ISelectBoxOption } from 'src/app/shared/interfaces/input_form';
 
@@ -31,13 +31,14 @@ export class InputSelectBoxComponent implements ControlValueAccessor, Validator{
   selectSearchControl: FormControl = new FormControl('');
   selectBoxControl: FormControl = new FormControl('');
 
-  value: any;
+  value: any = null;
 
   onChange = (token: string) => {}
   onTouched = () => {}
 
   touched = false;
   disabled = false;
+  required = false;
 
   writeValue(value: any): void {
     this.selectBoxControl.setValue(value || '')
@@ -57,10 +58,15 @@ export class InputSelectBoxComponent implements ControlValueAccessor, Validator{
   }
 
   validate(control: AbstractControl<any, any>): ValidationErrors | null {
-    return null
+    if(!this.required) return null;
+    return this.value == "" || this.value == null || this.value == undefined ? {required: true} :  null ;
   }
 
   ngOnInit() {
+
+    if(this.question.required){
+      this.required = this.question.required;
+    }
 
     if(this.question.disabled){
       this.selectBoxControl.disable();

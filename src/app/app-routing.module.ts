@@ -4,6 +4,7 @@ import { HomeComponent } from './pages/home/home.component';
 import { VendorsFormComponent } from './pages/vendors-form/vendors-form.component';
 import { RepseFormComponent } from './pages/repse-form/repse-form.component';
 import { UploadFormComponent } from './pages/upload-form/upload-form.component';
+import { GraciasComponent } from './pages/gracias/gracias.component';
 
 const routes: Routes = [
   {
@@ -25,6 +26,10 @@ const routes: Routes = [
   {
     path: 'upload-form',
     component: UploadFormComponent
+  },
+  {
+    path: 'gracias',
+    component: GraciasComponent
   },
   {
     path: '**',
