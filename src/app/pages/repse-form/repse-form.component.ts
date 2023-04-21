@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { startWith, pairwise, map, forkJoin, catchError, of, tap, mergeMap, switchMap } from 'rxjs';
 import { UploadS3Service } from 'src/app/services/upload-s3.service';
 import { VendorsService } from 'src/app/services/vendors.service';
+import { info_files } from 'src/app/shared/forms/files_types';
 import { REPSE_FORM, SECTIONS_REPSE_FORM } from 'src/app/shared/forms/repse_form';
 import { IForm } from 'src/app/shared/interfaces/form';
 
@@ -97,21 +98,11 @@ export class RepseFormComponent {
         this.setInputFilesForm();
 
         if(formControlName == 'inscripcion_repse_file'){
-          if(!this.form.value['inscripcion_repse_file']){
-            this.vendorService
-            .deleteVendorDocument({ document_id: 1 })
-            .subscribe((data) => data);
-          }
-
-
+          this.submitFile({formControlName, value:this.form.value['inscripcion_repse_file']})
         }
 
         if(formControlName == 'registro_IMSS'){
-          if(!this.form.value['registro_IMSS']){
-            this.vendorService
-              .deleteVendorDocument({ document_id: 2 })
-              .subscribe((data) => data);
-          }
+          this.submitFile({formControlName, value:this.form.value['registro_IMSS']})
         }
 
       }
@@ -187,59 +178,9 @@ export class RepseFormComponent {
       ]
     }
 
-    const filesSources = [{id: 1, file: this.form.value['inscripcion_repse_file']}, {id: 2, file: this.form.value['registro_IMSS']}]
-    .filter( (file:any) => file.file != null && file.file != undefined)
-    .map( (file:any) => this.s3Service.getPresignedPutURL(file.file.name, this.vendorData.id)
-      .pipe(
-        catchError( error => of({id: file.id, file:file.file, key: '', url: '' })),
-        map( (putUrl:any) => ({...putUrl, id: file.id, file: file.file}))
-      )
-    )
-
     this.vendorService.updateVendorInfo(_data).subscribe( data => {
-
-      if(!filesSources.length){
-        this.router.navigate(['complete-form'])
-      }
-
-      forkJoin(filesSources)
-      .subscribe(values => {
-        console.log(values)
-
-        const uploadSources = values.map( value =>
-          this.s3Service.uploadFileUrlPresigned(value.file, value.url, value.file.type)
-          .pipe(
-            catchError( _ => of({...value, url: ''})),
-            map( _ => value)
-          )
-        );
-
-        forkJoin(uploadSources)
-          .subscribe( uploadImages => {
-
-            uploadImages.forEach( value => {
-              this.vendorService.updateVendorDocument(
-                {
-                  vendor_document_type_id: value.id,
-                  link: value.url ? `${this.vendorData.id}/${value.file.name}` : ''
-                }
-              ).subscribe(data => {
-              })
-            })
-
-
-          })
-
-        this.router.navigate(['complete-form'])
-
-      })
-
+      this.router.navigate(['complete-form'])
     })
-
-
-
-
-
   }
 
   private setCheckboxInfo(){
@@ -286,5 +227,78 @@ export class RepseFormComponent {
     }
 
     this.form.controls[inputKey].updateValueAndValidity()
+  }
+
+  private submitFile(fileObject: any) {
+    this.loading = true;
+
+    const vendor_id = this.vendorData.id;
+
+    if(!vendor_id){
+      console.log('Error getting vendor ID');
+      return;
+    }
+
+    const { value, formControlName } = fileObject;
+    const fileIdDocument = Object.keys(info_files).find(
+      (key) =>
+        info_files[key as unknown as keyof typeof info_files] == formControlName
+    );
+
+    if (!value) {
+      const document = this.inmutableData['document_vendor'].find(
+        (document: any) => document.id == fileIdDocument
+      );
+      if (document) {
+        this.vendorService
+          .deleteVendorDocument({ document_id: document.document_id })
+          .subscribe((data) => this.loading = false);
+      }
+      return;
+    }
+
+    this.s3Service
+      .getPresignedPutURL(value.name, vendor_id)
+      .pipe(
+        catchError((error) =>
+          of({ id: fileIdDocument, file: value, key: '', url: '' })
+        ),
+        map((putUrl: any) => ({
+          ...putUrl,
+          id: fileIdDocument,
+          file: value,
+        })),
+        switchMap(
+          async (uploadFile: any) => {
+            if (!uploadFile.url) {
+              return of(uploadFile);
+            }
+
+            const blobFile = await uploadFile.file.arrayBuffer();
+
+            return this.s3Service.uploadFileUrlPresigned(<File>blobFile, uploadFile.url, uploadFile.file.type)
+            .pipe(
+              catchError((_) => of({ ...value, url: '' })),
+              map(() => uploadFile)
+            );
+
+          }
+        ),
+        switchMap( response => response.pipe(map( value => value))),
+        switchMap(
+          (uploadFile: any) =>{
+            return this.vendorService.updateVendorDocument({
+              vendor_document_type_id: Number(uploadFile.id),
+              link: uploadFile.url
+                ? `${vendor_id}/${uploadFile.file.name}`
+                : '',
+            })
+          }
+        ),
+        map((response) => response)
+      )
+      .subscribe((value) => {
+        this.loading = false;
+      });
   }
 }

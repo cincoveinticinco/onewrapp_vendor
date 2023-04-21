@@ -1,5 +1,15 @@
 <app-side-menu [sections]="mainForm.sections"></app-side-menu>
-<button (click)="handleSubmit('save')" class="save-button tiny-button" type="button" >Guardar</button>
+<button (click)="confirmSubmit()" class="save-button tiny-button" type="button" >Guardar</button>
+
+<app-modal
+  *ngIf="modalMessage"
+  title="Guardar registro"
+  [message]="modalMessage"
+  accept="Guardar"
+  cancel="Cancelar"
+  (onAccept)="handleSubmit('save')"
+  (onCancel)="modalMessage=null"
+></app-modal>
 
 <form (ngSubmit)="handleSubmit('verify')">
 
@@ -26,7 +36,7 @@
     </div>
 
     <div class="content-buttons">
-      <button [disabled]="form.invalid">ENVIAR FORMULARIO</button>
+      <button [disabled]="formInValid">ENVIAR FORMULARIO</button>
     </div>
   </section>
 </form>

@@ -6,6 +6,7 @@
     <ng-container *ngSwitchDefault>
       <input [required]="question.required!"  [formControl]="formQuestion" [placeholder]="(!question.readonly && !disabled) ? 'Inserte texto' : '-'" type="text" [readOnly]="question.readonly" [disabled]="disabled">
     </ng-container>
+
     <ng-container *ngSwitchCase="TypeInputForm.Document">
       <app-input-document [conditionValue]="documentValue" [question]="question" [required]="question.required!"  [formControl]="formQuestion" [disabled]="disabled"></app-input-document>
     </ng-container>
@@ -37,6 +38,10 @@
 
 
   </ng-container>
+
+  <span *ngIf="errorMessage && question.type != TypeInputForm.ArrayGroup" class="error-message" [title]="errorMessage">
+    {{ errorMessage }}
+  </span>
 </div>
 
 

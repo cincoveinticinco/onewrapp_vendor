@@ -1,0 +1,41 @@
+.background-modal{
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  background: #000000b5;
+  left: 0;
+  top: 0;
+  z-index: 10;
+}
+
+.wrapp-modal{
+  background: white;
+  min-width: 320px;
+  position: absolute;
+  right: 50%;
+  bottom: 50%;
+  transform: translate(50%, 50%);
+  box-shadow: 2px 4px 3px 3px #0000003d;
+
+
+  .content-modal{
+    padding: 1rem 1rem 1rem;
+    border-bottom: 1px solid rgb(0 0 0 / 15%);
+
+    p{
+      margin: 0;
+    }
+  }
+
+  .buttons-modal{
+    display: flex;
+    justify-content: flex-start;
+    column-gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    flex-direction: row-reverse;
+
+    button{
+      margin: 0;
+    }
+  }
+}

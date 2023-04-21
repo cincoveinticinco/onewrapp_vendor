@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, Optional, SimpleChanges, forwardRef } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, Optional, SimpleChanges, forwardRef } from '@angular/core';
 import { NG_VALUE_ACCESSOR, NG_VALIDATORS, ControlValueAccessor, Validator, AbstractControl, ValidationErrors, FormControl, FormBuilder, FormGroup, NgControl, Validators, ControlContainer } from '@angular/forms';
 import { IInputForm, ISelectBoxOption, TypeInputForm } from 'src/app/shared/interfaces/input_form';
 import { VALIDATORS_PATTERNS } from 'src/app/shared/interfaces/validators';
@@ -34,13 +34,15 @@ export class QuestionComponent implements ControlValueAccessor, Validator{
   onChange = (token: string) => {}
   onTouched = () => {}
 
+  errorMessage?: string;
+
   touched = false;
 
   valueQuestion: any;
   formQuestion: FormControl;
   documentValue: any;
 
-  constructor(private _fB: FormBuilder, @Optional() private controlContainer: ControlContainer){
+  constructor(private _fB: FormBuilder,private readonly changeDetectorRef: ChangeDetectorRef){
     this.formQuestion = this._fB.control('')
   }
 
@@ -107,8 +109,19 @@ export class QuestionComponent implements ControlValueAccessor, Validator{
     this.disabled = isDisabled;
   }
 
+  getMessageError(typeError: string){
+    console.log(typeError)
+    return {
+      'required': 'El campo es requerido',
+      'pattern': 'El valor del campo es inválido'
+    }[typeError];
+  }
+
   validate(control: AbstractControl<any, any>): ValidationErrors | null {
-    return control.invalid ? control.errors : null;
+    const errors = Object.keys(this.formQuestion.errors || {});
+    this.errorMessage = errors.length > 0 ? this.getMessageError(errors[0]) : undefined;
+
+    return (!control.pristine && this.formQuestion.invalid) ? this.formQuestion.errors : null;
   }
 
 

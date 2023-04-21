@@ -514,7 +514,6 @@ export const MEXICO_FORM: IForm = {
           content: 'Personas físicas y morales con participación igual o superior al cinco por ciento (5%)',
           disabled: false,
           data: 'informacion_accionistas',
-          required: true,
           align: ''
         },
         {

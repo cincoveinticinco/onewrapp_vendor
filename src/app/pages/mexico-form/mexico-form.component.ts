@@ -29,6 +29,8 @@ export class MexicoFormComponent {
   mainForm: IForm = { description: '', sections: [] };
   loading: boolean = false;
   form: FormGroup;
+  formInValid: boolean = false;
+  modalMessage: string | null = null;
 
   vendorData: any = {};
 
@@ -36,6 +38,18 @@ export class MexicoFormComponent {
   lists: any = {};
 
   valuesLoaded: boolean = false;
+
+  get representantes_legales(): FormControl {
+    return this.form.controls['informacion_representantes_legales'] as FormControl;
+  }
+
+  get junta_directiva(): FormControl {
+    return this.form.controls['informacion_junta_directiva'] as FormControl;
+  }
+
+  get personas_expuestas(): FormControl {
+    return this.form.controls['informacion_personas_expuestas'] as FormControl;
+  }
 
   get accionistas(): FormControl{
     return this.form.controls['informacion_accionistas'] as FormControl;
@@ -88,6 +102,8 @@ export class MexicoFormComponent {
       this.vendorData['business_group'] ? '1' : '2'
     );
 
+    this.form.controls['actividad_economica'].setValue(this.vendorData['vendor_economic'])
+
     this.setMoralSectionsVisible();
     this.setVendorMultipleInfo();
     this.setComplementInfoFinalBenefit();
@@ -95,11 +111,14 @@ export class MexicoFormComponent {
     this.setVisbleBussinesGroup();
     this.setFilesValues();
 
-    this.setValidators();
+    //this.setValidators();
     this.setValidationByTypeDocuent();
     this.setValidationsDeclaraciones();
 
-    this.valuesLoaded = true;
+    setTimeout(() => {
+      this.valuesLoaded = true;
+    }, 1000);
+
   }
 
   setListForm(data: any) {
@@ -218,6 +237,8 @@ export class MexicoFormComponent {
         if (this.valuesLoaded && formControlName) {
           this.handleChangeFormValues(formControlName);
         }
+
+        this.formInValid = this.form.touched && this.form.invalid
       });
 
 
@@ -278,7 +299,41 @@ export class MexicoFormComponent {
 
   }
 
+  confirmSubmit(){
+    this.representantes_legales.markAsDirty()
+    this.representantes_legales?.updateValueAndValidity();
+
+    const messages = [
+      this.representantes_legales.invalid ? 'INFORMACIÓN REPRESENTANTES LEGALES' : null,
+      this.junta_directiva.invalid ? 'INFORMACIÓN JUNTA DIRECTIVA, CONSEJO DE ADMINISTRACIÓN O EQUIVALENTE' : null,
+      this.accionistas.invalid ? 'INFORMACIÓN ACCIONISTAS Y/O SOCIOS' : null,
+      this.beneficiarios_finales.invalid ? 'INFORMACIÓN COMPLEMENTARIA DE BENEFICIARIOS FINALES' : null,
+    ].filter( message => message != null)
+
+    if(messages.length > 0){
+      this.modalMessage = `Hay informacion sin completar en ${messages.length > 1 ? 'las secciones' : 'la sección'} ${messages.join(', ')}, si no se completa esta no sera guardada. ¿Desea continuar?:`;
+      return;
+    }
+
+    this.handleSubmit('save');
+
+  }
+
   handleSubmit(action: string) {
+
+    this.modalMessage = null;
+
+    if(action == 'verify'){
+      this.form.markAsDirty();
+      Object.keys(this.form.controls).forEach( (key) => {
+        const control = this.form.get(key);
+        control?.markAsDirty();
+        control?.updateValueAndValidity();
+      })
+
+      if(this.form.invalid) return;
+    }
+
     const info_users: any = [];
 
     const otras_empresas = this.form.value['otras_empresas'].rows
@@ -431,7 +486,7 @@ export class MexicoFormComponent {
       handlers[formControlName as keyof typeof handlers].call(this);
     }
 
-    this.setValidators();
+    //this.setValidators();
   }
 
   private uploadInputFile(value: File, formControlName: string){

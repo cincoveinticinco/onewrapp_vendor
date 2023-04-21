@@ -15,10 +15,28 @@ input:is([type="text"],[type="date"],[type="password"],[type="email"]), select{
 
 }
 
-input.ng-invalid, select.ng-invalid, .ng-invalid > div > input{
+.ng-dirty input.ng-invalid, .ng-dirty select.ng-invalid, .ng-dirty .ng-invalid > div > input{
   border-color: var(--alert-color) !important;
   background-color: var(--alert-background) !important;
 }
+
+.error-message{
+  display: none;
+  font-size: var(--small-font-size);
+  text-align: right;
+  color: var(--alert-color);
+  font-weight: bold;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+app-question.ng-invalid .error-message{
+  display: block;
+}
+
+
+
 
 
 

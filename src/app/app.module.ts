@@ -30,6 +30,7 @@ import { UploadFormComponent } from './pages/upload-form/upload-form.component';
 import { ArrastarnsoltarDirective } from './shared/directives/arrastarnsoltar.directive';
 import { GraciasComponent } from './pages/gracias/gracias.component';
 import { InputDocumentComponent } from './components/form/question/input-document/input-document.component';
+import { ModalComponent } from './components/modal/modal.component';
 
 
 @NgModule({
@@ -56,6 +57,7 @@ import { InputDocumentComponent } from './components/form/question/input-documen
     ArrastarnsoltarDirective,
     GraciasComponent,
     InputDocumentComponent,
+    ModalComponent,
   ],
   imports: [
     BrowserModule,

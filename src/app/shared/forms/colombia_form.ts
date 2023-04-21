@@ -161,7 +161,6 @@ export const COLOMBIA_FORM: IForm = {
           type: TypeInputForm.Text,
           size: 3,
           data: 'info_add_address',
-          required: true,
           disabled: false
         },
         {
@@ -203,7 +202,7 @@ export const COLOMBIA_FORM: IForm = {
         {
           label: 'Correo electrónico',
           visible: true,
-          type: TypeInputForm.Text,
+          type: TypeInputForm.Email,
           size: 3,
           data: 'email',
           required: true,
@@ -261,7 +260,6 @@ export const COLOMBIA_FORM: IForm = {
           type: TypeInputForm.Paragraph,
           visible: true,
           data: 'p_pertenece_grupo_empresarial',
-          required: true,
           content: 'Indicar las empresas que lo conforman y la calidad que ostentan dentro del grupo, esto es, si es matriz (M), filial (F) o subsidiaria (S):',
           align: '',
           disabled: false
@@ -407,7 +405,7 @@ export const COLOMBIA_FORM: IForm = {
           {
             label: 'Correo electrónico',
             visible: true,
-            type: TypeInputForm.Text,
+            type: TypeInputForm.Email,
             size: 4,
             data: 'email',
             required: true,
@@ -516,7 +514,7 @@ export const COLOMBIA_FORM: IForm = {
           {
             label: 'Correo electrónico',
             visible: true,
-            type: TypeInputForm.Text,
+            type: TypeInputForm.Email,
             size: 4,
             disabled: false,
             data: 'email',
@@ -580,7 +578,7 @@ export const COLOMBIA_FORM: IForm = {
             {
               label: '% Participación',
               visible: true,
-              type: TypeInputForm.Text,
+              type: TypeInputForm.Percentage,
               size: 2,
               disabled: false,
               data: 'percente_participation',
@@ -669,6 +667,14 @@ export const COLOMBIA_FORM: IForm = {
           required: true,
           startEmpty: true,
           children: [
+            {
+              label: 'uuid',
+              visible: false,
+              type: TypeInputForm.Text,
+              size: 2,
+              data: 'id',
+              disabled: true
+            },
             {
               label: 'ID',
               visible: true,
@@ -1144,7 +1150,6 @@ export const COLOMBIA_FORM: IForm = {
           content: 'Descargue aquí el Formulario de Declaración de Cumplimiento de Políticas, Autorización de Tratamiento de Datos Personales y Autorización de Consulta y Reporte de TIS. Por favor fírmelo y luego súbalo.',
           textlink: 'aquí',
           data: 'documento_politicas_link',
-          required: true,
           link: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
           align: '',
           disabled: false

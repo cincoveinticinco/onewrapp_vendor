@@ -1,6 +1,6 @@
 export const info_files = {
-  1: 'servicios_actividades',
-  2: 'servicios_instalaciones',
+  1: 'inscripcion_repse_file',
+  2: 'registro_IMSS',
   3: 'cedula_file',
   4: 'certificado_existencia_file',
   5: 'cedula_representante_legal_file',

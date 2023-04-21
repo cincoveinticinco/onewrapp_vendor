@@ -33,8 +33,13 @@ export class InputArrayGroupComponent implements ControlValueAccessor, Validator
   disabled = false;
 
   value: any;
+  rawValue: any;
 
   writeValue(value: any): void {
+
+    if(this.question?.data == 'informacion_beneficiarios_finales_people'){
+      console.log(value)
+    }
 
     if(!value) {
       this.value = value
@@ -57,7 +62,8 @@ export class InputArrayGroupComponent implements ControlValueAccessor, Validator
     }
 
     setTimeout( () => {
-      this.value = this.form.valid ? value : null
+      this.rawValue = value?.rows ? value.rows : []
+      this.value = value //this.form.valid ? value : null
     }, 1)
 
 
@@ -75,7 +81,23 @@ export class InputArrayGroupComponent implements ControlValueAccessor, Validator
   }
 
   validate(control: AbstractControl<any, any>): ValidationErrors | null {
-    return control.invalid ? {nonCompleteArray: true}: null
+    return null //control.invalid ? {nonCompleteArray: true}: null
+  }
+
+  private triggerValidations(){
+
+    Object.keys(this.rows.controls).forEach( (row) => {
+
+      const control:FormGroup = <FormGroup>this.rows.get(row);
+      Object.keys(control.controls).forEach( (key) => {
+        control?.get(key)?.markAsDirty();
+        control?.get(key)?.updateValueAndValidity();
+      })
+
+      control?.markAsDirty();
+      control?.updateValueAndValidity();
+    })
+
   }
 
   private setValidators(formGroup: FormGroup){
@@ -145,7 +167,7 @@ export class InputArrayGroupComponent implements ControlValueAccessor, Validator
     }
     const formGroup = this._fB.group(form_fields);
 
-    this.setValidators(formGroup)
+    //this.setValidators(formGroup)
     return formGroup
   }
 
@@ -156,11 +178,12 @@ export class InputArrayGroupComponent implements ControlValueAccessor, Validator
 
   addRow(rowValue = null){
     this.rows.push(this.createRow(rowValue))
-    this.form.updateValueAndValidity();
+    //this.triggerValidations();
   }
 
   deleteRow(rowIndex: number){
     this.rows.removeAt(rowIndex);
+    //this.triggerValidations();
   }
 
   constructor(private _fB: FormBuilder, private _cD: ChangeDetectorRef){
@@ -174,9 +197,13 @@ export class InputArrayGroupComponent implements ControlValueAccessor, Validator
     this.buildForm()
 
     this.form.valueChanges.subscribe((value: any) => {
+
       setTimeout( () => {
-        this.value = this.form.valid ? value : null
+        this.rawValue = value?.rows ? value.rows : []
+        this.value = value //this.form.valid ? value : null
         this.onChange(this.value)
+
+
       }, 1)
 
 

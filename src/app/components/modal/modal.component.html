@@ -1,0 +1,12 @@
+<div class="background-modal">
+  <div class="wrapp-modal">
+    <div class="content-modal">
+      <h2>{{ title | uppercase}}</h2>
+      <p>{{ message }}</p>
+    </div>
+    <div class="buttons-modal">
+      <button type="button" class="tiny-button" (click)="handlerAccept()">{{ accept }}</button>
+      <button type="button" class="tiny-button" (click)="handlerCancel()">{{ cancel }}</button>
+    </div>
+  </div>
+</div>
