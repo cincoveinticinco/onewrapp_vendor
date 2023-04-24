@@ -36,7 +36,7 @@ export const REPSE_FORM: IForm = {
           disabled: false
         },
         {
-          label: '¿Los Servicios los presta en sus instalaciones? Para el caso de arrendamiento, ¿el equipo se operará en sus instalaicones?',
+          label: '¿Los Servicios los presta en sus instalaciones? Para el caso de arrendamiento, ¿el equipo se operará en sus instalaciones?',
           visible: true,
           type: TypeInputForm.ChooseOption,
           size: 8,

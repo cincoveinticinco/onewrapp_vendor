@@ -890,7 +890,7 @@ export const COLOMBIA_FORM: IForm = {
             {
               type: TypeInputForm.ArrayGroup,
               visible: true,
-              addButonText: 'AGREGAR BENIFICIARIO',
+              addButonText: 'AGREGAR PARIENTE',
               data: 'people_relationships',
               required: true,
               disabled: false,
@@ -1150,7 +1150,7 @@ export const COLOMBIA_FORM: IForm = {
           content: 'Descargue aquí el Formulario de Declaración de Cumplimiento de Políticas, Autorización de Tratamiento de Datos Personales y Autorización de Consulta y Reporte de TIS. Por favor fírmelo y luego súbalo.',
           textlink: 'aquí',
           data: 'documento_politicas_link',
-          link: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+          link: 'assets/files/declaracion_cumplimiento_politicas.pdf',
           align: '',
           disabled: false
         },

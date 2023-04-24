@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
+import { VendorsService } from 'src/app/services/vendors.service';
+import { CountryVendor } from 'src/app/shared/interfaces/country_vendors';
 
 @Component({
   selector: 'app-home',
@@ -12,11 +14,18 @@ export class HomeComponent implements OnInit {
   view: string = 'home';
   token: string = '';
   vendorId: string = '';
+  countryVendor?: CountryVendor;
   vendorEmail: string = '';
 
   error: string = '';
+  readonly CountryVendor = CountryVendor;
 
-  constructor(private router:Router, private route: ActivatedRoute, private auth: AuthService){}
+  constructor(
+    private router:Router,
+    private route: ActivatedRoute,
+    private auth: AuthService,
+    private vendorService: VendorsService
+  ){}
 
   setView(view: string): void{
     this.view = view;
@@ -75,6 +84,12 @@ export class HomeComponent implements OnInit {
         const vendor:string = params.vendor;
         this.vendorId = vendor
         localStorage.setItem('id_vendor', vendor)
+
+        this.vendorService.getVendorCity(this.vendorId)
+          .subscribe( (countryId: CountryVendor) => {
+            this.countryVendor = countryId;
+            console.log(this.countryVendor)
+          })
       });
   }
 }

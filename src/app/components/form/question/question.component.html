@@ -1,5 +1,5 @@
 <div>
-  <label [ngClass]="{'full-label': question.size == 8}">
+  <label *ngIf="question.label" [ngClass]="{'full-label': question.size == 8}">
     {{ question.label }}
   </label>
   <ng-container [ngSwitch]="question.type">
@@ -8,7 +8,7 @@
     </ng-container>
 
     <ng-container *ngSwitchCase="TypeInputForm.Document">
-      <app-input-document [conditionValue]="documentValue" [question]="question" [required]="question.required!"  [formControl]="formQuestion" [disabled]="disabled"></app-input-document>
+      <app-input-document [question]="question" [required]="question.required!"  [formControl]="formQuestion" [disabled]="disabled"></app-input-document>
     </ng-container>
     <ng-container *ngSwitchCase="TypeInputForm.Email">
       <input [required]="question.required!"  [formControl]="formQuestion" [placeholder]="(!question.readonly && !disabled) ? 'Inserte texto' : '-'" type="email" [readOnly]="question.readonly" [disabled]="disabled">
@@ -39,7 +39,7 @@
 
   </ng-container>
 
-  <span *ngIf="errorMessage && question.type != TypeInputForm.ArrayGroup" class="error-message" [title]="errorMessage">
+  <span *ngIf="errorMessage && (question.type != TypeInputForm.ArrayGroup && question.type != TypeInputForm.Document)" class="error-message" [title]="errorMessage">
     {{ errorMessage }}
   </span>
 </div>

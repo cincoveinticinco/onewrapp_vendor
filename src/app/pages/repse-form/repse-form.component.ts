@@ -6,12 +6,8 @@ import { UploadS3Service } from 'src/app/services/upload-s3.service';
 import { VendorsService } from 'src/app/services/vendors.service';
 import { info_files } from 'src/app/shared/forms/files_types';
 import { REPSE_FORM, SECTIONS_REPSE_FORM } from 'src/app/shared/forms/repse_form';
+import { CountryVendor } from 'src/app/shared/interfaces/country_vendors';
 import { IForm } from 'src/app/shared/interfaces/form';
-
-enum CountryForm {
-  Colombia = 34,
-  Mexico = 52
-}
 
 @Component({
   selector: 'app-repse-form',
@@ -19,11 +15,11 @@ enum CountryForm {
   styleUrls: ['./repse-form.component.scss']
 })
 export class RepseFormComponent {
-  readonly CountyForm = CountryForm
+  readonly CountryVendor = CountryVendor
 
   loading: boolean = false;
   inmutableData: any = {};
-  countryForm: CountryForm = CountryForm.Mexico;
+  countryForm: CountryVendor = CountryVendor.Mexico;
   titleForm: string = '';
 
   readonly REPSE_FORM = REPSE_FORM;
@@ -57,7 +53,7 @@ export class RepseFormComponent {
 
       this.countryForm = this.vendorData.country_id
 
-      if(this.countryForm == CountryForm.Colombia){
+      if(this.countryForm == CountryVendor.Colombia){
         this.router.navigate(['complete-form']);
       }
 

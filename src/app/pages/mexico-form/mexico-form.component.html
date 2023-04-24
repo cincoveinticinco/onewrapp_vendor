@@ -19,7 +19,7 @@
         <div *ngIf="section.title" class="section-title">{{ section.title }}</div>
         <div class="content-row">
           <ng-container *ngFor="let question of section.inputs">
-            <div *ngIf="question.visible" class="content-col" [ngClass]="'m-'+(question.size || 8)">
+            <div *ngIf="question.visible" class="content-col" [ngClass]="'m-'+(question.size || 8)" [ngStyle]="{'padding': question.type == TypeInputForm.Document ? '0' : null}">
               <ng-container *ngIf="question.data; else noFormField">
                 <app-question [formControlName]="question.data || ''"  [question]="question" ></app-question>
               </ng-container>

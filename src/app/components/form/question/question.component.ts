@@ -46,13 +46,11 @@ export class QuestionComponent implements ControlValueAccessor, Validator{
     this.formQuestion = this._fB.control('')
   }
 
-
   ngOnInit(): void {
 
     if(this.question.documentValue){
       this.documentValue = this.formValue[this.question.documentValue]
     }
-
 
     if(this.question.disabled){
       this.formQuestion.disable();
@@ -75,7 +73,7 @@ export class QuestionComponent implements ControlValueAccessor, Validator{
   setValidations(){
     const validators = [];
 
-    if(this.question.required){
+    if(this.question.required && this.question.type != TypeInputForm.Document){
       validators.push(Validators.required)
     }
 
@@ -110,18 +108,24 @@ export class QuestionComponent implements ControlValueAccessor, Validator{
   }
 
   getMessageError(typeError: string){
-    console.log(typeError)
     return {
       'required': 'El campo es requerido',
-      'pattern': 'El valor del campo es inválido'
+      'pattern': 'El valor del campo es inválido',
+      'min': 'El valor debe ser mayor a 5',
+      'minlength': 'El valor del campo es inválido',
+      'maxlength': 'El valor del campo es inválido'
     }[typeError];
   }
 
   validate(control: AbstractControl<any, any>): ValidationErrors | null {
-    const errors = Object.keys(this.formQuestion.errors || {});
+
+    const errorsQuestion = Object.keys(this.formQuestion.errors || {});
+    const errorsControl = Object.keys(control.errors || {});
+
+    const errors = [...errorsQuestion, ...errorsControl]
     this.errorMessage = errors.length > 0 ? this.getMessageError(errors[0]) : undefined;
 
-    return (!control.pristine && this.formQuestion.invalid) ? this.formQuestion.errors : null;
+    return (!control.pristine && (this.formQuestion.invalid || control.invalid)) ? {...this.formQuestion.errors, ...control.errors} : null;
   }
 
 

@@ -1,1 +1,14 @@
-<input [required]="question.required!"  [formControl]="formQuestion" [placeholder]="(!question.readonly && !disabled) ? 'Inserte texto' : '-'" type="text" [readOnly]="question.readonly" [disabled]="disabled">
+<div class="content-row" [formGroup]="form">
+  <ng-container *ngFor="let question of inputs">
+    <div *ngIf="question.visible" class="content-col" [ngClass]="'m-'+(question.size || 8)">
+      <ng-container *ngIf="question.data; else noFormField">
+        <app-question [formControlName]="question.data || ''"  [question]="question" ></app-question>
+      </ng-container>
+      <ng-template #noFormField>
+        <app-question [question]="question"></app-question>
+      </ng-template>
+
+    </div>
+    <div *ngIf="question.break" class="break-row"></div>
+  </ng-container>
+</div>

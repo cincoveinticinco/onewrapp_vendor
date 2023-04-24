@@ -1,7 +1,39 @@
 import { Component, Input, Optional, SimpleChanges, forwardRef } from '@angular/core';
-import { FormControl, FormBuilder, ControlContainer, Validators, AbstractControl, ValidationErrors, NG_VALIDATORS, NG_VALUE_ACCESSOR, ControlValueAccessor, Validator } from '@angular/forms';
+import { FormControl, FormBuilder, ControlContainer, Validators, AbstractControl, ValidationErrors, NG_VALIDATORS, NG_VALUE_ACCESSOR, ControlValueAccessor, Validator, FormGroup } from '@angular/forms';
+import { startWith, pairwise, map } from 'rxjs';
+import { VendorsService } from 'src/app/services/vendors.service';
 import { TypeInputForm, IInputForm, ISelectBoxOption } from 'src/app/shared/interfaces/input_form';
 import { VALIDATORS_PATTERNS } from 'src/app/shared/interfaces/validators';
+
+const inputs: IInputForm[] =  [{
+    label: 'Tipo ID',
+    visible: true,
+    type: TypeInputForm.SelectBox,
+    size: 2,
+    data: 'type',
+    required: true,
+    options_key: 'tipo_id',
+    disabled: false
+  },
+  {
+    label: 'Número de ID',
+    visible: true,
+    type: TypeInputForm.Text,
+    size: 6,
+    data: 'document',
+    disabled: false
+  },
+  {
+    label: 'DV',
+    visible: false,
+    type: TypeInputForm.SelectBox,
+    options_key: 'verification_digit',
+    size: 2,
+    data: 'verification',
+    required: true,
+    disabled: false
+  }]
+
 
 @Component({
   selector: 'app-input-document',
@@ -23,66 +55,131 @@ import { VALIDATORS_PATTERNS } from 'src/app/shared/interfaces/validators';
 export class InputDocumentComponent implements ControlValueAccessor, Validator{
 
   readonly TypeInputForm = TypeInputForm;
+  inputs = JSON.parse(JSON.stringify(inputs));
   @Input() question!: IInputForm;
   @Input() disabled: boolean = false;
-  @Input() conditionValue: number = 0;
   @Input() options: ISelectBoxOption[] = [];
 
   onChange = (token: string) => {}
   onTouched = () => {}
+  onValidationChange: any = () => {};
 
   touched = false;
 
   valueQuestion: any;
+  form: FormGroup;
   formQuestion: FormControl;
+  lists: any;
+  errors:any = null
+  constructor(private _fB: FormBuilder, private vendorsService: VendorsService){
+    this.formQuestion = this._fB.control('');
+    this.form = this._fB.group({});
 
-  constructor(private _fB: FormBuilder){
-    this.formQuestion = this._fB.control('')
   }
 
 
+  buildForm() {
+    const form_fields:any = {}
+
+    this.inputs.forEach( (input:any) => {
+      form_fields[input.data || ''] = ['']
+
+      if (input.options_key) {
+        input.options = this.lists[input.options_key];
+      }
+    });
+
+    this.form = this._fB.group(form_fields)
+  }
+
   ngOnInit(): void {
 
+    this.lists = this.vendorsService.getSelectBoxList();
+
+    this.buildForm();
+
     if(this.question.disabled){
-      this.formQuestion.disable();
+      this.form.disable();
     }
 
-    this.setValidations();
-
-
-    this.formQuestion.valueChanges.subscribe( (value:any) => {
+    this.form.get('type')?.valueChanges.subscribe( data => {
       this.setValidations();
-      this.valueQuestion = value
+    })
+
+    this.form.valueChanges.subscribe( (value:any) => {
+      this.valueQuestion = value;
       this.onChange(this.valueQuestion)
     })
 
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if(changes['conditionValue']){
-      console.log(changes['conditionValue'])
+  setErrors(){
+    this.errors = null;
+    Object.keys(this.form.controls).forEach(key => {
+      const control = this.form.get(key);
+      this.errors = {...this.errors, ...control?.errors}
+    })
+
+    console.log(this.errors)
+  }
+
+  setSelectLists(values: any){
+    if(values?.person){
+      if(values.person == 1){
+        this.inputs[0].options = this.lists.natural_id
+      }
+
+      if(values.person == 2){
+        this.inputs[0].options = this.lists.juridica_id
+      }
+
+      if(values.person == 3){
+        this.inputs[0].options = this.lists.fisica_id
+      }
+
+      if(values.person == 4){
+        this.inputs[0].options = this.lists.moral_id
+      }
     }
 
+    this.inputs = JSON.parse(JSON.stringify(this.inputs))
   }
 
   setValidations(){
 
-    if(Number(this.conditionValue) == 7){
-      this.formQuestion.setValidators([Validators.minLength(14), Validators.maxLength(14), Validators.pattern(VALIDATORS_PATTERNS.numbers)]);
+    if(Number(this.form.get('type')?.value) == 5){
+      this.inputs[2].visible = true;
+      this.inputs[1].size = 4;
+      this.form.get('verification')?.enable()
+    }else{
+      this.inputs[2].visible = false;
+      this.inputs[1].size = 6;
+      this.form.get('verification')?.disable()
+    }
+
+
+    if(Number(this.form.get('type')?.value) == 7){
+      this.form.get('document')?.setValidators([Validators.minLength(14), Validators.maxLength(14), Validators.pattern(VALIDATORS_PATTERNS.numbers)]);
       return;
     }
 
-    if(Number(this.conditionValue) == 10){
-      this.formQuestion.setValidators([Validators.minLength(13), Validators.maxLength(13), Validators.pattern(VALIDATORS_PATTERNS.numbers)]);
+    if(Number(this.form.get('type')?.value) == 10){
+      this.form.get('document')?.setValidators([Validators.minLength(13), Validators.maxLength(13), Validators.pattern(VALIDATORS_PATTERNS.numbers)]);
       return;
     }
 
-    this.formQuestion.setValidators(Validators.required);
+    this.form.get('document')?.setValidators([Validators.required]);
+    this.form.get('document')?.updateValueAndValidity()
+
   }
 
   writeValue(value: any): void {
-    this.formQuestion.setValue(value)
+    this.setSelectLists(value);
+
+    this.form.patchValue(value)
     this.valueQuestion = value
+
+
   }
   registerOnChange(fn: any): void {
     this.onChange = fn;
@@ -92,12 +189,16 @@ export class InputDocumentComponent implements ControlValueAccessor, Validator{
     this.onTouched = fn;
   }
 
+  registerOnValidatorChange?(fn: () => void): void {
+    this.onValidationChange = fn;
+}
+
   setDisabledState(isDisabled: boolean): void {
     this.disabled = isDisabled;
   }
 
   validate(control: AbstractControl<any, any>): ValidationErrors | null {
-    return control.invalid ? control.errors : null;
+    return this.errors ? this.errors : null;
   }
 
 

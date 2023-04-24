@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import * as moment from 'moment';
+import { v4 as uuidv4 } from 'uuid';
 
 import { distinctUntilChanged, map, pairwise, startWith } from 'rxjs';
 import { VendorsService } from 'src/app/services/vendors.service';
@@ -26,6 +27,7 @@ export class MexicoFormComponent {
   @Input() infoVendor: any;
 
   readonly COLOMBIAN_FORM = MEXICO_FORM;
+  readonly TypeInputForm = TypeInputForm
   mainForm: IForm = { description: '', sections: [] };
   loading: boolean = false;
   form: FormGroup;
@@ -85,7 +87,8 @@ export class MexicoFormComponent {
         : null,
     };
 
-    this.setListForm(this.infoVendor);
+    this.lists = this.inmutableData.lists;
+
     this.buildForm();
     this.setValuesForm();
 
@@ -102,6 +105,14 @@ export class MexicoFormComponent {
       this.vendorData['business_group'] ? '1' : '2'
     );
 
+    this.form.controls['document'].setValue(
+      {
+        type: this.vendorData['f_document_type_id'],
+        document: this.vendorData['document'],
+        verification: this.vendorData['verification_digit'],
+      }
+    );
+
     this.form.controls['actividad_economica'].setValue(this.vendorData['vendor_economic'])
 
     this.setMoralSectionsVisible();
@@ -111,8 +122,6 @@ export class MexicoFormComponent {
     this.setVisbleBussinesGroup();
     this.setFilesValues();
 
-    //this.setValidators();
-    this.setValidationByTypeDocuent();
     this.setValidationsDeclaraciones();
 
     setTimeout(() => {
@@ -241,33 +250,7 @@ export class MexicoFormComponent {
         this.formInValid = this.form.touched && this.form.invalid
       });
 
-
-    this.accionistas.valueChanges
-      .pipe(
-        startWith(this.form.value),
-        pairwise(),
-        distinctUntilChanged(),
-      ).subscribe( ([oldValues, newValue]:any) => {
-
-      if(!newValue) return;
-
-      const rowsArray = newValue.rows ? newValue.rows : newValue;
-      rowsArray.forEach( (row:any, index:number) => {
-        const isMoral = Number(row['f_person_type_id']) == TYPE_PERSON_MEXICO.Moral;
-
-        row['verification_digit_visible'] = isMoral;
-        row['f_document_type_id_list'] = isMoral ? this.lists.moral_id : this.lists.fisica_id;
-
-        const oldRowsArray = oldValues && oldValues.rows ? oldValues.rows : oldValues;
-        if(oldRowsArray && oldRowsArray[index]){
-
-
-          if(oldRowsArray[index]['f_document_type_id'] != null && row['f_document_type_id'] != oldRowsArray[index]['f_document_type_id']){
-            row['f_document_type_id'] = null;
-          }
-        }
-      });
-    });
+/*
 
     this.beneficiarios_finales.valueChanges
       .pipe(
@@ -296,7 +279,7 @@ export class MexicoFormComponent {
 
 
     })
-
+*/
   }
 
   confirmSubmit(){
@@ -336,13 +319,15 @@ export class MexicoFormComponent {
 
     const info_users: any = [];
 
-    const otras_empresas = this.form.value['otras_empresas'].rows
+    const otras_empresas = this.form.value['otras_empresas']?.rows
       ? this.form.value['otras_empresas'].rows
       : this.form.value['otras_empresas'];
     if (otras_empresas) {
       otras_empresas.forEach((row: any) => {
         info_users.push({
           ...row,
+          document: row.document.document,
+          f_document_type_id: row.document.type,
           f_vendor_info_user_type_id: 1,
         });
       });
@@ -350,31 +335,37 @@ export class MexicoFormComponent {
 
     const representantes_legales = this.form.value[
       'informacion_representantes_legales'
-    ].rows
+    ]?.rows
       ? this.form.value['informacion_representantes_legales'].rows
       : this.form.value['informacion_representantes_legales'];
     if (representantes_legales) {
       representantes_legales.forEach((row: any) => {
         info_users.push({
           ...row,
+          document: row.document.document,
+          f_document_type_id: row.document.type,
+          verification_digit: row.document.verification,
           f_vendor_info_user_type_id: 2,
         });
       });
     }
 
-    const junta_directiva = this.form.value['informacion_junta_directiva'].rows
+    const junta_directiva = this.form.value['informacion_junta_directiva']?.rows
       ? this.form.value['informacion_junta_directiva'].rows
       : this.form.value['informacion_junta_directiva'];
     if (junta_directiva) {
       junta_directiva.forEach((row: any) => {
         info_users.push({
           ...row,
+          document: row.document.document,
+          f_document_type_id: row.document.type,
+          verification_digit: row.document.verification,
           f_vendor_info_user_type_id: 3,
         });
       });
     }
 
-    const info_accionistas = this.form.value['informacion_accionistas'].rows
+    const info_accionistas = this.form.value['informacion_accionistas']?.rows
       ? this.form.value['informacion_accionistas'].rows
       : this.form.value['informacion_accionistas'];
 
@@ -382,6 +373,9 @@ export class MexicoFormComponent {
       info_accionistas.forEach((row: any) => {
         info_users.push({
           ...row,
+          document: row.document.document,
+          f_document_type_id: row.document.type,
+          verification_digit: row.document.verification,
           f_vendor_info_user_type_id: 4,
         });
       });
@@ -394,10 +388,12 @@ export class MexicoFormComponent {
       : this.form.value['informacion_beneficiarios_finales'];
     if (info_beneficiarios_finales) {
       info_beneficiarios_finales.forEach((row: any) => {
+
         const people_final = row['informacion_beneficiarios_finales_people']
           .rows
           ? row['informacion_beneficiarios_finales_people'].rows
           : row['informacion_beneficiarios_finales_people'];
+
         if (people_final) {
           people_final.forEach((person: any) => {
             info_users.push({
@@ -405,6 +401,9 @@ export class MexicoFormComponent {
               f_document_parent_type_id: row.f_document_type_id,
               f_vendor_info_user_type_id: 5,
               ...person,
+              document: person.document.document,
+              f_document_type_id: person.document.type,
+              verification_digit: person.document.verification,
             });
           });
         }
@@ -438,10 +437,13 @@ export class MexicoFormComponent {
     ]
 
 
+
     const formData = {
       ...this.form.value,
-      f_document_type_id: this.form.value.f_document_type_id
-        ? Number(this.form.value.f_document_type_id)
+      document: this.form.value['document'].document,
+      verification_digit: this.form.value['document'].verification,
+      f_document_type_id: this.form.value['document'].type
+        ? Number(this.form.value['document'].type)
         : null,
       f_person_type_id: this.form.value.f_person_type_id
         ? Number(this.form.value.f_person_type_id)
@@ -456,7 +458,6 @@ export class MexicoFormComponent {
       info_users,
       info_additional
     }
-
 
     if(action == 'verify'){
       this.onVerify.emit(formData);
@@ -480,48 +481,21 @@ export class MexicoFormComponent {
       estado_cuenta_bancaria_file: () => this.uploadInputFile(value, formControlName),
       comprobante_domicilio_file: () => this.uploadInputFile(value, formControlName),
       documento_politicas: () => this.uploadInputFile(value, formControlName),
+      conflicto_intereses: () =>this.setValidationsDeclaraciones(),
+      vinculo_estatal: () =>this.setValidationsDeclaraciones(),
+      vinculo_familiar_estatal: () =>this.setValidationsDeclaraciones(),
+      servicios_actividades_prestados: () =>this.setValidationsDeclaraciones(),
+      incluido_sat: () =>this.setValidationsDeclaraciones(),
     };
 
     if (formControlName in handlers) {
       handlers[formControlName as keyof typeof handlers].call(this);
     }
 
-    //this.setValidators();
   }
 
   private uploadInputFile(value: File, formControlName: string){
     this.onFileSubmit.emit({formControlName, value});
-  }
-
-  private setValidators(){
-
-
-    this.mainForm.sections.forEach((section) => {
-      section.inputs.forEach((input) => {
-        const validators: ValidatorFn[] = [];
-
-        if(input.visible){
-          if(input.required){
-            validators.push(Validators.required)
-          }
-
-          if(input.type == TypeInputForm.Email){
-            validators.push(Validators.pattern(VALIDATORS_PATTERNS.email))
-          }
-
-          if (input.data) {
-            const control = this.form.controls[input.data]
-
-            if(validators.length > 0)
-              control.setValidators(validators);
-          }
-        }
-      })
-    })
-
-    this.setValidationByTypeDocuent()
-    this.setValidationsDeclaraciones()
-
   }
 
   private setValidationsDeclaraciones(){
@@ -555,24 +529,6 @@ export class MexicoFormComponent {
 
     });
 
-  }
-
-  private setValidationByTypeDocuent(formControlName: string = 'f_document_type_id'){
-    const value = this.form.value[formControlName];
-    const control = this.form.controls['document'];
-
-    if(Number(value) == 7){
-      control.setValidators([Validators.minLength(14), Validators.maxLength(14), Validators.pattern(VALIDATORS_PATTERNS.numbers)]);
-      return;
-    }
-
-    if(Number(value) == 10){
-      control.setValidators([Validators.minLength(13), Validators.maxLength(13), Validators.pattern(VALIDATORS_PATTERNS.numbers)]);
-      return;
-    }
-
-    control.setValidators(Validators.required);
-    control.updateValueAndValidity()
   }
 
   private setVisbleBussinesGroup(){
@@ -624,8 +580,11 @@ export class MexicoFormComponent {
           this.form.controls['otras_empresas'].setValue(
             info_user.user_person.map((user: any) => ({
               name: user.name,
-              f_document_type_id: user.f_document_type_id,
-              document: user.document,
+
+              document: {
+                document: user.document,
+                type: user.f_document_type_id,
+              },
               quantity: user.quantity,
               id: user.id,
             }))
@@ -638,7 +597,11 @@ export class MexicoFormComponent {
               name: user.name,
               last_name: user.last_name,
               f_document_type_id: user.f_document_type_id,
-              document: user.document,
+              document: {
+                document: user.document,
+                type: user.f_document_type_id,
+                verification: user.verification_digit,
+              },
               expedition_date: user.expedition_date,
               country: user.country,
               department: user.department,
@@ -655,7 +618,11 @@ export class MexicoFormComponent {
               name: user.name,
               last_name: user.last_name,
               f_document_type_id: user.f_document_type_id,
-              document: user.document,
+              document: {
+                document: user.document,
+                type: user.f_document_type_id,
+                verification: user.verification_digit,
+              },
               expedition_date: user.expedition_date,
               country: user.country,
               department: user.department,
@@ -675,10 +642,13 @@ export class MexicoFormComponent {
                 f_person_type_id: user.f_person_type_id,
                 name: user.name,
                 percente_participation: user.percente_participation,
-                f_document_type_id: user.f_document_type_id,
                 f_document_type_id_list: isMoral ? this.lists.moral_id : this.lists.fisica_id,
-                document: user.document,
-                verification_digit: user.verification_digit,
+                document: {
+                  person: user.f_person_type_id,
+                  document: user.document,
+                  type: user.f_document_type_id,
+                  verification: user.verification_digit,
+                },
                 verification_digit_visible: isMoral,
                 expedition_date: user.expedition_date,
                 country: user.country,
@@ -722,6 +692,7 @@ export class MexicoFormComponent {
     const informacion_accionistas = this.inmutableData.vendor_info_user.find(
       (info_user: any) => info_user.id == 4
     );
+
     if (informacion_accionistas && informacion_accionistas.user_person) {
       const info_final = informacion_accionistas.user_person.filter(
         (person: any) => {
@@ -741,20 +712,24 @@ export class MexicoFormComponent {
             (child: any) => ({
               f_person_type_id: child.f_person_type_id,
               name: child.name,
-              f_document_type_id: child.f_document_type_id,
-              document: child.document,
-              verification_digit: child.verification_digit,
+              document: {
+                person: child.f_person_type_id,
+                document: child.document,
+                type: child.f_document_type_id,
+                verification: child.verification_digit,
+              },
               expedition_date: child.expedition_date,
               id: child.id,
             })
           ),
         }))
       );
+
+      console.log(this.form.controls['informacion_beneficiarios_finales'].value)
     }
   }
 
   private addFinalBeneficiaryByActionist() {
-
 
     const info_final = this.form.value['informacion_accionistas']?.rows ? this.form.value['informacion_accionistas'].rows.filter(
       (person: any) => {
@@ -765,14 +740,21 @@ export class MexicoFormComponent {
     ): [];
 
 
-    this.form.controls['informacion_beneficiarios_finales'].setValue({
-      rows: info_final.map((user: any) => ({
-        id: 999,
-        document: user.document,
-        f_document_type_id: user.f_document_type_id,
-        name: user.name,
-        informacion_beneficiarios_finales_people: [],
-      })),
+    const currentValue = this.form.value['informacion_beneficiarios_finales']?.rows
+    ? this.form.value['informacion_beneficiarios_finales'].rows
+    : this.form.value['informacion_beneficiarios_finales'];
+
+  this.form.controls['informacion_beneficiarios_finales'].setValue({
+      rows: info_final.map((user: any) => {
+        const exist = currentValue.find( (item:any) => item.id == user.id)
+        return {
+          id: exist ? exist.id : uuidv4(),
+          document: user.document?.document ? user.document?.document: user.document,
+          f_document_type_id: user.document?.type ? user.document?.type: user.f_document_type_id,
+          name: user.name,
+          informacion_beneficiarios_finales_people: exist ? exist.informacion_beneficiarios_finales_people : []
+        }
+      }),
     });
   }
 
@@ -796,7 +778,6 @@ export class MexicoFormComponent {
       })
     })
   }
-
 
   private setMoralSectionsVisible() {
     const showMoralSections =

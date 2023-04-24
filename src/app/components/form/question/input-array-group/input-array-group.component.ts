@@ -38,7 +38,7 @@ export class InputArrayGroupComponent implements ControlValueAccessor, Validator
   writeValue(value: any): void {
 
     if(this.question?.data == 'informacion_beneficiarios_finales_people'){
-      console.log(value)
+     // console.log(value)
     }
 
     if(!value) {
@@ -63,7 +63,7 @@ export class InputArrayGroupComponent implements ControlValueAccessor, Validator
 
     setTimeout( () => {
       this.rawValue = value?.rows ? value.rows : []
-      this.value = value //this.form.valid ? value : null
+      this.value = this.form.valid ? value : null
     }, 1)
 
 
@@ -167,7 +167,6 @@ export class InputArrayGroupComponent implements ControlValueAccessor, Validator
     }
     const formGroup = this._fB.group(form_fields);
 
-    //this.setValidators(formGroup)
     return formGroup
   }
 
@@ -178,6 +177,15 @@ export class InputArrayGroupComponent implements ControlValueAccessor, Validator
 
   addRow(rowValue = null){
     this.rows.push(this.createRow(rowValue))
+
+    this.rows.controls.forEach( row => {
+      (row.get('f_person_type_id') as FormGroup)?.valueChanges.subscribe(data => {
+        const currentDocument = row.get('document')
+        currentDocument?.setValue({...currentDocument?.value, person: data}, {emitEvent: false});
+
+      })
+    });
+
     //this.triggerValidations();
   }
 
@@ -200,7 +208,7 @@ export class InputArrayGroupComponent implements ControlValueAccessor, Validator
 
       setTimeout( () => {
         this.rawValue = value?.rows ? value.rows : []
-        this.value = value //this.form.valid ? value : null
+        this.value = this.form.valid ? value : null
         this.onChange(this.value)
 
 
