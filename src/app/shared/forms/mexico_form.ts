@@ -649,7 +649,6 @@ export const MEXICO_FORM: IForm = {
           visible: true,
           content: 'Si alguno de los accionistas y/o socios con participación superior o igual al cinco por ciento (5%) es una persona moral, indicar en el presente capitulo la información de la persona o personas físicas (Beneficiario Final). Se considerará Beneficiario Final: 1) Persona física que, actuando individual o conjuntamente, sea titular, directa o indirectamente, del cinco por ciento (5%), o más del capital o los derechos de voto de la persona moral y/o se beneficie en cinco por ciento (5%), o más de los activos, rendimientos o utilidades de la persona moral; y 2) Persona física que, actuando individual o conjuntamente, ejerza control sobre la persona moral, por cualquier otro medio diferente a los establecidos en el numeral anterior.',
           disabled: false,
-          data: 'informacion_beneficiarios_finales',
           required: true,
           align: ''
         },

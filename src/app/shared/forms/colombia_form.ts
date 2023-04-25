@@ -100,6 +100,18 @@ export const COLOMBIA_FORM: IForm = {
 
         },
         {
+          visible: true,
+          type: TypeInputForm.Document,
+          size: 4,
+          data: 'document',
+          data_list: ['f_document_type_id', 'document'],
+          options_key_list: ['tipo_persona'],
+          required: true,
+          options_key: 'tipo_id',
+          disabled: false
+        },
+        /*
+        {
           label: 'Tipo ID',
           visible: true,
           type: TypeInputForm.SelectBox,
@@ -128,6 +140,7 @@ export const COLOMBIA_FORM: IForm = {
           required: true,
           disabled: false
         },
+        */
         {
           label: 'Fecha matrícula o expedición ID',
           visible: true,
@@ -276,11 +289,24 @@ export const COLOMBIA_FORM: IForm = {
               label: 'Nombre o Razón Social',
               visible: true,
               type: TypeInputForm.Text,
-              size: 4,
+              size: 3,
               data: 'name',
               required: true,
               disabled: false
             },
+            {
+              visible: true,
+              type: TypeInputForm.Document,
+              size: 4,
+              data: 'document',
+              data_list: ['f_document_type_id', 'document'],
+              options_key_list: ['tipo_persona'],
+              required: true,
+              options_key: 'tipo_id',
+              disabled: false,
+              hideVerification: true
+            },
+            /*
             {
               label: 'Tipo ID',
               visible: true,
@@ -300,6 +326,7 @@ export const COLOMBIA_FORM: IForm = {
               required: true,
               disabled: false
             },
+            */
             {
               label: 'Calidad',
               visible: true,
@@ -348,6 +375,18 @@ export const COLOMBIA_FORM: IForm = {
             disabled: false
           },
           {
+            visible: true,
+            type: TypeInputForm.Document,
+            size: 4,
+            data: 'document',
+            data_list: ['f_document_type_id', 'document'],
+            options_key_list: ['tipo_persona'],
+            required: true,
+            options_key: 'natural_id',
+            disabled: false
+          },
+          /*
+          {
             label: 'Tipo ID',
             visible: true,
             type: TypeInputForm.SelectBox,
@@ -366,6 +405,7 @@ export const COLOMBIA_FORM: IForm = {
             required: true,
             disabled: false
           },
+          */
           {
             label: 'Fecha expedición ID',
             visible: true,
@@ -457,6 +497,18 @@ export const COLOMBIA_FORM: IForm = {
             required: true,
           },
           {
+            visible: true,
+            type: TypeInputForm.Document,
+            size: 4,
+            data: 'document',
+            data_list: ['f_document_type_id', 'document'],
+            options_key_list: ['natural_id'],
+            required: true,
+            options_key: 'natural_id',
+            disabled: false
+          },
+          /*
+          {
             label: 'Tipo ID',
             visible: true,
             type: TypeInputForm.SelectBox,
@@ -475,6 +527,7 @@ export const COLOMBIA_FORM: IForm = {
             data: 'document',
             required: true,
           },
+          */
           {
             label: 'Fecha expedición ID',
             visible: true,
@@ -585,6 +638,18 @@ export const COLOMBIA_FORM: IForm = {
               required: true,
             },
             {
+              visible: true,
+              type: TypeInputForm.Document,
+              size: 4,
+              data: 'document',
+              data_list: ['f_document_type_id', 'document'],
+              options_key_list: ['tipo_persona'],
+              required: true,
+              options_key: 'tipo_id',
+              disabled: false
+            },
+            /*
+            {
               label: 'Tipo ID',
               visible: true,
               type: TypeInputForm.SelectBox,
@@ -613,6 +678,7 @@ export const COLOMBIA_FORM: IForm = {
               data: 'verification_digit',
               required: true,
             },
+            */
             {
               label: 'Fecha matrícula o expedición ID',
               visible: true,
@@ -676,6 +742,17 @@ export const COLOMBIA_FORM: IForm = {
               disabled: true
             },
             {
+              label: 'Tipo ID',
+              visible: true,
+              type: TypeInputForm.SelectBox,
+              size: 2,
+              disabled: true,
+              readonly: true,
+              options_key: 'todos_tipo_id',
+              data: 'f_document_type_id',
+              required: true,
+            },
+            {
               label: 'ID',
               visible: true,
               type: TypeInputForm.Text,
@@ -697,7 +774,7 @@ export const COLOMBIA_FORM: IForm = {
               label: 'Razón Social',
               visible: true,
               type: TypeInputForm.Text,
-              size: 6,
+              size: 4,
               data: 'name',
               required: true,
               disabled: true
@@ -730,6 +807,18 @@ export const COLOMBIA_FORM: IForm = {
                   required: true,
                 },
                 {
+                  visible: true,
+                  type: TypeInputForm.Document,
+                  size: 4,
+                  data: 'document',
+                  data_list: ['f_document_type_id', 'document'],
+                  options_key_list: ['tipo_persona'],
+                  required: true,
+                  options_key: 'tipo_id',
+                  disabled: false
+                },
+                /*
+                {
                   label: 'Tipo ID',
                   visible: true,
                   type: TypeInputForm.SelectBox,
@@ -758,6 +847,7 @@ export const COLOMBIA_FORM: IForm = {
                   data: 'verification_digit',
                   required: true,
                 },
+                */
                 {
                   label: 'Fecha matrícula o expedición ID',
                   visible: true,
@@ -915,6 +1005,18 @@ export const COLOMBIA_FORM: IForm = {
                   disabled: false
                 },
                 {
+                  visible: true,
+                  type: TypeInputForm.Document,
+                  size: 3,
+                  data: 'document',
+                  data_list: ['f_document_type_id', 'document'],
+                  options_key_list: ['tipo_persona'],
+                  required: true,
+                  options_key: 'natural_id',
+                  disabled: false
+                },
+                /*
+                {
                   label: 'Tipo ID',
                   visible: true,
                   type: TypeInputForm.SelectBox,
@@ -933,6 +1035,7 @@ export const COLOMBIA_FORM: IForm = {
                   required: true,
                   disabled: false
                 },
+                */
               ]
             }
           ]

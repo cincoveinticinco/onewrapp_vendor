@@ -96,6 +96,14 @@ export class InputDocumentComponent implements ControlValueAccessor, Validator{
 
     this.lists = this.vendorsService.getSelectBoxList();
 
+    this.inputs[0].options_key = this.question.options_key;
+
+    if(this.question.hideVerification){
+      this.inputs[2].visible = false;
+      this.inputs[1].size = 6;
+      this.form.get('verification')?.disable()
+    }
+
     this.buildForm();
 
     if(this.question.disabled){
@@ -119,8 +127,6 @@ export class InputDocumentComponent implements ControlValueAccessor, Validator{
       const control = this.form.get(key);
       this.errors = {...this.errors, ...control?.errors}
     })
-
-    console.log(this.errors)
   }
 
   setSelectLists(values: any){
@@ -145,17 +151,23 @@ export class InputDocumentComponent implements ControlValueAccessor, Validator{
     this.inputs = JSON.parse(JSON.stringify(this.inputs))
   }
 
+
+
   setValidations(){
 
-    if(Number(this.form.get('type')?.value) == 5){
-      this.inputs[2].visible = true;
-      this.inputs[1].size = 4;
-      this.form.get('verification')?.enable()
-    }else{
-      this.inputs[2].visible = false;
-      this.inputs[1].size = 6;
-      this.form.get('verification')?.disable()
+    if(!this.question.hideVerification){
+      if(Number(this.form.get('type')?.value) == 5){
+        this.inputs[2].visible = true;
+        this.inputs[1].size = 4;
+        this.form.get('verification')?.enable()
+      }else{
+        this.inputs[2].visible = false;
+        this.inputs[1].size = 6;
+        this.form.get('verification')?.disable()
+      }
     }
+
+
 
 
     if(Number(this.form.get('type')?.value) == 7){
@@ -174,10 +186,13 @@ export class InputDocumentComponent implements ControlValueAccessor, Validator{
   }
 
   writeValue(value: any): void {
+
     this.setSelectLists(value);
 
     this.form.patchValue(value)
     this.valueQuestion = value
+
+    //this.onValidationChange();
 
 
   }
@@ -198,6 +213,7 @@ export class InputDocumentComponent implements ControlValueAccessor, Validator{
   }
 
   validate(control: AbstractControl<any, any>): ValidationErrors | null {
+    this.setErrors();
     return this.errors ? this.errors : null;
   }
 

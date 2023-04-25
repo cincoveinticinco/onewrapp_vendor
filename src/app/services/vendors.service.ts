@@ -81,6 +81,7 @@ export class VendorsService {
   private createSelectBoxList(sourceList: any){
 
     const vendorData = sourceList.vendor;
+    const country = vendorData.country_id
 
     const tipo_contraparte = sourceList.vendor_types.map((item: any) =>
       this.setSelectBoxOptions(item, 'id', 'vendor_type')
@@ -126,11 +127,17 @@ export class VendorsService {
         )
       : [];
 
-    const todos_tipo_id = [...fisica_id, ...moral_id];
-    const tipo_id =
-      vendorData.f_person_type_id == TYPE_PERSON_MEXICO.Moral
+    const todos_tipo_id =  country == CountryVendor.Mexico ?
+      [...fisica_id, ...moral_id]: [...juridica_id, ...natural_id];
+
+    const tipo_id = country == CountryVendor.Mexico ?
+      (vendorData.f_person_type_id == TYPE_PERSON_MEXICO.Moral
         ? moral_id
-        : fisica_id;
+        : fisica_id) :
+      (vendorData.f_person_type_id == TYPE_PERSON_COLOMBIA.Juridica
+          ? juridica_id
+          : natural_id)
+      ;
 
     const ciiu = sourceList.vendor_economic_activitis.map((item: any) =>
       this.setSelectBoxOptions(item, 'id', 'ciiu')

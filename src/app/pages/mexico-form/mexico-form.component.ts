@@ -249,42 +249,20 @@ export class MexicoFormComponent {
 
         this.formInValid = this.form.touched && this.form.invalid
       });
-
-/*
-
-    this.beneficiarios_finales.valueChanges
-      .pipe(
-        startWith(this.beneficiarios_finales.value),
-        pairwise(),
-        distinctUntilChanged(),
-      ).subscribe( ([oldValues, newValue]:any) => {
-
-
-
-      if(!newValue) return;
-
-      const _newValue = newValue.rows ? newValue.rows : newValue;
-      _newValue.forEach( (newRowValue:any, indexRow: number) => {
-
-        const people_row = newRowValue.informacion_beneficiarios_finales_people
-        const rowsArray = people_row.rows ? people_row.rows : people_row;
-
-        rowsArray.forEach( (row:any, index:number) => {
-          const isMoral = Number(row['f_person_type_id']) == TYPE_PERSON_MEXICO.Moral;
-
-          row['verification_digit_visible'] = isMoral;
-          row['f_document_type_id_list'] = isMoral ? this.lists.moral_id : this.lists.fisica_id;
-         });
-      });
-
-
-    })
-*/
   }
 
   confirmSubmit(){
     this.representantes_legales.markAsDirty()
     this.representantes_legales?.updateValueAndValidity();
+
+    this.junta_directiva.markAsDirty()
+    this.junta_directiva?.updateValueAndValidity();
+
+    this.accionistas.markAsDirty()
+    this.accionistas?.updateValueAndValidity();
+
+    this.beneficiarios_finales.markAsDirty()
+    this.beneficiarios_finales?.updateValueAndValidity();
 
     const messages = [
       this.representantes_legales.invalid ? 'INFORMACIÓN REPRESENTANTES LEGALES' : null,
@@ -292,6 +270,8 @@ export class MexicoFormComponent {
       this.accionistas.invalid ? 'INFORMACIÓN ACCIONISTAS Y/O SOCIOS' : null,
       this.beneficiarios_finales.invalid ? 'INFORMACIÓN COMPLEMENTARIA DE BENEFICIARIOS FINALES' : null,
     ].filter( message => message != null)
+
+    console.log(messages)
 
     if(messages.length > 0){
       this.modalMessage = `Hay informacion sin completar en ${messages.length > 1 ? 'las secciones' : 'la sección'} ${messages.join(', ')}, si no se completa esta no sera guardada. ¿Desea continuar?:`;
@@ -302,21 +282,7 @@ export class MexicoFormComponent {
 
   }
 
-  handleSubmit(action: string) {
-
-    this.modalMessage = null;
-
-    if(action == 'verify'){
-      this.form.markAsDirty();
-      Object.keys(this.form.controls).forEach( (key) => {
-        const control = this.form.get(key);
-        control?.markAsDirty();
-        control?.updateValueAndValidity();
-      })
-
-      if(this.form.invalid) return;
-    }
-
+  private prepareSubmitData(){
     const info_users: any = [];
 
     const otras_empresas = this.form.value['otras_empresas']?.rows
@@ -401,9 +367,9 @@ export class MexicoFormComponent {
               f_document_parent_type_id: row.f_document_type_id,
               f_vendor_info_user_type_id: 5,
               ...person,
-              document: person.document.document,
-              f_document_type_id: person.document.type,
-              verification_digit: person.document.verification,
+              document: person.document?.document,
+              f_document_type_id: person.document?.type,
+              verification_digit: person.document?.verification,
             });
           });
         }
@@ -459,6 +425,28 @@ export class MexicoFormComponent {
       info_additional
     }
 
+    return formData;
+  }
+
+  handleSubmit(action: string) {
+
+    this.modalMessage = null;
+
+    if(action == 'verify'){
+      this.form.markAsDirty();
+      Object.keys(this.form.controls).forEach( (key) => {
+        const control = this.form.get(key);
+        control?.markAsDirty();
+        control?.updateValueAndValidity();
+      })
+
+      if(this.form.invalid) return;
+    }
+
+    console.log('fired')
+
+    const formData = this.prepareSubmitData();
+
     if(action == 'verify'){
       this.onVerify.emit(formData);
     }else{
@@ -495,7 +483,8 @@ export class MexicoFormComponent {
   }
 
   private uploadInputFile(value: File, formControlName: string){
-    this.onFileSubmit.emit({formControlName, value});
+    const formData = this.prepareSubmitData();
+    this.onFileSubmit.emit({formControlName, value, formData});
   }
 
   private setValidationsDeclaraciones(){
@@ -725,7 +714,6 @@ export class MexicoFormComponent {
         }))
       );
 
-      console.log(this.form.controls['informacion_beneficiarios_finales'].value)
     }
   }
 

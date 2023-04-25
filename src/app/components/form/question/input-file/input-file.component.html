@@ -1,10 +1,11 @@
 <label
   *ngIf="!value"class="content-file-input"
   appArrastarnsoltar
+  [extensiones_permitidas]="['pdf', 'PDF']"
   (onChangeFile)="onDragFileChange($event)"
   >
   <span>Arrastar y soltar o <a>buscar</a></span>
-  <input [required]="required" type="file" (change)="onFileChange($event)">
+  <input [required]="required" type="file" accept=".pdf" (change)="onFileChange($event)">
 </label>
 
 <div *ngIf="value" class="content-file-filled">

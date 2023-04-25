@@ -46,5 +46,6 @@ export interface IInputForm{
   startEmpty?: boolean,
   link?: string,
   textlink?: string,
-  documentValue?: string
+  documentValue?: string,
+  hideVerification?:boolean
 }

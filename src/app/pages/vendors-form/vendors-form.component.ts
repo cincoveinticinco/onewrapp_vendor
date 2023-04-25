@@ -74,7 +74,7 @@ export class VendorsFormComponent {
   submitFile(fileObject: any) {
     this.loading = true;
 
-    const { value, formControlName } = fileObject;
+    const { value, formControlName, formData } = fileObject;
     const fileIdDocument = Object.keys(info_files).find(
       (key) =>
         info_files[key as unknown as keyof typeof info_files] == formControlName
@@ -138,7 +138,7 @@ export class VendorsFormComponent {
         map((response) => response)
       )
       .subscribe((value) => {
-        this.loadInfo();
+        this.submit(formData)
       });
   }
 

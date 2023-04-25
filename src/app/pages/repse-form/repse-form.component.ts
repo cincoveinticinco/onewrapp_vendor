@@ -137,9 +137,8 @@ export class RepseFormComponent {
       const visita_instalaciones = this.form.value['visita_instalaciones'];
       const registrado_repse = this.form.value['registrado_repse'];
 
-      this.requiredFiles = servicios_actividades == 1
+      this.requiredFiles = (servicios_actividades == 1 || visita_instalaciones == 1)
       && servicios_instalaciones == 2
-      && visita_instalaciones == 1
       && registrado_repse == 1;
 
       this.setVisibleInput('inscripcion_repse_file', this.requiredFiles);
