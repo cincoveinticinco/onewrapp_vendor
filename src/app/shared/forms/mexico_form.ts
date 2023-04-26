@@ -658,7 +658,6 @@ export const MEXICO_FORM: IForm = {
           fixElements: true,
           disabled: false,
           data: 'informacion_beneficiarios_finales',
-          required: true,
           startEmpty: true,
           children: [
             {

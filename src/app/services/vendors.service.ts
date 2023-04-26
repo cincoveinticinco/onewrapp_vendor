@@ -60,6 +60,11 @@ export class VendorsService {
     .pipe(map( response => response))
   }
 
+  updateVendorAditionalInfo(formData: any){
+    return this.http.post(`${environment.API_URL}finance/insertInfoAdditional`, {...formData})
+    .pipe(map( response => response))
+  }
+
   deleteVendorDocument(formData: any){
     return this.http.post(`${environment.API_URL}finance/deleteDocumentVendor`, {...formData})
     .pipe(map( response => response))

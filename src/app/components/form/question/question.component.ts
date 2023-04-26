@@ -119,13 +119,25 @@ export class QuestionComponent implements ControlValueAccessor, Validator{
 
   validate(control: AbstractControl<any, any>): ValidationErrors | null {
 
-    const errorsQuestion = Object.keys(this.formQuestion.errors || {});
+    if(this.question.data == 'informacion_accionistas'){
+      console.log(this.formQuestion)
+    }
+
+   /* const errorsQuestion = Object.keys(this.formQuestion.errors || {});
     const errorsControl = Object.keys(control.errors || {});
 
     const errors = [...errorsQuestion, ...errorsControl]
     this.errorMessage = errors.length > 0 ? this.getMessageError(errors[0]) : undefined;
 
+    if(this.question.data == 'document'){
+      console.log(control, this.formQuestion)
+    }
+
+
     return (!control.pristine && (this.formQuestion.invalid || control.invalid)) ? {...this.formQuestion.errors, ...control.errors} : null;
+    */
+
+    return null;
   }
 
 

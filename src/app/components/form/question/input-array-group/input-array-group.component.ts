@@ -81,6 +81,10 @@ export class InputArrayGroupComponent implements ControlValueAccessor, Validator
   }
 
   validate(control: AbstractControl<any, any>): ValidationErrors | null {
+    if(this.question?.data == 'informacion_accionistas'){
+      console.log(this.form)
+    }
+
     return null //control.invalid ? {nonCompleteArray: true}: null
   }
 
@@ -97,34 +101,6 @@ export class InputArrayGroupComponent implements ControlValueAccessor, Validator
       control?.markAsDirty();
       control?.updateValueAndValidity();
     })
-
-  }
-
-  private setValidators(formGroup: FormGroup){
-
-    const children = this.question?.children
-    const validators: ValidatorFn[] = [];
-
-    children?.forEach( input => {
-
-      if(input.visible){
-        if(input.required){
-          validators.push(Validators.required)
-        }
-
-        if(input.type == TypeInputForm.Email){
-          validators.push(Validators.pattern(VALIDATORS_PATTERNS.email))
-        }
-
-        if (input.data) {
-          const control = formGroup.controls[input.data]
-
-          if(validators.length > 0)
-            control.setValidators(validators);
-        }
-      }
-    })
-
 
   }
 

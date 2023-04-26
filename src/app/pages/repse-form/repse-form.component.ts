@@ -138,8 +138,8 @@ export class RepseFormComponent {
       const registrado_repse = this.form.value['registrado_repse'];
 
       this.requiredFiles = (servicios_actividades == 1 || visita_instalaciones == 1)
-      && servicios_instalaciones == 2
-      && registrado_repse == 1;
+      //&& servicios_instalaciones == 2
+      //&& registrado_repse == 1;
 
       this.setVisibleInput('inscripcion_repse_file', this.requiredFiles);
       this.setVisibleInput('registro_IMSS', this.requiredFiles);
@@ -150,32 +150,38 @@ export class RepseFormComponent {
 
     this.loading = true
 
-    const _data = {
-      ...this.inmutableData.vendor,
-      info_users: [],
-      info_additional: [
-        {
-          vendor_inf_add_type_id: 1,
-          value: this.form.value['servicios_actividades'] == '1' ? true : null,
-        },
-        {
-          vendor_inf_add_type_id: 2,
-          value: this.form.value['servicios_instalaciones'] == '1' ? true : null,
-        },
-        {
-          vendor_inf_add_type_id: 3,
-          value: this.form.value['visita_instalaciones'] == '1' ? true : null,
-        },
-        {
-          vendor_inf_add_type_id: 4,
-          value: this.form.value['registrado_repse'] == '1' ? true : null,
-        },
-      ]
-    }
+    const info_additional = [
+      {
+        vendor_inf_add_type_id: 1,
+        value: this.form.value['servicios_actividades'] == '1' ? true : null,
+      },
+      {
+        vendor_inf_add_type_id: 2,
+        value: this.form.value['servicios_instalaciones'] == '1' ? true : null,
+      },
+      {
+        vendor_inf_add_type_id: 3,
+        value: this.form.value['visita_instalaciones'] == '1' ? true : null,
+      },
+      {
+        vendor_inf_add_type_id: 4,
+        value: this.form.value['registrado_repse'] == '1' ? true : null,
+      },
+    ]
 
-    this.vendorService.updateVendorInfo(_data).subscribe( data => {
+    const sourceDetails = info_additional.map( info => this.vendorService.updateVendorAditionalInfo(info))
+
+    forkJoin(sourceDetails).subscribe( data => {
+      const error:any = data.find( (message:any) => message.error)
+      if(error){
+        console.log(error.error);
+        return;
+      }
       this.router.navigate(['complete-form'])
+
     })
+
+
   }
 
   private setCheckboxInfo(){

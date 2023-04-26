@@ -87,7 +87,7 @@ export class VendorsFormComponent {
       if (document) {
         this.vendorService
           .deleteVendorDocument({ document_id: document.document_id })
-          .subscribe((data) => this.loadInfo());
+          .subscribe((data) => this.submit(formData));
       }
       return;
     }

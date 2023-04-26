@@ -11,7 +11,7 @@
   (onCancel)="modalMessage=null"
 ></app-modal>
 
-<form *ngIf="!loading" (ngSubmit)="handleSubmit('verify')">
+<form (ngSubmit)="handleSubmit('verify')">
 
   <section class="content" [formGroup]="form">
     <div *ngFor="let section of mainForm.sections" [id]="section.key">

@@ -134,7 +134,7 @@ export class ColombiaFormComponent {
 
     setTimeout(() => {
       this.valuesLoaded = true;
-    }, 1000);
+    }, 2000);
 
 
 
@@ -272,7 +272,6 @@ export class ColombiaFormComponent {
       ? this.form.value['informacion_accionistas'].rows
       : this.form.value['informacion_accionistas'];
 
-      console.log(info_accionistas)
 
     if (info_accionistas) {
       info_accionistas.forEach((row: any) => {
@@ -308,6 +307,7 @@ export class ColombiaFormComponent {
               document: person.document?.document,
               f_document_type_id: person.document?.type,
               verification_digit: person.document?.verification,
+              pep: person.info_beneficiarios_persona_pep == '1' ? true : null,
             });
           });
         }
@@ -421,6 +421,8 @@ export class ColombiaFormComponent {
 
   private handleChangeFormValues(formControlName: string) {
     const value = this.form.value[formControlName];
+
+    console.log(formControlName, value)
 
     const handlers = {
       f_person_type_id: () => this.setTypeIdByTypePerson(value),

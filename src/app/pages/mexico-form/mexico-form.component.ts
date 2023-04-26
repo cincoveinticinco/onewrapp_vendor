@@ -440,7 +440,16 @@ export class MexicoFormComponent {
         control?.updateValueAndValidity();
       })
 
-      if(this.form.invalid) return;
+      console.log(this.form)
+
+      Object.keys(this.form.controls).map( key => {
+        if(this.form.get(key)?.invalid){
+          console.log(key, this.form.get(key))
+        }
+      })
+
+      return;
+     //if(this.form.invalid) return;
     }
 
     console.log('fired')
@@ -718,6 +727,11 @@ export class MexicoFormComponent {
   }
 
   private addFinalBeneficiaryByActionist() {
+    console.log('add final beneficiary')
+  }
+
+  /*
+  private addFinalBeneficiaryByActionist() {
 
     const info_final = this.form.value['informacion_accionistas']?.rows ? this.form.value['informacion_accionistas'].rows.filter(
       (person: any) => {
@@ -727,12 +741,19 @@ export class MexicoFormComponent {
       }
     ): [];
 
+    if(info_final.length){
+      this.form.get('informacion_beneficiarios_finales')?.setValidators(Validators.required)
+    }else{
+      this.form.get('informacion_beneficiarios_finales')?.removeValidators(Validators.required)
+    }
+
+
 
     const currentValue = this.form.value['informacion_beneficiarios_finales']?.rows
     ? this.form.value['informacion_beneficiarios_finales'].rows
     : this.form.value['informacion_beneficiarios_finales'];
 
-  this.form.controls['informacion_beneficiarios_finales'].setValue({
+    this.form.controls['informacion_beneficiarios_finales'].setValue({
       rows: info_final.map((user: any) => {
         const exist = currentValue.find( (item:any) => item.id == user.id)
         return {
@@ -744,7 +765,13 @@ export class MexicoFormComponent {
         }
       }),
     });
+
+    this.form.get('informacion_beneficiarios_finales')?.updateValueAndValidity();
+
+
+
   }
+  */
 
   private setFilesValues(){
     this.inmutableData['document_vendor'].forEach( (document:any) => {
