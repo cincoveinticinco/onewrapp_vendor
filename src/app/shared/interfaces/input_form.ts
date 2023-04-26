@@ -21,6 +21,7 @@ export interface ISelectBoxOption{
 
 export interface IInputForm{
   label?: string,
+  value?: any,
   placeholder?: string,
   type: TypeInputForm,
   content?: string,
@@ -47,5 +48,8 @@ export interface IInputForm{
   link?: string,
   textlink?: string,
   documentValue?: string,
+  dataDocumentType?: string,
+  dataDocumentVerification?: string,
+  dataDocumentPerson?: string,
   hideVerification?:boolean
 }

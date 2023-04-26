@@ -15,10 +15,11 @@ input:is([type="text"],[type="date"],[type="password"],[type="email"]), select{
 
 }
 
-.ng-dirty input.ng-invalid, .ng-dirty select.ng-invalid, .ng-dirty .ng-invalid > div > input{
+.ng-submitted input.ng-invalid, .ng-submitted select.ng-invalid{
   border-color: var(--alert-color) !important;
   background-color: var(--alert-background) !important;
 }
+
 
 .error-message{
   display: none;

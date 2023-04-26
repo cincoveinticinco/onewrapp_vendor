@@ -1,0 +1,24 @@
+<section class="content" >
+  <form (ngSubmit)="onSubmit()" [formGroup]="form" [ngClass]="{'ng-submitted':submitted}">
+
+    <div class="content-row">
+      <ng-container  *ngFor="let question of questions">
+        <div class="content-col" [ngClass]="'m-'+(question.size || 8)" [ngStyle]="{'padding': question.controlType == TypeControlQuestion.Document ? '0' : null}">
+          <app-dynamic-question [question]="question" [form]="form"></app-dynamic-question>
+        </div>
+        <div *ngIf="question.break" class="break-row"></div>
+      </ng-container>
+
+    </div>
+
+
+
+    <div class="form-row">
+      <button type="submit">Save</button>
+    </div>
+  </form>
+
+  <div *ngIf="payLoad" class="form-row">
+    <strong>Saved the following values</strong><br>{{payLoad}}
+  </div>
+</section>
