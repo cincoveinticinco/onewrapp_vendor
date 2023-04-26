@@ -134,7 +134,7 @@ export class ColombiaFormComponent {
 
     setTimeout(() => {
       this.valuesLoaded = true;
-    }, 2000);
+    }, 4000);
 
 
 
@@ -314,7 +314,12 @@ export class ColombiaFormComponent {
       });
     }
 
-    const exposed_peoploe = this.personas_expuestas.value.rows.map(
+    const personas_expuestas =  this.personas_expuestas.value?.rows
+      ? this.personas_expuestas.value.rows
+      : this.personas_expuestas.value;
+
+
+    const exposed_peoploe = personas_expuestas.map(
       (person: any) => {
         const {
           people_relationships,

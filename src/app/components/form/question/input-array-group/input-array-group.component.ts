@@ -162,12 +162,12 @@ export class InputArrayGroupComponent implements ControlValueAccessor, Validator
       })
     });
 
-    //this.triggerValidations();
+    this.triggerValidations();
   }
 
   deleteRow(rowIndex: number){
     this.rows.removeAt(rowIndex);
-    //this.triggerValidations();
+    this.triggerValidations();
   }
 
   constructor(private _fB: FormBuilder, private _cD: ChangeDetectorRef){

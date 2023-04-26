@@ -191,10 +191,6 @@ export class InputDocumentComponent implements ControlValueAccessor, Validator{
 
     this.form.patchValue(value)
     this.valueQuestion = value
-
-    //this.onValidationChange();
-
-
   }
   registerOnChange(fn: any): void {
     this.onChange = fn;

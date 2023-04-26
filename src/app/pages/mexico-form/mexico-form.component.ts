@@ -349,7 +349,7 @@ export class MexicoFormComponent {
 
     const info_beneficiarios_finales = this.form.value[
       'informacion_beneficiarios_finales'
-    ].rows
+    ]?.rows
       ? this.form.value['informacion_beneficiarios_finales'].rows
       : this.form.value['informacion_beneficiarios_finales'];
     if (info_beneficiarios_finales) {
@@ -441,15 +441,11 @@ export class MexicoFormComponent {
       })
 
       console.log(this.form)
-
-      Object.keys(this.form.controls).map( key => {
-        if(this.form.get(key)?.invalid){
-          console.log(key, this.form.get(key))
-        }
-      })
-
+     if(this.form.invalid){
+      this.goToInputError();
       return;
-     //if(this.form.invalid) return;
+     }
+
     }
 
     console.log('fired')
@@ -462,6 +458,16 @@ export class MexicoFormComponent {
       this.onSubmit.emit(formData);
     }
 
+  }
+
+  private goToInputError(){
+    const bodyRect = document.body.getBoundingClientRect();
+    const errorElement = document.querySelector('app-question.ng-invalid label');
+    if(errorElement){
+      const rect = errorElement.getBoundingClientRect();
+      const offset   = rect.top - bodyRect.top;
+      window.scrollTo(0, offset)
+    }
   }
 
   private handleChangeFormValues(formControlName: string) {

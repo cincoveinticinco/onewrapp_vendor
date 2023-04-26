@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges
 import { NG_VALUE_ACCESSOR, NG_VALIDATORS, ControlValueAccessor, Validator, AbstractControl, ValidationErrors, FormControl, FormBuilder, FormGroup, NgControl, Validators, ControlContainer } from '@angular/forms';
 import { IInputForm, ISelectBoxOption, TypeInputForm } from 'src/app/shared/interfaces/input_form';
 import { VALIDATORS_PATTERNS } from 'src/app/shared/interfaces/validators';
+import { documentValidator } from 'src/app/shared/validators/document.validator';
 
 
 @Component({
@@ -86,7 +87,12 @@ export class QuestionComponent implements ControlValueAccessor, Validator{
       validators.push(Validators.min(5))
     }
 
+    if(this.question.type == TypeInputForm.Document){
+      validators.push(documentValidator);
+    }
+
     if(validators.length > 0){
+
      this.formQuestion.setValidators(validators)
     }
   }
@@ -119,25 +125,14 @@ export class QuestionComponent implements ControlValueAccessor, Validator{
 
   validate(control: AbstractControl<any, any>): ValidationErrors | null {
 
-    if(this.question.data == 'informacion_accionistas'){
-      console.log(this.formQuestion)
-    }
-
-   /* const errorsQuestion = Object.keys(this.formQuestion.errors || {});
+    const errorsQuestion = Object.keys(this.formQuestion.errors || {});
     const errorsControl = Object.keys(control.errors || {});
 
     const errors = [...errorsQuestion, ...errorsControl]
     this.errorMessage = errors.length > 0 ? this.getMessageError(errors[0]) : undefined;
 
-    if(this.question.data == 'document'){
-      console.log(control, this.formQuestion)
-    }
-
-
     return (!control.pristine && (this.formQuestion.invalid || control.invalid)) ? {...this.formQuestion.errors, ...control.errors} : null;
-    */
 
-    return null;
   }
 
 
