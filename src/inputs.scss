@@ -20,9 +20,13 @@ input:is([type="text"],[type="date"],[type="password"],[type="email"]), select{
   background-color: var(--alert-background) !important;
 }
 
+input.ng-invalid, select.ng-invalid{
+  border-color: var(--alert-color) !important;
+  background-color: var(--alert-background) !important;
+}
+
 
 .error-message{
-  display: none;
   font-size: var(--small-font-size);
   text-align: right;
   color: var(--alert-color);
@@ -35,11 +39,6 @@ input:is([type="text"],[type="date"],[type="password"],[type="email"]), select{
 app-question.ng-invalid .error-message{
   display: block;
 }
-
-
-
-
-
 
 input:disabled{
   background-color: transparent;
@@ -71,7 +70,7 @@ label{
 
 .full-label{
   white-space: normal;
-  line-height: 1.2;
+  /*line-height: 1.2;*/
 }
 
 

@@ -15,6 +15,7 @@ import { EmailboxQuestion } from '../shared/question/struct/emailbox-question';
 import { RadioboxQuestion } from '../shared/question/struct/radiobox-question';
 import { FileboxQuestion } from '../shared/question/struct/filebox-question';
 import { DocumentboxQuestion } from '../shared/question/struct/documentbox-question';
+import { ArrayBoxQuestion } from '../shared/question/struct/arraybox-question';
 
 @Injectable({
   providedIn: 'root'
@@ -29,11 +30,16 @@ export class QuestionService {
       key: input.data,
       label: input.label,
       required: input.required,
+      disabled: input.disabled,
       value: input.value,
       link: input.link,
       textLink: input.textlink,
       size: input.size,
       break: input.break,
+      children: input.children,
+      fixElements: input.fixElements,
+      title: input.title,
+      addButonText: input.addButonText,
       options: input.options as {key: string, value: string}[]
     }
 
@@ -46,6 +52,7 @@ export class QuestionService {
       [TypeControlQuestion.ChooseOption]:  new RadioboxQuestion(question),
       [TypeControlQuestion.File]:  new FileboxQuestion(question),
       [TypeControlQuestion.Document]:  new DocumentboxQuestion(question),
+      [TypeControlQuestion.ArrayGroup]:  new ArrayBoxQuestion(question),
     }
 
     return questions_directory[input.type as unknown as keyof typeof questions_directory] || questions_directory[TypeControlQuestion.Text];
@@ -54,14 +61,12 @@ export class QuestionService {
   }
 
   private getMexicoQuestions(listsDropdowns: any, values:any){
-    const QUESTIONS_FORM = cloneDeep(MEXICO_FORM);
-    const questions: QuestionBase<string>[] = [];
 
-    /**Set specific fields */
-    values['actividad_economica'] = values['vendor_economic'];
-    values['tipo_solicitud'] = 'Vinculación';
+    const QUESTIONS_FORM = cloneDeep(MEXICO_FORM);
+    const sections : any = [];
 
     QUESTIONS_FORM.sections.forEach( section => {
+      const questions: QuestionBase<string>[] = [];
       section.inputs.forEach( input => {
 
         if(values[input.data!]){
@@ -73,49 +78,69 @@ export class QuestionService {
         }
         questions.push(this.getControlForm(input));
       })
+
+      sections.push({ ...section, questions});
     });
 
-    return questions;
+    console.log(sections)
+
+    return sections;
+  }
+
+  private setCustomQuestionBoxValues(input: any, sourceValues: any){
+    const values:any = {};
+
+    if(input.type == TypeInputForm.Date){
+      values[input.data] = sourceValues[input.data] ? moment(sourceValues[input.data]).format('YYYY-MM-DD') : null
+    }
+
+    if(input.type == TypeInputForm.ChooseOption){
+      values[input.data] = sourceValues[input.data] ? '1' : '2';
+    }
+
+    if(input.type == TypeInputForm.Document){
+      const type = sourceValues[input.dataDocumentType!] || null;
+      const verification = sourceValues[input.dataDocumentVerification!] || null;
+      const person = sourceValues[input.dataDocumentPerson!] || null;
+
+      values[input.data] = {
+        document: sourceValues[input.data],
+        type,
+        verification,
+        person
+      }
+    }
+
+    if(input.type == TypeInputForm.ArrayGroup && sourceValues[input.data]?.length){
+
+      const arrayValues = sourceValues[input.data].map( (rowSourceValue: any) => {
+        input.children?.forEach( (childInput:any) => {
+          rowSourceValue = {...rowSourceValue, ...this.setCustomQuestionBoxValues(childInput, rowSourceValue)}
+        })
+
+        return rowSourceValue;
+      });
+
+      values[input.data] = arrayValues;
+    }
+
+    return values;
   }
 
   private setValuesQuestions(sourceValues:any) {
-    const values:any = {};
+    let values:any = {};
     const QUESTIONS_FORM = cloneDeep(MEXICO_FORM);
 
     QUESTIONS_FORM.sections.forEach( section => {
       section.inputs.forEach( input => {
 
         if(input.data){
-
           values[input.data] = sourceValues[input.data];
-
-          if(input.type == TypeInputForm.Date){
-            values[input.data] = sourceValues[input.data] ? moment(sourceValues[input.data]).format('YYYY-MM-DD') : null
-          }
-
-          if(input.type == TypeInputForm.ChooseOption){
-            values[input.data] = sourceValues[input.data] ? '1' : '2';
-          }
-
-          if(input.type == TypeInputForm.Document){
-            const type = sourceValues[input.dataDocumentType!] || null;
-            const verification = sourceValues[input.dataDocumentVerification!] || null;
-            const person = sourceValues[input.dataDocumentPerson!] || null;
-
-            values[input.data] = {
-              document: sourceValues[input.data],
-              type,
-              verification,
-              person
-            }
-          }
+          values = {...values, ...this.setCustomQuestionBoxValues(input, sourceValues)}
 
         }
       })
     });
-
-
-
 
     return values;
 
@@ -125,6 +150,21 @@ export class QuestionService {
   getQuestions(listsDropdowns: any, sourceValues: any) {
     const values = this.setValuesQuestions(sourceValues)
     const questions = this.getMexicoQuestions(listsDropdowns, values);
-    return of(questions.sort((a, b) => a.order - b.order));
+    return of(questions);
+  }
+
+  getArrayGroupQuestions(rawQuestions: any, listsDropdowns: any){
+    const QUESTIONS_FORM = cloneDeep(rawQuestions);
+    const questions: QuestionBase<string>[] = [];
+
+    QUESTIONS_FORM.forEach( (input:any) => {
+      if(input.options_key){
+        input.options = listsDropdowns[input.options_key]
+      }
+
+      questions.push(this.getControlForm(input));
+    })
+
+    return questions;
   }
 }

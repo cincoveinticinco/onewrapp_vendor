@@ -11,27 +11,34 @@ import { QuestionBase } from 'src/app/shared/question/struct/question-base';
   providers: [ QuestionControlService ]
 })
 export class DynamicFormComponent {
-  @Input() questions: QuestionBase<string>[] | null = [];
+  @Input() sections: any = [];
+  questions: QuestionBase<string>[] | null = [];
   form!: FormGroup;
   payLoad = '';
-  submitted: boolean = false;
+  submitted: boolean = true;
   readonly TypeControlQuestion = TypeControlQuestion;
 
   constructor(private qcs: QuestionControlService) {}
 
   ngOnInit() {
+    this.questions = this.sections?.map( (section:any) => section.questions)?.flat(1);
     this.form = this.qcs.toFormGroup(this.questions as QuestionBase<string>[]);
+
   }
 
   onSubmit() {
     this.submitted = true;
     this.form.updateValueAndValidity();
-    console.log(this.form)
 
+    console.log(this.form)
 
     if(this.form.valid){
       this.payLoad = JSON.stringify(this.form.getRawValue());
     }
 
+  }
+
+  handleQuestionValueChange(event: any){
+    console.log(event)
   }
 }

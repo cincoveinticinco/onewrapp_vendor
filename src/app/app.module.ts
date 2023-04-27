@@ -35,6 +35,7 @@ import { DynamicFormQuestionComponent } from './components/form/question/dynamic
 import { DynamicFormComponent } from './components/form/question/dynamic-form/dynamic-form.component';
 import { FileboxQuestionComponent } from './components/form/question/filebox-question/filebox-question.component';
 import { DocumentboxQuestionComponent } from './components/form/question/documentbox-question/documentbox-question.component';
+import { ArrayboxQuestionComponent } from './components/form/question/arraybox-question/arraybox-question.component';
 
 
 @NgModule({
@@ -66,6 +67,7 @@ import { DocumentboxQuestionComponent } from './components/form/question/documen
     DynamicFormComponent,
     FileboxQuestionComponent,
     DocumentboxQuestionComponent,
+    ArrayboxQuestionComponent,
   ],
   imports: [
     BrowserModule,

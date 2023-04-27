@@ -37,10 +37,6 @@ export class DocumentboxQuestionComponent implements ControlValueAccessor, Valid
     }
   }
   validate(control: AbstractControl<any, any>): ValidationErrors | null {
-    console.log(control)
-    if (control.value && control.value.document.length != 10) {
-      return { 'phoneNumberInvalid': true };
-    }
     return null;
   }
 
@@ -97,18 +93,14 @@ export class DocumentboxQuestionComponent implements ControlValueAccessor, Valid
 
 
     if(Number(this.form.get('type')?.value) == 7){
-      this.form.get('document')?.setValidators([Validators.minLength(14), Validators.maxLength(14), Validators.pattern(VALIDATORS_PATTERNS.numbers)]);
+      this.form.get('document')?.setValidators([Validators.minLength(14), Validators.maxLength(14), Validators.pattern(VALIDATORS_PATTERNS.numbers), Validators.required]);
       return;
     }
 
     if(Number(this.form.get('type')?.value) == 10){
-      this.form.get('document')?.setValidators([Validators.minLength(13), Validators.maxLength(13), Validators.pattern(VALIDATORS_PATTERNS.numbers)]);
+      this.form.get('document')?.setValidators([Validators.minLength(13), Validators.maxLength(13), Validators.pattern(VALIDATORS_PATTERNS.numbers), Validators.required]);
       return;
     }
-
-    //this.form.get('document')?.setValidators([Validators.required]);
-    //this.form.get('document')?.updateValueAndValidity()
-
   }
 
   writeValue(value: any): void {

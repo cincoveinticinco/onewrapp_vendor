@@ -5,6 +5,7 @@ export type QuestionBaseParams<T> = {
   key?: string;
   label?: string;
   required?: boolean;
+  disabled?: boolean;
   order?: number;
   controlType?: TypeControlQuestion;
   type?: string;
@@ -12,6 +13,7 @@ export type QuestionBaseParams<T> = {
   align?: string;
   typeInput?: string;
   break?: boolean;
+  children?: any;
   options?: {key: string, value: string}[];
 }
 
@@ -20,6 +22,7 @@ export class QuestionBase<T> {
   key: string;
   label: string;
   required: boolean;
+  disabled: boolean;
   order: number;
   controlType: TypeControlQuestion;
   type: string;
@@ -27,6 +30,7 @@ export class QuestionBase<T> {
   align?: string;
   typeInput?: string;
   break?: boolean;
+  children: QuestionBase<string>[];
   options: {key: string, value: string}[];
 
   constructor(options: QuestionBaseParams<T> = {}) {
@@ -34,13 +38,14 @@ export class QuestionBase<T> {
     this.key = options.key || '';
     this.label = options.label || '';
     this.required = !!options.required;
+    this.disabled = !!options.disabled;
     this.order = options.order === undefined ? 1 : options.order;
     this.controlType = options.controlType || TypeControlQuestion.Text;
     this.type = options.type || '';
     this.size = options.size || 8;
     this.align = options.align || '';
-    this.break = options.break || false;
+    this.break = !!options.break;
     this.options = options.options || [];
-
+    this.children = options.children || [];
   }
 }

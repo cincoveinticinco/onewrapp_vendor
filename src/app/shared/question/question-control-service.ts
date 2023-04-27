@@ -1,12 +1,17 @@
 import { Injectable } from '@angular/core';
-import { AbstractControl, FormControl, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 
 import { QuestionBase } from './struct/question-base';
 import { TypeControlQuestion } from './interfaces/type-control-question';
 import { documentValidator } from '../validators/document.validator';
+import { arraygroupValidator } from '../validators/arraygroup.validator';
+import { Subject } from 'rxjs';
 
 @Injectable()
 export class QuestionControlService {
+
+
+
   toFormGroup(questions: QuestionBase<string>[] ) {
     const group: any = {};
 
@@ -22,10 +27,14 @@ export class QuestionControlService {
         validators.push(documentValidator)
       }
 
-      group[question.key] = new FormControl(question.value || '', validators)
+      if(question.controlType == TypeControlQuestion.ArrayGroup){
+        group[question.key] = new FormArray([], validators);
+        return;
+      }
+
+      group[question.key] = new FormControl({value: (question.value || ''), disabled: question.disabled}, validators);
     });
 
-    console.log(group)
     return new FormGroup(group);
   }
 }

@@ -5,20 +5,35 @@
 
     <p *ngSwitchCase="TypeControlQuestion.Paragraph" [ngStyle]="{'text-align': question.align }" [innerHTML]="question.value"></p>
 
-    <input *ngSwitchCase="TypeControlQuestion.Text" [formControlName]="question.key" [id]="question.key" [type]="question.type">
+    <input
+      *ngSwitchCase="TypeControlQuestion.Text"
+      [formControlName]="question.key"
+      [id]="question.key"
+      [type]="question.type">
 
-    <input *ngSwitchCase="TypeControlQuestion.Date" [formControlName]="question.key" [id]="question.key" [type]="question.type">
+    <input
+      *ngSwitchCase="TypeControlQuestion.Date"
+      [formControlName]="question.key"
+      [id]="question.key"
+      [type]="question.type">
 
-    <input *ngSwitchCase="TypeControlQuestion.Email" [formControlName]="question.key"[id]="question.key" [type]="question.type">
+    <input
+      *ngSwitchCase="TypeControlQuestion.Email"
+      [formControlName]="question.key"
+      [id]="question.key"
+      [type]="question.type">
 
-    <select *ngSwitchCase="TypeControlQuestion.Dropdown" [id]="question.key"  [formControlName]="question.key">
+    <select
+      *ngSwitchCase="TypeControlQuestion.Dropdown"
+      [id]="question.key"
+      [formControlName]="question.key">
       <option *ngFor="let opt of question.options" [value]="opt.key">{{opt.value}}</option>
     </select>
 
     <ng-container *ngSwitchCase="TypeControlQuestion.ChooseOption">
       <div class="input-choose-option">
-        <label><input [name]="question.key" type="radio" value="1" [formControlName]="question.key"> Si</label>
-        <label><input [name]="question.key" type="radio" value="2" [formControlName]="question.key"> No</label>
+        <label><input (click)="handleChangeValue(question)" [name]="question.key" type="radio" value="1" [formControlName]="question.key"> Si</label>
+        <label><input (click)="handleChangeValue(question)" [name]="question.key" type="radio" value="2" [formControlName]="question.key"> No</label>
       </div>
     </ng-container>
 
@@ -30,8 +45,15 @@
       <app-documentbox-question documentValidatorValidator  [formControlName]="question.key" ></app-documentbox-question>
     </ng-container>
 
+    <ng-container *ngSwitchCase="TypeControlQuestion.ArrayGroup">
+      <app-arraybox-question [form]="form" [arrayQuestion]="questionForm" [questions]="question.children" ></app-arraybox-question>
+    </ng-container>
+
 
   </div>
 
-  <div class="errorMessage" *ngIf="!isValid">{{question.label}} is required</div>
+  <ng-container *ngIf="question.controlType != TypeControlQuestion.ArrayGroup">
+    <div class="error-message" *ngIf="!isValid">{{ messageError }}</div>
+  </ng-container>
+
 </div>
