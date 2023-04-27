@@ -39,6 +39,21 @@ export class DynamicFormComponent {
   }
 
   handleQuestionValueChange(event: any){
-    console.log(event)
+    const question_affected = this.questions?.filter( question => event.question.actions?.questions.includes(question.key));
+
+    switch(event.question.actions.action){
+      case 'showNHide':
+        question_affected?.forEach( question => {
+          question.visible = event.value == '1'
+          if(event.value == '1'){
+            this.form.controls[question.key].enable()
+          }else{
+            this.form.controls[question.key].disable()
+          }
+        })
+
+      return;
+    }
+
   }
 }

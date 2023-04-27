@@ -55,6 +55,8 @@ export class ArrayboxQuestionComponent{
   setValues(){
     if(!this.arrayQuestion?.value) return;
 
+    this.formArray.clear();
+
     this.arrayQuestion?.value.forEach( (value:any) => {
       const row = this.createRow(value);
       row.patchValue(value);

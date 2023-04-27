@@ -113,4 +113,8 @@ export class MexicoFormComponent {
       }
     );
   }
+
+  private setVendorDeclaraciones(){
+
+  }
 }

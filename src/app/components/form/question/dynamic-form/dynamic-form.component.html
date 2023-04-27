@@ -2,15 +2,17 @@
   <form (ngSubmit)="onSubmit()" [formGroup]="form" [ngClass]="{'ng-submitted':submitted}">
 
     <div *ngFor="let section of sections" [id]="section.key">
-      <div *ngIf="section.title" class="section-title">{{ section.title }}</div>
-      <div class="content-row">
-        <ng-container  *ngFor="let question of section.questions">
-          <div class="content-col" [ngClass]="'m-'+(question.size || 8)" [ngStyle]="{'padding': question.controlType == TypeControlQuestion.Document ? '0' : null}">
-            <app-dynamic-question [question]="question" [form]="form" (changeValue)="handleQuestionValueChange($event)"></app-dynamic-question>
-          </div>
-          <div *ngIf="question.break" class="break-row"></div>
-        </ng-container>
-      </div>
+      <ng-container *ngIf="section.visible">
+        <div *ngIf="section.title" class="section-title">{{ section.title }}</div>
+        <div class="content-row">
+          <ng-container *ngFor="let question of section.questions">
+            <div *ngIf="question.visible" class="content-col" [ngClass]="'m-'+(question.size || 8)" [ngStyle]="{'padding': question.controlType == TypeControlQuestion.Document ? '0' : null}">
+              <app-dynamic-question [question]="question" [form]="form" (changeValue)="handleQuestionValueChange($event)"></app-dynamic-question>
+            </div>
+            <div *ngIf="question.break" class="break-row"></div>
+          </ng-container>
+        </div>
+      </ng-container>
     </div>
 
     <div class="form-row">

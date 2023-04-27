@@ -24,7 +24,7 @@ export class QuestionService {
 
   constructor() { }
 
-  private getControlForm(input: IInputForm){
+  private getControlForm(input: IInputForm & {actions?: any}){
 
     const question = {
       key: input.data,
@@ -40,6 +40,8 @@ export class QuestionService {
       fixElements: input.fixElements,
       title: input.title,
       addButonText: input.addButonText,
+      actions: input.actions,
+      visible: input.visible,
       options: input.options as {key: string, value: string}[]
     }
 
@@ -76,6 +78,7 @@ export class QuestionService {
         if(input.options_key){
           input.options = listsDropdowns[input.options_key]
         }
+        input = this.setActionsQuestionsMexico(input);
         questions.push(this.getControlForm(input));
       })
 
@@ -85,6 +88,18 @@ export class QuestionService {
     console.log(sections)
 
     return sections;
+  }
+
+  private setActionsQuestionsMexico(input: any){
+
+    if(input.data == 'business_group'){
+      input.actions = {
+        action: 'showNHide',
+        questions: ['otras_empresas']
+      }
+    }
+
+    return input;
   }
 
   private setCustomQuestionBoxValues(input: any, sourceValues: any){

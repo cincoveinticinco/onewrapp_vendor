@@ -32,8 +32,8 @@
 
     <ng-container *ngSwitchCase="TypeControlQuestion.ChooseOption">
       <div class="input-choose-option">
-        <label><input (click)="handleChangeValue(question)" [name]="question.key" type="radio" value="1" [formControlName]="question.key"> Si</label>
-        <label><input (click)="handleChangeValue(question)" [name]="question.key" type="radio" value="2" [formControlName]="question.key"> No</label>
+        <label><input (ngModelChange)="handleChangeValue(question)" [name]="question.key" type="radio" value="1" [formControlName]="question.key"> Si</label>
+        <label><input (ngModelChange)="handleChangeValue(question)" [name]="question.key" type="radio" value="2" [formControlName]="question.key"> No</label>
       </div>
     </ng-container>
 
