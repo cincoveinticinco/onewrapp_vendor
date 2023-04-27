@@ -109,6 +109,10 @@ export class ColombiaFormComponent {
       this.vendorData['business_group'] ? '1' : '2'
     );
 
+    this.form.controls['board_of_directors'].setValue(
+      this.vendorData['board_of_directors'] ? '1' : '2'
+    );
+
     this.form.controls['pep'].setValue(this.vendorData['pep'] ? '1' : '2');
 
     this.form.controls['document'].setValue(
@@ -128,13 +132,14 @@ export class ColombiaFormComponent {
     this.setCheckboxInfo();
     this.setVisbleBussinesGroup();
     this.setFilesValues();
+    this.setVisbleJuntaDirectiva();
 
     this.setValidationsDeclaraciones();
 
 
     setTimeout(() => {
       this.valuesLoaded = true;
-    }, 4000);
+    }, 8000);
 
 
 
@@ -389,6 +394,7 @@ export class ColombiaFormComponent {
         ? Number(this.form.value.f_vendor_type_id)
         : null,
       business_group: this.form.value.business_group == '1' ? true : null,
+      board_of_directors: this.form.value.board_of_directors == '1' ? true : null,
       pep: this.form.value.pep == '1' ? true : null,
       info_users,
       exposed_peoploe,
@@ -410,7 +416,10 @@ export class ColombiaFormComponent {
         control?.updateValueAndValidity();
       })
 
-      if(this.form.invalid) return;
+      if(this.form.invalid){
+        this.goToInputError();
+        return;
+       }
     }
 
 
@@ -424,10 +433,19 @@ export class ColombiaFormComponent {
 
   }
 
+  private goToInputError(){
+    const bodyRect = document.body.getBoundingClientRect();
+    const errorElement = document.querySelector('app-question.ng-invalid label');
+    if(errorElement){
+      const rect = errorElement.getBoundingClientRect();
+      const offset   = rect.top - bodyRect.top;
+      window.scrollTo(0, offset)
+    }
+  }
+
+
   private handleChangeFormValues(formControlName: string) {
     const value = this.form.value[formControlName];
-
-    console.log(formControlName, value)
 
     const handlers = {
       f_person_type_id: () => this.setTypeIdByTypePerson(value),
@@ -438,6 +456,7 @@ export class ColombiaFormComponent {
       informacion_representantes_legales: () => this.addPoliticianPeople(),
       informacion_beneficiarios_finales: () => this.addPoliticianPeople(),
       business_group: () => this.setVisbleBussinesGroup(),
+      board_of_directors: () => this.setVisbleJuntaDirectiva(),
       pep: () => this.addPoliticianPeople(),
       cedula_file: () => this.uploadInputFile(value, formControlName),
       certificado_existencia_file: () => this.uploadInputFile(value, formControlName),
@@ -461,6 +480,18 @@ export class ColombiaFormComponent {
   private uploadInputFile(value: File, formControlName: string){
     const formData = this.prepareSubmitData();
     this.onFileSubmit.emit({formControlName, value, formData});
+  }
+
+  private setVisbleJuntaDirectiva(){
+    const showJuntaDirectiva = this.form.value['board_of_directors'] == '1';
+
+    this.setVisibleInput(
+      'informacion_junta_directiva',
+      showJuntaDirectiva,
+      SECTIONS_COLOMBIA_FORM.INFORMACION_JUNTA_DIRECTIVA
+    );
+
+
   }
 
   private setVisbleBussinesGroup(){

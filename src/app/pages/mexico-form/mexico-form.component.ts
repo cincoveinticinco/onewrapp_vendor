@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import * as moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
@@ -14,6 +14,7 @@ import { IForm } from 'src/app/shared/interfaces/form';
 import { IInputForm, ISelectBoxOption, TypeInputForm } from 'src/app/shared/interfaces/input_form';
 import { info_files } from 'src/app/shared/forms/files_types';
 import { VALIDATORS_PATTERNS } from 'src/app/shared/interfaces/validators';
+import { SideMenuComponent } from 'src/app/components/side-menu/side-menu.component';
 
 @Component({
   selector: 'app-mexico-form',
@@ -105,6 +106,10 @@ export class MexicoFormComponent {
       this.vendorData['business_group'] ? '1' : '2'
     );
 
+    this.form.controls['board_of_directors'].setValue(
+      this.vendorData['board_of_directors'] ? '1' : '2'
+    );
+
     this.form.controls['document'].setValue(
       {
         type: this.vendorData['f_document_type_id'],
@@ -120,6 +125,7 @@ export class MexicoFormComponent {
     this.setComplementInfoFinalBenefit();
     this.setCheckboxInfo();
     this.setVisbleBussinesGroup();
+    this.setVisbleJuntaDirectiva();
     this.setFilesValues();
 
     this.setValidationsDeclaraciones();
@@ -127,6 +133,8 @@ export class MexicoFormComponent {
     setTimeout(() => {
       this.valuesLoaded = true;
     }, 1000);
+
+    console.log(this.form)
 
   }
 
@@ -421,6 +429,7 @@ export class MexicoFormComponent {
         ? Number(this.form.value.f_vendor_type_id)
         : null,
       business_group: this.form.value.business_group == '1' ? true : null,
+      board_of_directors: this.form.value.board_of_directors == '1' ? true : null,
       info_users,
       info_additional
     }
@@ -477,6 +486,7 @@ export class MexicoFormComponent {
       f_person_type_id: () => this.setTypeIdByTypePerson(value),
       informacion_accionistas: () => this.addFinalBeneficiaryByActionist(),
       business_group: () => this.setVisbleBussinesGroup(),
+      board_of_directors: () => this.setVisbleJuntaDirectiva(),
       identificacion_oficial_file: () => this.uploadInputFile(value, formControlName),
       inscripcion_registro_fed_file: () => this.uploadInputFile(value, formControlName),
       cumplimiento_obligaciones_file: () => this.uploadInputFile(value, formControlName),
@@ -532,6 +542,18 @@ export class MexicoFormComponent {
 
 
     });
+
+  }
+
+  private setVisbleJuntaDirectiva(){
+    const showJuntaDirectiva = this.form.value['board_of_directors'] == '1';
+
+    this.setVisibleInput(
+      'informacion_junta_directiva',
+      showJuntaDirectiva,
+      SECTIONS_MEXICO_FORM.INFORMACION_JUNTA_DIRECTIVA
+    );
+
 
   }
 

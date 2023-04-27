@@ -470,7 +470,17 @@ export const COLOMBIA_FORM: IForm = {
       title: 'INFORMACIÓN JUNTA DIRECTIVA, CONSEJO DE ADMINISTRACIÓN O EQUIVALENTE',
       label: 'Información Junta Directiva',
       visible: true,
-      inputs: [{
+      inputs: [
+        {
+          label: '¿Tiene junta directiva?',
+          visible: true,
+          type: TypeInputForm.ChooseOption,
+          size: 8,
+          data: 'board_of_directors',
+          required: true,
+          disabled: false
+        },
+        {
         type: TypeInputForm.ArrayGroup,
         visible: true,
         addButonText: 'AGREGAR MIEMBRO',
@@ -901,7 +911,7 @@ export const COLOMBIA_FORM: IForm = {
               size: 1,
               disabled: false,
               data: 'parent_id',
-              required: true,
+              required: false,
             },
             {
               label: 'Element ID',

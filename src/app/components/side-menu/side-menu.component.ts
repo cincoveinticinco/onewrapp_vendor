@@ -21,4 +21,12 @@ export class SideMenuComponent {
     this.viewportScrolling.scrollToAnchor(key);
   }
 
+  public checkSectionsColor(section: any): string{
+    const bodyRect = document.body.getBoundingClientRect();
+
+    const errorElement = document.querySelector(`#${section.key} app-question.ng-invalid label`);
+    return errorElement ? 'fail-section': 'success-section';
+
+  }
+
 }

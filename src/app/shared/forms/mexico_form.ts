@@ -310,7 +310,9 @@ export const MEXICO_FORM: IForm = {
       title: 'INFORMACIÓN REPRESENTANTES LEGALES',
       label: 'Información Representantes Legales',
       visible: true,
-      inputs: [{
+      inputs: [
+
+      {
         type: TypeInputForm.ArrayGroup,
         visible: true,
         data: 'informacion_representantes_legales',
@@ -423,7 +425,17 @@ export const MEXICO_FORM: IForm = {
       title: 'INFORMACIÓN JUNTA DIRECTIVA, CONSEJO DE ADMINISTRACIÓN O EQUIVALENTE',
       label: 'Información Junta Directiva',
       visible: true,
-      inputs: [{
+      inputs: [
+        {
+          label: '¿Tiene junta directiva?',
+          visible: true,
+          type: TypeInputForm.ChooseOption,
+          size: 8,
+          data: 'board_of_directors',
+          required: true,
+          disabled: false
+        },
+        {
         type: TypeInputForm.ArrayGroup,
         visible: true,
         addButonText: 'AGREGAR MIEMBRO',
