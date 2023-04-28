@@ -1,5 +1,6 @@
 import { ChangeDetectorRef, Component, Input } from '@angular/core';
 import { AbstractControl, ControlValueAccessor, FormArray, FormBuilder, FormGroup, NG_VALIDATORS, NG_VALUE_ACCESSOR, ValidationErrors, Validator, ValidatorFn, Validators } from '@angular/forms';
+import { debounceTime, take } from 'rxjs';
 import { IInputForm, TypeInputForm } from 'src/app/shared/interfaces/input_form';
 import { VALIDATORS_PATTERNS } from 'src/app/shared/interfaces/validators';
 
@@ -157,8 +158,7 @@ export class InputArrayGroupComponent implements ControlValueAccessor, Validator
     this.rows.controls.forEach( row => {
       (row.get('f_person_type_id') as FormGroup)?.valueChanges.subscribe(data => {
         const currentDocument = row.get('document')
-        currentDocument?.setValue({...currentDocument?.value, person: data}, {emitEvent: false});
-
+        currentDocument?.setValue({...currentDocument?.value, person: data }, {emitEvent: false});
       })
     });
 

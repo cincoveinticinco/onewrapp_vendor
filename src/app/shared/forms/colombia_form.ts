@@ -472,7 +472,7 @@ export const COLOMBIA_FORM: IForm = {
       visible: true,
       inputs: [
         {
-          label: '¿Tiene junta directiva?',
+          label: '¿Tiene Junta Directiva, Consejo de Administración o equivalente?',
           visible: true,
           type: TypeInputForm.ChooseOption,
           size: 8,

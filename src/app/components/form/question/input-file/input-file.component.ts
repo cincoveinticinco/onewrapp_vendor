@@ -1,6 +1,7 @@
-import { Component, Input } from '@angular/core';
+import { Component, ElementRef, Input, ViewChild } from '@angular/core';
 import { AbstractControl, ControlValueAccessor, FormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, ValidationErrors, Validator, Validators } from '@angular/forms';
 import { IInputForm } from 'src/app/shared/interfaces/input_form';
+import { v4 as uuidv4 } from 'uuid';
 
 @Component({
   selector: 'input-file',
@@ -21,13 +22,14 @@ import { IInputForm } from 'src/app/shared/interfaces/input_form';
 })
 export class InputFileComponent implements ControlValueAccessor, Validator{
   @Input() question!: IInputForm;
+  @ViewChild('inputFile') inputFile?: ElementRef;
   control: FormControl = new FormControl('');
 
   value: any;
   fileName: any;
   required: boolean = false;
 
-  onChange = (token: string) => {}
+  onChange = (token: any) => {}
   onTouched = () => {}
 
   touched = false;
@@ -60,8 +62,7 @@ export class InputFileComponent implements ControlValueAccessor, Validator{
     if(files && files.length > 0){
       const file = files[0];
       this.control.setValue(file);
-
-      this.value = { name: file.name, url: null};
+      this.value = { name: file.name, url: null, uuid: uuidv4()};
     }
 
 
@@ -73,15 +74,15 @@ export class InputFileComponent implements ControlValueAccessor, Validator{
       const file = files[0];
       this.control.setValue(file);
 
-      this.value = { name: file.name, url: null};
+      this.value = { name: file.name, url: null, uuid: uuidv4()};
     }
   }
 
   clearFile(){
     this.control.setValue(null);
     this.value = null;
+    this.onChange(this.value)
   }
-
 
   ngOnInit(): void {
 

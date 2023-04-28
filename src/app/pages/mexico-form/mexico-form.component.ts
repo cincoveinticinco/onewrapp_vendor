@@ -554,6 +554,8 @@ export class MexicoFormComponent {
       SECTIONS_MEXICO_FORM.INFORMACION_JUNTA_DIRECTIVA
     );
 
+    this.junta_directiva.setValue([{}])
+
 
   }
 

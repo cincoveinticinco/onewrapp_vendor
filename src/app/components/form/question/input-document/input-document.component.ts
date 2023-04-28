@@ -186,6 +186,11 @@ export class InputDocumentComponent implements ControlValueAccessor, Validator{
   }
 
   writeValue(value: any): void {
+    if(this.valueQuestion){
+      if(value.person != this.valueQuestion?.person){
+        value.type = null;
+      }
+    }
 
     this.setSelectLists(value);
 

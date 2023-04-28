@@ -139,10 +139,7 @@ export class ColombiaFormComponent {
 
     setTimeout(() => {
       this.valuesLoaded = true;
-    }, 8000);
-
-
-
+    }, 5000);
 
   }
 
@@ -194,7 +191,6 @@ export class ColombiaFormComponent {
         this.handleChangeFormValues(formControlName);
       }
 
-
       this.formInValid = this.form.touched && this.form.invalid
 
     });
@@ -231,9 +227,9 @@ export class ColombiaFormComponent {
       otras_empresas.forEach((row: any) => {
         info_users.push({
           ...row,
-          document: row.document.document,
-          f_document_type_id: row.document.type,
-          verification_digit: row.document.verification,
+          document: row.document?.document,
+          f_document_type_id: row.document?.type,
+          verification_digit: row.document?.verification,
           f_vendor_info_user_type_id: 1,
         });
       });
@@ -248,9 +244,9 @@ export class ColombiaFormComponent {
       representantes_legales.forEach((row: any) => {
         info_users.push({
           ...row,
-          document: row.document.document,
-          f_document_type_id: row.document.type,
-          verification_digit: row.document.verification,
+          document: row.document?.document,
+          f_document_type_id: row.document?.type,
+          verification_digit: row.document?.verification,
           pep: row.informacion_representantes_legales_pep == '1' ? true : null,
           f_vendor_info_user_type_id: 2,
         });
@@ -264,9 +260,9 @@ export class ColombiaFormComponent {
       junta_directiva.forEach((row: any) => {
         info_users.push({
           ...row,
-          document: row.document.document,
-          f_document_type_id: row.document.type,
-          verification_digit: row.document.verification,
+          document: row.document?.document,
+          f_document_type_id: row.document?.type,
+          verification_digit: row.document?.verification,
           pep: row.informacion_junta_directiva_pep == '1' ? true : null,
           f_vendor_info_user_type_id: 3,
         });
@@ -282,9 +278,9 @@ export class ColombiaFormComponent {
       info_accionistas.forEach((row: any) => {
         info_users.push({
           ...row,
-          document: row.document.document,
-          f_document_type_id: row.document.type,
-          verification_digit: row.document.verification,
+          document: row.document?.document,
+          f_document_type_id: row.document?.type,
+          verification_digit: row.document?.verification,
           pep: row.informacion_accionistas_pep == '1' ? true : null,
           f_vendor_info_user_type_id: 4,
         });
@@ -447,6 +443,8 @@ export class ColombiaFormComponent {
   private handleChangeFormValues(formControlName: string) {
     const value = this.form.value[formControlName];
 
+    console.log(value, formControlName)
+
     const handlers = {
       f_person_type_id: () => this.setTypeIdByTypePerson(value),
       f_document_type_id: () => this.setVerificationCodeVisible(),
@@ -478,6 +476,7 @@ export class ColombiaFormComponent {
   }
 
   private uploadInputFile(value: File, formControlName: string){
+    console.log(value, formControlName)
     const formData = this.prepareSubmitData();
     this.onFileSubmit.emit({formControlName, value, formData});
   }
@@ -490,6 +489,8 @@ export class ColombiaFormComponent {
       showJuntaDirectiva,
       SECTIONS_COLOMBIA_FORM.INFORMACION_JUNTA_DIRECTIVA
     );
+
+    this.junta_directiva.setValue([{}])
 
 
   }

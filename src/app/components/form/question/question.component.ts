@@ -131,7 +131,12 @@ export class QuestionComponent implements ControlValueAccessor, Validator{
     const errors = [...errorsQuestion, ...errorsControl]
     this.errorMessage = errors.length > 0 ? this.getMessageError(errors[0]) : undefined;
 
-    return (!control.pristine && (this.formQuestion.invalid || control.invalid)) ? {...this.formQuestion.errors, ...control.errors} : null;
+    if(this.question.type != TypeInputForm.ArrayGroup){
+      return (!control.pristine && (this.formQuestion.invalid || control.invalid)) ? {...this.formQuestion.errors, ...control.errors} : null;
+    }
+
+    return null
+
 
   }
 
