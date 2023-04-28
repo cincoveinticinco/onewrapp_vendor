@@ -11,5 +11,6 @@ export enum TypeControlQuestion{
   Hidden,
   Email,
   Percentage,
-  Document
+  Document,
+  HiddenArrayGroup
 }

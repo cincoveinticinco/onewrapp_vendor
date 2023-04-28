@@ -108,25 +108,6 @@ export const MEXICO_FORM: IForm = {
           options_key: 'tipo_id',
           disabled: false
         },
-        /*{
-          label: 'Tipo ID',
-          visible: true,
-          type: TypeInputForm.SelectBox,
-          size: 2,
-          data: 'f_document_type_id',
-          required: true,
-          options_key: 'tipo_id',
-          disabled: false
-        },
-        /*{
-          label: 'Número de ID',
-          visible: true,
-          type: TypeInputForm.Text,
-          size: 2,
-          data: 'document',
-          required: true,
-          disabled: false
-        },*/
         {
           label: 'Fecha matrícula o expedición ID',
           visible: true,
@@ -273,26 +254,6 @@ export const MEXICO_FORM: IForm = {
               options_key: 'tipo_id',
               disabled: false
             },
-            /*
-            {
-              label: 'Tipo ID',
-              visible: true,
-              type: TypeInputForm.SelectBox,
-              size: 1,
-              data: 'f_document_type_id',
-              required: true,
-              options_key: 'moral_id',
-              disabled: false
-            },
-            {
-              label: 'Número de ID',
-              visible: true,
-              type: TypeInputForm.Text,
-              size: 2,
-              data: 'document',
-              required: true,
-              disabled: false
-            },*/
             {
               label: 'Calidad',
               visible: true,
@@ -353,27 +314,6 @@ export const MEXICO_FORM: IForm = {
             options_key: 'tipo_id',
             disabled: false
           },
-          /*
-          {
-            label: 'Tipo ID',
-            visible: true,
-            type: TypeInputForm.SelectBox,
-            size: 1,
-            data: 'f_document_type_id',
-            required: true,
-            options_key: 'fisica_id',
-            disabled: false
-          },
-          {
-            label: 'Número de ID',
-            visible: true,
-            type: TypeInputForm.Text,
-            size: 3,
-            data: 'document',
-            required: true,
-            disabled: false,
-          },
-          */
           {
             label: 'Fecha expedición ID',
             visible: true,
@@ -468,27 +408,6 @@ export const MEXICO_FORM: IForm = {
             options_key: 'tipo_id',
             disabled: false
           },
-          /*
-          {
-            label: 'Tipo ID',
-            visible: true,
-            type: TypeInputForm.SelectBox,
-            size: 1,
-            disabled: false,
-            options_key: 'fisica_id',
-            data: 'f_document_type_id',
-            required: true,
-          },
-          {
-            label: 'Número de ID',
-            visible: true,
-            type: TypeInputForm.Text,
-            size: 3,
-            disabled: false,
-            data: 'document',
-            required: true,
-          },
-          */
           {
             label: 'Fecha expedición ID',
             visible: true,
@@ -602,30 +521,6 @@ export const MEXICO_FORM: IForm = {
               options_key: 'tipo_id',
               disabled: false
             },
-
-            /*
-            {
-              label: 'Tipo ID',
-              visible: true,
-              type: TypeInputForm.SelectBox,
-              size: 2,
-              disabled: false,
-              options_key: 'todos_tipo_id',
-              data: 'f_document_type_id',
-              required: true,
-            },
-            {
-              label: 'Número de ID',
-              visible: true,
-              type: TypeInputForm.Text,
-              size: 2,
-              disabled: false,
-              data: 'document',
-              required: true,
-            },
-            */
-
-
             {
               label: 'Fecha matrícula o expedición ID',
               visible: true,
@@ -643,7 +538,58 @@ export const MEXICO_FORM: IForm = {
               disabled: false,
               data: 'country',
               required: true,
-            },
+            }
+            /*{
+              visible: true,
+              type: TypeInputForm.HiddenArrayGroup,
+              size: 2,
+              disabled: false,
+              data: 'informacion_beneficiarios_finales_people',
+              required: true,
+               children: [
+                {
+                  label: 'Tipo persona',
+                  visible: true,
+                  type: TypeInputForm.SelectBox,
+                  size: 2,
+                  disabled: false,
+                  options_key: 'tipo_persona',
+                  data: 'f_person_type_id',
+                  required: true,
+                },
+                {
+                  label: 'Nombre o Razón Social',
+                  visible: true,
+                  type: TypeInputForm.Text,
+                  size: 6,
+                  disabled: false,
+                  data: 'name',
+                  required: true,
+                },
+                {
+                  visible: true,
+                  type: TypeInputForm.Document,
+                  size: 4,
+                  data: 'document',
+                  dataDocumentType: 'f_document_type_id',
+                  dataDocumentVerification: '',
+                  dataDocumentPerson: 'f_person_type_id',
+                  options_key_list: ['tipo_persona'],
+                  required: true,
+                  options_key: 'tipo_id',
+                  disabled: false
+                },
+                {
+                  label: 'Fecha matrícula o expedición ID',
+                  visible: true,
+                  type: TypeInputForm.Date,
+                  size: 3,
+                  disabled: false,
+                  data: 'expedition_date',
+                  required: true,
+                },
+              ]
+            }*/,
           ]
         }
       ]
@@ -740,36 +686,6 @@ export const MEXICO_FORM: IForm = {
                   options_key: 'tipo_id',
                   disabled: false
                 },
-                /*
-                {
-                  label: 'Tipo ID',
-                  visible: true,
-                  type: TypeInputForm.SelectBox,
-                  size: 1,
-                  disabled: false,
-                  options_key: 'todos_tipo_id',
-                  data: 'f_document_type_id',
-                  required: true,
-                },
-                {
-                  label: 'Número de ID',
-                  visible: true,
-                  type: TypeInputForm.Text,
-                  size: 2,
-                  disabled: false,
-                  data: 'document',
-                  required: true,
-                },
-                /*{
-                  label: 'DV',
-                  visible: true,
-                  type: TypeInputForm.SelectBox,
-                  size: 1,
-                  disabled: false,
-                  options_key: 'verification_digit',
-                  data: 'verification_digit',
-                  required: true,
-                },*/
                 {
                   label: 'Fecha matrícula o expedición ID',
                   visible: true,

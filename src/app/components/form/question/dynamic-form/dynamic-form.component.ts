@@ -18,12 +18,19 @@ export class DynamicFormComponent {
   submitted: boolean = true;
   readonly TypeControlQuestion = TypeControlQuestion;
 
+  public get formGroup(){
+    return this.form;
+  }
+
+  public get questionsForm(){
+    return this.questions;
+  }
+
   constructor(private qcs: QuestionControlService) {}
 
   ngOnInit() {
     this.questions = this.sections?.map( (section:any) => section.questions)?.flat(1);
     this.form = this.qcs.toFormGroup(this.questions as QuestionBase<string>[]);
-
   }
 
   onSubmit() {

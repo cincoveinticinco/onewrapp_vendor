@@ -5,7 +5,8 @@ export function documentValidator(control: AbstractControl): {[key: string]: any
 
   if (control.value) {
 
-    if(!control.value.document.length){
+
+    if(!control.value.document || !control.value.document.length){
       return { 'documentRequired': true };
     }
 
@@ -21,6 +22,9 @@ export function documentValidator(control: AbstractControl): {[key: string]: any
 
     if(control.value.type == 10 && control.value.document.length != 13){
       return { 'documentLengthInvalid': {type:  10, length: control.value.document.length} };
+    }
+    if(!control.value.type){
+      return { 'typeRequired': true };
     }
 
   }

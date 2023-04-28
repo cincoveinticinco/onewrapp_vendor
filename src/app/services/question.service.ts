@@ -16,6 +16,7 @@ import { RadioboxQuestion } from '../shared/question/struct/radiobox-question';
 import { FileboxQuestion } from '../shared/question/struct/filebox-question';
 import { DocumentboxQuestion } from '../shared/question/struct/documentbox-question';
 import { ArrayBoxQuestion } from '../shared/question/struct/arraybox-question';
+import { HiddenArrayBoxQuestion } from '../shared/question/struct/hiddenarraybox-question';
 
 @Injectable({
   providedIn: 'root'
@@ -45,6 +46,9 @@ export class QuestionService {
       options: input.options as {key: string, value: string}[]
     }
 
+    if(input.data != 'informacion_beneficiarios_finales'){
+    }
+
     const questions_directory = {
       [TypeControlQuestion.Paragraph]:  new ParagraphQuestion(question),
       [TypeControlQuestion.Text]:  new TextboxQuestion(question),
@@ -55,6 +59,7 @@ export class QuestionService {
       [TypeControlQuestion.File]:  new FileboxQuestion(question),
       [TypeControlQuestion.Document]:  new DocumentboxQuestion(question),
       [TypeControlQuestion.ArrayGroup]:  new ArrayBoxQuestion(question),
+      [TypeControlQuestion.HiddenArrayGroup]:  new HiddenArrayBoxQuestion(question),
     }
 
     return questions_directory[input.type as unknown as keyof typeof questions_directory] || questions_directory[TypeControlQuestion.Text];
@@ -78,6 +83,26 @@ export class QuestionService {
         if(input.options_key){
           input.options = listsDropdowns[input.options_key]
         }
+
+        if(input.children){
+          input.children.forEach( (childInput: any) => {
+
+            if(childInput.type == TypeInputForm.ArrayGroup){
+
+           /*   console.log('================================')
+              input.value.forEach( (rowValue: any) => {
+                console.log(rowValue)
+              })
+
+              console.log(childInput.data)
+              console.log(childInput)
+              console.log('================================')
+              */
+            }
+          })
+        }
+
+
         input = this.setActionsQuestionsMexico(input);
         questions.push(this.getControlForm(input));
       })
@@ -98,6 +123,29 @@ export class QuestionService {
         questions: ['otras_empresas']
       }
     }
+
+    if(input.data == 'conflicto_intereses'){
+      input.actions = {
+        action: 'showNHide',
+        questions: ['desc_conflicto_intereses']
+      }
+    }
+
+    if(input.data == 'vinculo_estatal'){
+      input.actions = {
+        action: 'showNHide',
+        questions: ['desc_vinculo_estatal']
+      }
+    }
+
+    if(input.data == 'vinculo_familiar_estatal'){
+      input.actions = {
+        action: 'showNHide',
+        questions: ['desc_vinculo_familiar_estatal']
+      }
+    }
+
+
 
     return input;
   }
@@ -126,8 +174,7 @@ export class QuestionService {
       }
     }
 
-    if(input.type == TypeInputForm.ArrayGroup && sourceValues[input.data]?.length){
-
+    if((input.type == TypeInputForm.ArrayGroup || input.type == TypeInputForm.HiddenArrayGroup) && sourceValues[input.data]?.length){
       const arrayValues = sourceValues[input.data].map( (rowSourceValue: any) => {
         input.children?.forEach( (childInput:any) => {
           rowSourceValue = {...rowSourceValue, ...this.setCustomQuestionBoxValues(childInput, rowSourceValue)}
@@ -135,6 +182,7 @@ export class QuestionService {
 
         return rowSourceValue;
       });
+
 
       values[input.data] = arrayValues;
     }
@@ -156,6 +204,7 @@ export class QuestionService {
         }
       })
     });
+
 
     return values;
 

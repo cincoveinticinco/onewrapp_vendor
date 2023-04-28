@@ -1,12 +1,12 @@
 import { TypeControlQuestion } from '../interfaces/type-control-question';
 import { QuestionBase, QuestionBaseParams } from './question-base';
 
-export class ArrayBoxQuestion extends QuestionBase<any> {
+export class HiddenArrayBoxQuestion extends QuestionBase<any> {
 
   fixElements?: boolean;
   title?: string;
   addButonText?: string;
-  override controlType = TypeControlQuestion.ArrayGroup;
+  override controlType = TypeControlQuestion.HiddenArrayGroup;
 
   constructor(options: QuestionBaseParams<string> & {
     fixElements?:boolean;
@@ -18,7 +18,5 @@ export class ArrayBoxQuestion extends QuestionBase<any> {
     this.fixElements = options.fixElements || false;
     this.title = options.title || '';
     this.addButonText = options.addButonText || '';
-
-
   }
 }

@@ -27,7 +27,7 @@ export class QuestionControlService {
         validators.push(documentValidator)
       }
 
-      if(question.controlType == TypeControlQuestion.ArrayGroup){
+      if(question.controlType == TypeControlQuestion.ArrayGroup || question.controlType == TypeControlQuestion.HiddenArrayGroup){
         group[question.key] = new FormArray([], validators);
         return;
       }

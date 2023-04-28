@@ -1,11 +1,13 @@
 import { Component, Input, Optional, Self } from '@angular/core';
-import { AbstractControl, ControlValueAccessor, FormArray, FormBuilder, FormGroup, NgControl, ValidationErrors, Validator } from '@angular/forms';
+import { AbstractControl, ControlValueAccessor, FormArray, FormBuilder, FormControl, FormGroup, NgControl, ValidationErrors, Validator } from '@angular/forms';
+import { debounceTime } from 'rxjs';
 import { QuestionService } from 'src/app/services/question.service';
 import { VendorsService } from 'src/app/services/vendors.service';
 import { TypeControlQuestion } from 'src/app/shared/question/interfaces/type-control-question';
 import { QuestionControlService } from 'src/app/shared/question/question-control-service';
 import { ArrayBoxQuestion } from 'src/app/shared/question/struct/arraybox-question';
 import { QuestionBase } from 'src/app/shared/question/struct/question-base';
+import { v4 as uuidv4 } from 'uuid';
 
 @Component({
   selector: 'app-arraybox-question',
@@ -53,25 +55,29 @@ export class ArrayboxQuestionComponent{
   }
 
   setValues(){
+
     if(!this.arrayQuestion?.value) return;
 
     this.formArray.clear();
 
     this.arrayQuestion?.value.forEach( (value:any) => {
       const row = this.createRow(value);
+
       row.patchValue(value);
       this.formArray.push(row);
     })
 
   }
 
-  createRow(rowValue: any = null){
+  createRow(emptyRow: boolean = false){
     const formGroup = this.qcs.toFormGroup(this.questionsForm as QuestionBase<string>[]);
+    formGroup.addControl('uuid', new FormControl(emptyRow ? uuidv4() : null),  {emitEvent: false});
+    formGroup.addControl('groupIndex', new FormControl(this.formArray.length > 0 ? this.formArray.length - 1 : 0),  {emitEvent: false});
     return formGroup
   }
 
   addRow(){
-    this.formArray.push(this.createRow());
+    this.formArray.push(this.createRow(true));
     this.onValidation();
   }
 

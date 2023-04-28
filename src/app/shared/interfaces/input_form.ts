@@ -11,7 +11,8 @@ export enum TypeInputForm{
   Hidden,
   Email,
   Percentage,
-  Document
+  Document,
+  HiddenArrayGroup
 }
 
 export interface ISelectBoxOption{

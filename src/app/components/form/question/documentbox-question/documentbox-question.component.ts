@@ -34,8 +34,12 @@ export class DocumentboxQuestionComponent implements ControlValueAccessor, Valid
 
     if(this.ngControl != null){
       this.ngControl.valueAccessor = this;
+
     }
+
+    this.lists = this.vendorsService.getSelectBoxList();
   }
+
   validate(control: AbstractControl<any, any>): ValidationErrors | null {
     return null;
   }
@@ -45,11 +49,15 @@ export class DocumentboxQuestionComponent implements ControlValueAccessor, Valid
   }
 
   ngOnInit(): void {
-    this.lists = this.vendorsService.getSelectBoxList();
     this.verificationList =  this.lists['verification_digit'];
 
     this.setSelectLists();
     this.setValidations();
+
+    this.form.controls['type'].valueChanges.subscribe( values => {
+      this.form.controls['type'].setValue(values, {emitEvent: false})
+      this.setValidations();
+    });
 
     this.form.valueChanges.subscribe( values => {
       this.value = values
@@ -59,29 +67,38 @@ export class DocumentboxQuestionComponent implements ControlValueAccessor, Valid
   }
 
   private setSelectLists(){
-    if(this.form.get('person')?.value){
-      if(this.form.get('person')?.value == 1){
+
+    const person = Number(this.form.get('person')?.value)
+
+    if(person){
+      if(person == 1){
         this.typeList = this.lists.natural_id
       }
 
-      if(this.form.get('person')?.value == 2){
+      if(person == 2){
         this.typeList = this.lists.juridica_id
       }
 
-      if(this.form.get('person')?.value == 3){
+      if(person == 3){
         this.typeList = this.lists.fisica_id
       }
 
-      if(this.form.get('person')?.value == 4){
+      if(person == 4){
         this.typeList = this.lists.moral_id
       }
     }else{
       this.typeList = this.lists.todos_id
     }
 
+
   }
 
   private setValidations(){
+
+    const existTypeInList = this.typeList?.find( (option:any) => option.key == Number(this.form.get('type')?.value))
+    if(!existTypeInList){
+      this.form.get('type')?.setValue(null);
+    }
 
     if(Number(this.form.get('type')?.value) == 5){
       this.hideVerification = false;
@@ -93,19 +110,25 @@ export class DocumentboxQuestionComponent implements ControlValueAccessor, Valid
 
 
     if(Number(this.form.get('type')?.value) == 7){
-      this.form.get('document')?.setValidators([Validators.minLength(14), Validators.maxLength(14), Validators.pattern(VALIDATORS_PATTERNS.numbers), Validators.required]);
+      this.form.get('document')?.setValidators([Validators.required, Validators.pattern(VALIDATORS_PATTERNS.numbers),Validators.minLength(14), Validators.maxLength(14) ]);
+      this.form.get('document')?.updateValueAndValidity();
       return;
     }
 
     if(Number(this.form.get('type')?.value) == 10){
       this.form.get('document')?.setValidators([Validators.minLength(13), Validators.maxLength(13), Validators.pattern(VALIDATORS_PATTERNS.numbers), Validators.required]);
+      this.form.get('document')?.updateValueAndValidity();
       return;
     }
+
   }
 
   writeValue(value: any): void {
-    this.form.patchValue(value)
-    this.value = value
+    this.form.patchValue(value, {emitEvent: false})
+    this.value = this.form.value
+
+    this.setSelectLists();
+
   }
   registerOnChange(fn: any): void {
     this.onChange = fn;
