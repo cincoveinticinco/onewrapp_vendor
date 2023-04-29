@@ -3,6 +3,7 @@ import { FormGroup } from '@angular/forms';
 import { TypeControlQuestion } from 'src/app/shared/question/interfaces/type-control-question';
 import { ArrayBoxQuestion } from 'src/app/shared/question/struct/arraybox-question';
 import { QuestionBase } from 'src/app/shared/question/struct/question-base';
+import { v4 as uuidv4 } from 'uuid';
 
 @Component({
   selector: 'app-dynamic-question',
@@ -17,6 +18,8 @@ export class DynamicFormQuestionComponent {
   @Input() form!: FormGroup;
 
   @Output() changeValue = new EventEmitter();
+
+  id: string;
 
   get getValue(){
     return this.form.controls[this.question.key]?.value
@@ -75,5 +78,9 @@ export class DynamicFormQuestionComponent {
     this.changeValue.emit({
       question, value: this.getValue
     })
+  }
+
+  constructor(){
+    this.id = `${this.question?.key || 'item'}_${uuidv4()}`
   }
 }

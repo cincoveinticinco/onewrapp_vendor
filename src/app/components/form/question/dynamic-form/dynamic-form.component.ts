@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { TypeControlQuestion } from 'src/app/shared/question/interfaces/type-control-question';
 import { QuestionControlService } from 'src/app/shared/question/question-control-service';
@@ -12,6 +12,8 @@ import { QuestionBase } from 'src/app/shared/question/struct/question-base';
 })
 export class DynamicFormComponent {
   @Input() sections: any = [];
+  @Output() saveForm = new EventEmitter();
+  @Output() submitForm = new EventEmitter();
   questions: QuestionBase<string>[] | null = [];
   form!: FormGroup;
   payLoad = '';
@@ -37,12 +39,13 @@ export class DynamicFormComponent {
     this.submitted = true;
     this.form.updateValueAndValidity();
 
-    console.log(this.form)
-
     if(this.form.valid){
-      this.payLoad = JSON.stringify(this.form.getRawValue());
+      this.submitForm.emit(this.form.getRawValue())
     }
+  }
 
+  getFormValue(){
+    return this.form.getRawValue();
   }
 
   handleQuestionValueChange(event: any){

@@ -8,24 +8,24 @@
     <input
       *ngSwitchCase="TypeControlQuestion.Text"
       [formControlName]="question.key"
-      [id]="question.key"
+      [id]="id"
       [type]="question.type">
 
     <input
       *ngSwitchCase="TypeControlQuestion.Date"
       [formControlName]="question.key"
-      [id]="question.key"
+      [id]="id"
       [type]="question.type">
 
     <input
       *ngSwitchCase="TypeControlQuestion.Email"
       [formControlName]="question.key"
-      [id]="question.key"
+      [id]="id"
       [type]="question.type">
 
     <select
       *ngSwitchCase="TypeControlQuestion.Dropdown"
-      [id]="question.key"
+      [id]="id"
       [formControlName]="question.key">
       <option *ngFor="let opt of question.options" [value]="opt.key">{{opt.value}}</option>
     </select>

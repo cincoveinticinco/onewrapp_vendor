@@ -369,7 +369,17 @@ export const MEXICO_FORM: IForm = {
       title: 'INFORMACIÓN JUNTA DIRECTIVA, CONSEJO DE ADMINISTRACIÓN O EQUIVALENTE',
       label: 'Información Junta Directiva',
       visible: true,
-      inputs: [{
+      inputs: [
+        {
+          label: '¿Tiene Junta Directiva, Consejo de Administración o equivalente?',
+          visible: true,
+          type: TypeInputForm.ChooseOption,
+          size: 8,
+          data: 'board_of_directors',
+          required: true,
+          disabled: false
+        },
+        {
         type: TypeInputForm.ArrayGroup,
         visible: true,
         addButonText: 'AGREGAR MIEMBRO',

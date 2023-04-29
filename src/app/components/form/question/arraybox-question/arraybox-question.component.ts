@@ -43,11 +43,9 @@ export class ArrayboxQuestionComponent{
 
 
   ngOnInit(): void {
-    this.lists = this.vendorsService.getSelectBoxList();
-    this.questionsForm = this.questionService.getArrayGroupQuestions(this.questions, this.lists)
-
-    this.setValues();
-
+      this.lists = this.vendorsService.getSelectBoxList();
+      this.questionsForm = this.questionService.getArrayGroupQuestions(this.questions, this.lists)
+      setTimeout( () => this.setValues())
   }
 
   asFormGroup(value: any): FormGroup{
@@ -56,23 +54,39 @@ export class ArrayboxQuestionComponent{
 
   setValues(){
 
+    if(this.arrayQuestion?.parent){
+      this.arrayQuestion.value = this.form.controls[`init_${this.arrayQuestion?.key}`].getRawValue();
+    }
+
     if(!this.arrayQuestion?.value) return;
 
     this.formArray.clear();
 
-    this.arrayQuestion?.value.forEach( (value:any) => {
-      const row = this.createRow(value);
+    this.arrayQuestion?.value.forEach( (value:any, index:number) => {
+      const row = this.createRow();
 
-      row.patchValue(value);
-      this.formArray.push(row);
+      const inits_values:any = {...value}
+      Object.keys(value).forEach( key => {
+        inits_values[`init_${key}`] = value[key]
+      })
+
+      row.patchValue(inits_values, {emitEvent: false});
+      this.formArray.push(row, {emitEvent: false});
     })
 
   }
 
   createRow(emptyRow: boolean = false){
     const formGroup = this.qcs.toFormGroup(this.questionsForm as QuestionBase<string>[]);
+    formGroup.addControl('id', new FormControl(),  {emitEvent: false});
     formGroup.addControl('uuid', new FormControl(emptyRow ? uuidv4() : null),  {emitEvent: false});
     formGroup.addControl('groupIndex', new FormControl(this.formArray.length > 0 ? this.formArray.length - 1 : 0),  {emitEvent: false});
+
+    const formArray = this.questionsForm.find( question => question instanceof ArrayBoxQuestion )
+    if(formArray){
+      formGroup.addControl(`init_${formArray.key}`, new FormControl(),  {emitEvent: false});
+    }
+
     return formGroup
   }
 
@@ -84,29 +98,4 @@ export class ArrayboxQuestionComponent{
   deleteRow(rowIndex: number){
     this.formArray.removeAt(rowIndex);
   }
-
-  /*
-
-  writeValue(value: any): void {
-    this.value = value;
-    this.form.patchValue(value)
-  }
-  registerOnChange(fn: any): void {
-    this.onChange = fn;
-  }
-  registerOnTouched(fn: any): void {
-    this.onTouched = fn;
-  }
-  setDisabledState?(isDisabled: boolean): void {
-    this.disabled = isDisabled;
-  }
-  validate(control: AbstractControl<any, any>): ValidationErrors | null {
-    console.log(control)
-    return this.formArray.length == 3 ? {required: true} : null;
-  }
-  registerOnValidatorChange?(fn: () => void): void {
-    this.onValidation = fn;
-  }
-  */
-
 }

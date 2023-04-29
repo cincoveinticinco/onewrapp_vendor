@@ -36,6 +36,7 @@ import { DynamicFormComponent } from './components/form/question/dynamic-form/dy
 import { FileboxQuestionComponent } from './components/form/question/filebox-question/filebox-question.component';
 import { DocumentboxQuestionComponent } from './components/form/question/documentbox-question/documentbox-question.component';
 import { ArrayboxQuestionComponent } from './components/form/question/arraybox-question/arraybox-question.component';
+import { QuestionControlService } from './shared/question/question-control-service';
 
 
 @NgModule({
@@ -86,7 +87,8 @@ import { ArrayboxQuestionComponent } from './components/form/question/arraybox-q
     },
     {
       provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true
-    }
+    },
+    QuestionControlService
   ],
   bootstrap: [AppComponent]
 })

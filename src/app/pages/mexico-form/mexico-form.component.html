@@ -1,2 +1,5 @@
-<app-dynamic-form [sections]="questions$ | async"></app-dynamic-form>
+<app-dynamic-form
+  [sections]="questions$ | async"
+  (submitForm)="onSubmitForm($event)"
+></app-dynamic-form>
 

@@ -20,7 +20,8 @@ export class QuestionControlService {
       const validators = []
 
       if(question.required){
-        validators.push(Validators.required)
+        if(question.controlType != TypeControlQuestion.File)
+          validators.push(Validators.required)
       }
 
       if(question.controlType == TypeControlQuestion.Document){

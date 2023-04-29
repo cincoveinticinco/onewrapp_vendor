@@ -19,7 +19,9 @@
 
     <app-mexico-form
       *ngSwitchCase="CountyForm.Mexico"
-      [infoVendor]="inmutableData">
+      [infoVendor]="inmutableData"
+      (onVerify)="verifyVendor($event)"
+      (onSubmit)="submit($event)">
     </app-mexico-form>
 
     <!--app-mexico-form

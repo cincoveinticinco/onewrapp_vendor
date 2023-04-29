@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { of } from 'rxjs';
 import { cloneDeep } from "lodash";
 import * as moment from 'moment';
+import { v4 as uuidv4 } from 'uuid';
 
 import { DropdownQuestion } from '../shared/question/struct/dropdown-question';
 import { QuestionBase } from '../shared/question/struct/question-base';
@@ -17,13 +18,15 @@ import { FileboxQuestion } from '../shared/question/struct/filebox-question';
 import { DocumentboxQuestion } from '../shared/question/struct/documentbox-question';
 import { ArrayBoxQuestion } from '../shared/question/struct/arraybox-question';
 import { HiddenArrayBoxQuestion } from '../shared/question/struct/hiddenarraybox-question';
+import { FormArray, FormControl } from '@angular/forms';
+import { QuestionControlService } from '../shared/question/question-control-service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class QuestionService {
 
-  constructor() { }
+  constructor(private qcs: QuestionControlService) { }
 
   private getControlForm(input: IInputForm & {actions?: any}){
 
@@ -43,10 +46,8 @@ export class QuestionService {
       addButonText: input.addButonText,
       actions: input.actions,
       visible: input.visible,
+      parent: input.parent,
       options: input.options as {key: string, value: string}[]
-    }
-
-    if(input.data != 'informacion_beneficiarios_finales'){
     }
 
     const questions_directory = {
@@ -69,7 +70,10 @@ export class QuestionService {
 
   private getMexicoQuestions(listsDropdowns: any, values:any){
 
+
+
     const QUESTIONS_FORM = cloneDeep(MEXICO_FORM);
+    const flatQuestions = QUESTIONS_FORM.sections.map( (section:any) => section.inputs)?.flat(1);
     const sections : any = [];
 
     QUESTIONS_FORM.sections.forEach( section => {
@@ -88,25 +92,27 @@ export class QuestionService {
           input.children.forEach( (childInput: any) => {
 
             if(childInput.type == TypeInputForm.ArrayGroup){
-
-           /*   console.log('================================')
-              input.value.forEach( (rowValue: any) => {
-                console.log(rowValue)
-              })
-
-              console.log(childInput.data)
-              console.log(childInput)
-              console.log('================================')
-              */
+              childInput.parent = input.data
             }
           })
         }
 
-
         input = this.setActionsQuestionsMexico(input);
-        questions.push(this.getControlForm(input));
-      })
 
+        if(input.actions?.action == 'showNHide'){
+          input.actions?.questions.forEach( (keyActionInput:any) => {
+            const actionInput = flatQuestions.find( x => x.data == keyActionInput);
+            if(actionInput){
+              actionInput.visible = input.value == '1';
+              actionInput.disabled = !actionInput.visible;
+            }
+          })
+        }
+
+        const question = this.getControlForm(input)
+        if(question) questions.push(question);
+
+      })
       sections.push({ ...section, questions});
     });
 
@@ -121,6 +127,13 @@ export class QuestionService {
       input.actions = {
         action: 'showNHide',
         questions: ['otras_empresas']
+      }
+    }
+
+    if(input.data == 'board_of_directors'){
+      input.actions = {
+        action: 'showNHide',
+        questions: ['informacion_junta_directiva']
       }
     }
 
@@ -205,6 +218,27 @@ export class QuestionService {
       })
     });
 
+    return values;
+
+  }
+
+  private setValuesSingleQuestions(questionsForm: any, sourceValues:any) {
+
+    if(!sourceValues) return {}
+
+    const QUESTIONS_FORM = cloneDeep(questionsForm);
+
+    const values = sourceValues.map( (rowValue:any) => {
+      QUESTIONS_FORM.forEach( (input: any) => {
+        if(input.data){
+          rowValue = {...rowValue, ...this.setCustomQuestionBoxValues(input, rowValue)}
+        }
+      });
+
+      return rowValue;
+    });
+
+
 
     return values;
 
@@ -217,7 +251,8 @@ export class QuestionService {
     return of(questions);
   }
 
-  getArrayGroupQuestions(rawQuestions: any, listsDropdowns: any){
+  getArrayGroupQuestions(rawQuestions: any, listsDropdowns: any, parent: any = null){
+
     const QUESTIONS_FORM = cloneDeep(rawQuestions);
     const questions: QuestionBase<string>[] = [];
 
@@ -226,9 +261,29 @@ export class QuestionService {
         input.options = listsDropdowns[input.options_key]
       }
 
-      questions.push(this.getControlForm(input));
+      if(parent){
+        input.parent = parent;
+      }
+
+      const question = this.getControlForm(input)
+      if (question) questions.push(question);
     })
 
     return questions;
+  }
+
+  addNewRowArrayGroupQuestion(formArray: FormArray, questionsForm: QuestionBase<string>[]){
+
+    const formGroup = this.qcs.toFormGroup(questionsForm as QuestionBase<string>[]);
+    formGroup.addControl('id', new FormControl(),  {emitEvent: false});
+    formGroup.addControl('uuid', new FormControl(uuidv4()),  {emitEvent: false});
+    formGroup.addControl('groupIndex', new FormControl(formArray.length > 0 ? formArray.length - 1 : 0),  {emitEvent: false});
+
+    const formArrayChild = questionsForm.find( question => question instanceof ArrayBoxQuestion )
+    if(formArrayChild){
+      formGroup.addControl(`init_${formArrayChild.key}`, new FormControl(),  {emitEvent: false});
+    }
+
+    return formGroup
   }
 }

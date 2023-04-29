@@ -52,5 +52,7 @@ export interface IInputForm{
   dataDocumentType?: string,
   dataDocumentVerification?: string,
   dataDocumentPerson?: string,
-  hideVerification?:boolean
+  hideVerification?:boolean,
+  parent?: string;
+  actions?:any;
 }
