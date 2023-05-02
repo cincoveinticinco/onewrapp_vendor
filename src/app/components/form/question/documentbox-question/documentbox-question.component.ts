@@ -30,6 +30,7 @@ export class DocumentboxQuestionComponent implements ControlValueAccessor, Valid
       type: [''],
       document: [''],
       verification: [''],
+      list: ['']
     });
 
     if(this.ngControl != null){
@@ -68,6 +69,8 @@ export class DocumentboxQuestionComponent implements ControlValueAccessor, Valid
 
   private setSelectLists(){
 
+
+
     const person = Number(this.form.get('person')?.value)
 
     if(person){
@@ -87,7 +90,7 @@ export class DocumentboxQuestionComponent implements ControlValueAccessor, Valid
         this.typeList = this.lists.moral_id
       }
     }else{
-      this.typeList = this.lists.todos_id
+      this.typeList = this.lists[this.form.get('list')?.value]
     }
 
 
@@ -97,7 +100,7 @@ export class DocumentboxQuestionComponent implements ControlValueAccessor, Valid
 
     const existTypeInList = this.typeList?.find( (option:any) => option.key == Number(this.form.get('type')?.value))
     if(!existTypeInList){
-      this.form.get('type')?.setValue(null);
+      this.form.get('type')?.setValue(null, {emitEvent: false});
     }
 
     if(Number(this.form.get('type')?.value) == 5){

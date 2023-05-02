@@ -55,4 +55,5 @@ export interface IInputForm{
   hideVerification?:boolean,
   parent?: string;
   actions?:any;
+  dataVisible?: boolean;
 }

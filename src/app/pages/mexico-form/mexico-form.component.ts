@@ -1,13 +1,15 @@
 import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { FormArray, FormControl, FormGroup } from '@angular/forms';
 import { values } from 'lodash';
-import { Observable, map, pairwise, startWith } from 'rxjs';
+import { Observable, debounceTime, map, pairwise, startWith } from 'rxjs';
 import { DynamicFormComponent } from 'src/app/components/form/question/dynamic-form/dynamic-form.component';
 import { QuestionService } from 'src/app/services/question.service';
 import { SECTIONS_MEXICO_FORM, TYPE_PERSON_MEXICO } from 'src/app/shared/forms/mexico_form';
 import { QuestionBase } from 'src/app/shared/question/struct/question-base';
 import { v4 as uuidv4 } from 'uuid';
 import { isEqual } from 'lodash';
+import { info_files } from 'src/app/shared/forms/files_types';
+import { CountryVendor } from 'src/app/shared/interfaces/country_vendors';
 
 
 @Component({
@@ -36,20 +38,33 @@ export class MexicoFormComponent {
     return this.dynamicForm?.formGroup.get('informacion_accionistas') as FormArray;
   }
 
+  get otherCompanies(): FormArray{
+    return this.dynamicForm?.formGroup.get('otras_empresas') as FormArray;
+  }
+
+  get legalRepresent(): FormArray{
+    return this.dynamicForm?.formGroup.get('informacion_representantes_legales') as FormArray;
+  }
+
+  get boardDirectors(): FormArray{
+    return this.dynamicForm?.formGroup.get('informacion_junta_directiva') as FormArray;
+  }
+
   constructor(private questionService: QuestionService) {
 
   }
 
   ngAfterViewInit(): void {
 
+    setTimeout( () => {
+      this.setValuesChangeShareholder();
+      this.setValuesChangeFinalBeneficiary();
+      this.setValuesChangeOtherCompanies();
+      this.setValuesChangeLegalRepresent();
+      this.setValuesChangeBoardDirectors();
 
-    /** On change share holder */
-    this.setValuesChangeShareholder();
-
-    /** On change final beneficiary infor */
-    this.setValuesChangeFinalBeneficiary();
-
-
+      this.setValuesChangeAttachments();
+    }, 1000)
   }
 
   ngOnInit(): void {
@@ -57,7 +72,11 @@ export class MexicoFormComponent {
     this.lists = this.infoVendor.lists;
 
     this.setValuesForm();
-    this.questions$ = this.questionService.getQuestions(this.lists, this.valuesForm);
+    this.questions$ = this.questionService.getQuestions(this.lists, this.valuesForm, CountryVendor.Mexico);
+
+
+
+
   }
 
   setValuesForm() {
@@ -65,21 +84,48 @@ export class MexicoFormComponent {
     this.valuesForm = {
       ...this.vendorData,
       'tipo_solicitud': 'Vinculación',
-      'business_group': this.vendorData['business_group' ]? '1' : '2',
       'actividad_economica': this.vendorData['vendor_economic']
 
     }
 
     this.setVendorMultipleInfo();
     this.setComplementInfoFinalBenefit();
-    this.setVendorDeclaraciones()
+    this.setVendorDeclaraciones();
 
-    console.log(this.valuesForm)
+    this.setFilesValues();
+
   }
 
   onSubmitForm(values: any){
     const formData = this.prepareSubmitData(values);
+    this.onVerify.emit(formData);
+  }
+
+  confirmSubmit(){
+    const values = this.dynamicForm?.getFormValue();
+    const formData = this.prepareSubmitData(values);
     this.onSubmit.emit(formData);
+  }
+
+  private setFilesValues(){
+    this.infoVendor['document_vendor'].forEach( (document:any) => {
+
+      if(document.link == null || document.link == undefined){
+        return;
+      }
+
+      const file = { name: document.link, url: document.link}
+
+      Object.keys(info_files)
+      .map((key: string) => {
+        const file_key = info_files[key as unknown as keyof typeof info_files];
+
+        if(document.id == Number(key)){
+          this.valuesForm[file_key] = file
+        }
+
+      })
+    })
   }
 
   private setVendorMultipleInfo() {
@@ -87,7 +133,7 @@ export class MexicoFormComponent {
       (info_user: any) => {
         if (info_user.id == 1) {
           this.valuesForm['otras_empresas'] =
-            info_user.user_person.map((user: any) => ({
+            info_user.user_person.length ? info_user.user_person.map((user: any) => ({
               uuid: uuidv4(),
               name: user.name,
               document: user.document,
@@ -95,12 +141,12 @@ export class MexicoFormComponent {
               f_person_type_id: TYPE_PERSON_MEXICO.Moral,
               quantity: user.quantity,
               id: user.id,
-            }))
+            })) : [{}]
         }
 
         if (info_user.id == 2) {
           this.valuesForm['informacion_representantes_legales'] =
-            info_user.user_person.map((user: any) => ({
+          info_user.user_person.length ? info_user.user_person.map((user: any) => ({
               uuid: uuidv4(),
               name: user.name,
               last_name: user.last_name,
@@ -113,12 +159,12 @@ export class MexicoFormComponent {
               city: user.city,
               email: user.email,
               id: user.id,
-            }))
+            })): [{}]
         }
 
         if (info_user.id == 3) {
           this.valuesForm['informacion_junta_directiva'] =
-            info_user.user_person.map((user: any) => ({
+          info_user.user_person.length ? info_user.user_person.map((user: any) => ({
               uuid: uuidv4(),
               name: user.name,
               last_name: user.last_name,
@@ -131,13 +177,13 @@ export class MexicoFormComponent {
               city: user.city,
               email: user.email,
               id: user.id,
-            }))
+            })): [{}]
         }
 
         if (info_user.id == 4) {
 
           this.valuesForm['informacion_accionistas'] =
-            info_user.user_person.map((user: any) => {
+          info_user.user_person.length ? info_user.user_person.map((user: any) => {
               return {
                 uuid: uuidv4(),
                 f_person_type_id: user.f_person_type_id,
@@ -151,7 +197,7 @@ export class MexicoFormComponent {
                 children: user.childrent
 
               }
-            })
+            }): [{}]
         }
       }
     );
@@ -222,6 +268,93 @@ export class MexicoFormComponent {
     return this.valuesForm['informacion_beneficiarios_finales'][this.valuesForm['informacion_beneficiarios_finales'].length - 1]
   }
 
+  private setValuesChangeOtherCompanies(){
+
+    this.otherCompanies?.valueChanges
+    .pipe(
+      startWith(this.otherCompanies?.value),
+      pairwise(),
+      map(([oldValues, newValues]: any) => {
+        return newValues.findIndex(
+          (item:any, k:number) => {
+            return !isEqual(newValues[k], oldValues[k])
+          }
+        );
+      })
+    ).subscribe( (values:any) => {
+      if(values > -1){
+        this.handleOtherCompaniesChange(this.otherCompanies['controls'][values])
+      }
+    });
+  }
+
+  private handleOtherCompaniesChange(row: any){
+
+    /** Action change type person */
+      row.get('document').patchValue({
+        ...row.get('document').value,
+        person: TYPE_PERSON_MEXICO.Moral
+      }, {emitEvent: false, emitModelToViewChange: true});
+  }
+
+  private setValuesChangeLegalRepresent(){
+    this.legalRepresent?.valueChanges
+    .pipe(
+      startWith(this.legalRepresent?.value),
+      pairwise(),
+      map(([oldValues, newValues]: any) => {
+        return newValues.findIndex(
+          (item:any, k:number) => {
+            return !isEqual(newValues[k], oldValues[k])
+          }
+        );
+      })
+    ).subscribe( (values:any) => {
+
+      if(values > -1){
+        this.handleLegalRepresentChange(this.legalRepresent['controls'][values])
+      }
+    });
+  }
+
+  private handleLegalRepresentChange(row: any){
+
+    /** Action change type person */
+    row.get('document').patchValue({
+      ...row.get('document').value,
+      person: TYPE_PERSON_MEXICO.Fisica
+    }, {emitEvent: false, emitModelToViewChange: true});
+  }
+
+  private setValuesChangeBoardDirectors(){
+    this.boardDirectors?.valueChanges
+    .pipe(
+      startWith(this.boardDirectors?.value),
+      pairwise(),
+      map(([oldValues, newValues]: any) => {
+        return newValues.findIndex(
+          (item:any, k:number) => {
+            return !isEqual(newValues[k], oldValues[k])
+          }
+        );
+      })
+    ).subscribe( (values:any) => {
+
+      if(values > -1){
+        this.handleBoardDirectorsChange(this.boardDirectors['controls'][values])
+      }
+    });
+  }
+
+  private handleBoardDirectorsChange(row: any){
+
+    /** Action change type person */
+    row.get('document').patchValue({
+      ...row.get('document').value,
+      person: TYPE_PERSON_MEXICO.Fisica
+    }, {emitEvent: false, emitModelToViewChange: true});
+  }
+
   private setValuesChangeShareholder(){
     this.shareholderInformation?.valueChanges
     .pipe(
@@ -239,7 +372,7 @@ export class MexicoFormComponent {
       if(values > -1){
         this.handleShareholderChange(this.shareholderInformation['controls'][values])
       }
-  });
+    });
   }
 
   private handleShareholderChange(row: any){
@@ -333,10 +466,44 @@ export class MexicoFormComponent {
     }
   }
 
+  private setValuesChangeAttachments(){
+    const formGroup = this.dynamicForm?.formGroup;
+    const filesInForm = [
+      "identificacion_oficial_file",
+      "inscripcion_registro_fed_file",
+      "cumplimiento_obligaciones_file",
+      "acta_constitutiva_file",
+      "estado_cuenta_bancaria_file",
+      "comprobante_domicilio_file",
+      "documento_politicas"
+    ]
+
+    formGroup?.valueChanges
+      .pipe(
+        startWith(formGroup.value),
+        pairwise(),
+        map(([oldValues, newValues]: any) => {
+          return Object.keys(newValues).find(
+            (k) => newValues[k] != oldValues[k] && filesInForm.includes(k)
+          );
+        })
+      )
+      .subscribe( (value:any) => {
+        if(value){
+          this.handleAttachmentsChanges(formGroup.value[value], value);
+        }
+      });
+
+  }
+
+  private handleAttachmentsChanges(value: any, formControlName: string){
+    const values = this.dynamicForm?.getFormValue();
+    const formData = this.prepareSubmitData(values);
+    this.onFileSubmit.emit({formControlName, value: value?.file, formData})
+  }
+
   private prepareSubmitData(values: any){
     const info_users: any = [];
-
-    console.log(values)
 
     values['otras_empresas']?.forEach((row: any) => {
       info_users.push({
@@ -443,6 +610,7 @@ export class MexicoFormComponent {
         ? Number(_values.f_vendor_type_id)
         : null,
       business_group: _values.business_group == '1' ? true : null,
+      board_of_directors: _values.board_of_directors == '1' ? true : null,
       info_users,
       info_additional
     }

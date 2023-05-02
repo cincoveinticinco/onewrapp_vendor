@@ -36,7 +36,8 @@ export class FileboxQuestionComponent implements ControlValueAccessor, Validator
       const file = files[0];
       this.control.setValue(file);
 
-      this.value = { name: file.name, url: null};
+      this.value = { file, name: file.name, url: null};
+      this.onChange(this.value)
     }
   }
 
@@ -46,13 +47,15 @@ export class FileboxQuestionComponent implements ControlValueAccessor, Validator
       const file = files[0];
       this.control.setValue(file);
 
-      this.value = { name: file.name, url: null};
+      this.value = { file, name: file.name, url: null};
+      this.onChange(this.value)
     }
   }
 
   clearFile(){
     this.control.setValue(null);
     this.value = null;
+    this.onChange(this.value)
   }
 
   writeValue(value: any): void {

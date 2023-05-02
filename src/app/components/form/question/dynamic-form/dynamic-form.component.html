@@ -1,3 +1,4 @@
+<app-side-menu [sections]="sections" [form]="form"></app-side-menu>
 <section class="content" >
   <form (ngSubmit)="onSubmit()" [formGroup]="form" [ngClass]="{'ng-submitted':submitted}">
 
@@ -19,8 +20,4 @@
       <button type="submit">ENVIAR FORMULARIO</button>
     </div>
   </form>
-
-  <div *ngIf="payLoad" class="form-row">
-    <strong>Saved the following values</strong><br>{{payLoad}}
-  </div>
 </section>

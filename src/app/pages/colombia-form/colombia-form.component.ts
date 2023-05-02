@@ -1,19 +1,19 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, Output } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, ValidatorFn, Validators } from '@angular/forms';
-import * as moment from 'moment';
-import { v4 as uuidv4 } from 'uuid';
-
-import { distinctUntilChanged, map, pairwise, startWith } from 'rxjs';
-import { VendorsService } from 'src/app/services/vendors.service';
+import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { FormArray, FormControl, FormGroup } from '@angular/forms';
+import { values } from 'lodash';
+import { Observable, debounceTime, map, pairwise, startWith } from 'rxjs';
+import { DynamicFormComponent } from 'src/app/components/form/question/dynamic-form/dynamic-form.component';
+import { QuestionService } from 'src/app/services/question.service';
 import {
-  COLOMBIA_FORM,
   SECTIONS_COLOMBIA_FORM,
   TYPE_PERSON_COLOMBIA,
 } from 'src/app/shared/forms/colombia_form';
-import { IForm } from 'src/app/shared/interfaces/form';
-import { ISelectBoxOption, TypeInputForm } from 'src/app/shared/interfaces/input_form';
+import { QuestionBase } from 'src/app/shared/question/struct/question-base';
+import { v4 as uuidv4 } from 'uuid';
+import { isEqual } from 'lodash';
 import { info_files } from 'src/app/shared/forms/files_types';
-import { VALIDATORS_PATTERNS } from 'src/app/shared/interfaces/validators';
+import { CountryVendor } from 'src/app/shared/interfaces/country_vendors';
+
 
 @Component({
   selector: 'app-colombia-form',
@@ -21,902 +21,104 @@ import { VALIDATORS_PATTERNS } from 'src/app/shared/interfaces/validators';
   styleUrls: ['./colombia-form.component.scss'],
 })
 export class ColombiaFormComponent {
+  @ViewChild(DynamicFormComponent) dynamicForm?: DynamicFormComponent;
+  @Input() infoVendor:any;
   @Output() onSubmit = new EventEmitter();
   @Output() onVerify = new EventEmitter();
   @Output() onFileSubmit = new EventEmitter();
-  @Input() infoVendor: any;
+  questions$?: Observable<QuestionBase<any>[]>;
+  vendorData?: any;
+  lists?: any;
+  valuesForm: any;
 
-  readonly COLOMBIAN_FORM = COLOMBIA_FORM;
-  readonly TypeInputForm = TypeInputForm
-  mainForm: IForm = { description: '', sections: [] };
-  loading: boolean = false;
-  form: FormGroup;
-  formInValid: boolean = false;
-  modalMessage: string | null = null;
-
-  vendorData: any = {};
-  vendorEconomicActivity: any[] = [];
-  inmutableData: any = {};
-  lists: any = {};
-
-  valuesLoaded: boolean = false;
-
-  get representantes_legales(): FormControl {
-    return this.form.controls['informacion_representantes_legales'] as FormControl;
+  get finalBeneficiaryInfo(): FormArray{
+    return this.dynamicForm?.formGroup.get('informacion_beneficiarios_finales') as FormArray;
   }
 
-  get junta_directiva(): FormControl {
-    return this.form.controls['informacion_junta_directiva'] as FormControl;
+  get shareholderInformation(): FormArray{
+    return this.dynamicForm?.formGroup.get('informacion_accionistas') as FormArray;
   }
 
-  get personas_expuestas(): FormControl {
-    return this.form.controls['informacion_personas_expuestas'] as FormControl;
+  get otherCompanies(): FormArray{
+    return this.dynamicForm?.formGroup.get('otras_empresas') as FormArray;
   }
 
-  get accionistas(): FormControl{
-    return this.form.controls['informacion_accionistas'] as FormControl;
+  get legalRepresent(): FormArray{
+    return this.dynamicForm?.formGroup.get('informacion_representantes_legales') as FormArray;
   }
 
-  get beneficiarios_finales(): FormControl{
-    return this.form.controls['informacion_beneficiarios_finales'] as FormControl;
+  get boardDirectors(): FormArray{
+    return this.dynamicForm?.formGroup.get('informacion_junta_directiva') as FormArray;
   }
 
-  get verify(): FormControl {
-    return this.form.controls['verify'] as FormControl;
+  get publicExposedPeople(): FormArray{
+    return this.dynamicForm?.formGroup.get('informacion_personas_expuestas') as FormArray;
   }
 
-  constructor(private _fB: FormBuilder, private vendorService: VendorsService, private _cD: ChangeDetectorRef) {
-    this.form = this._fB.group({});
+  constructor(private questionService: QuestionService) {
+
+  }
+
+  ngAfterViewInit(): void {
+
+    this.setValuesChangeCIIU();
+    this.setValuesBasicInfo();
+
+    setTimeout( () => {
+      this.setValuesChangeShareholder();
+      this.setValuesChangeFinalBeneficiary();
+      this.setValuesChangeOtherCompanies();
+      this.setValuesChangeLegalRepresent();
+      this.setValuesChangeBoardDirectors();
+      this.setValuesChangePublicExposedPeople()
+      this.setValuesChangeAttachments();
+
+    }, 1000)
   }
 
   ngOnInit(): void {
+    this.vendorData = {...this.infoVendor.vendor}
+    this.lists = this.infoVendor.lists;
 
-    this.loading = true;
-    this.mainForm = { ...COLOMBIA_FORM };
-
-    if (!this.infoVendor) return;
-
-    this.inmutableData = { ...this.infoVendor };
-
-    this.vendorData = {
-      ...this.infoVendor.vendor,
-      tipo_solicitud: 'Vinculación',
-      created_at: this.infoVendor.vendor.created_at
-        ? moment(this.infoVendor.vendor.created_at).format('YYYY-MM-DD')
-        : null,
-      expedition_date: this.infoVendor.vendor.expedition_date
-        ? moment(this.infoVendor.vendor.expedition_date).format('YYYY-MM-DD')
-        : null,
-    };
-
-    this.lists = this.inmutableData.lists;
-    this.vendorEconomicActivity = [...this.inmutableData.vendor_economic_activitis];
-
-    this.buildForm();
     this.setValuesForm();
-
-    this.loading = false
-
+    this.questions$ = this.questionService.getQuestions(this.lists, this.valuesForm, CountryVendor.Colombia);
   }
 
   setValuesForm() {
-    Object.keys(this.form.controls).forEach((key) => {
-      const control = this.form.controls[key];
-      control.setValue(this.vendorData[key], {emitEvent: false});
-    });
 
-    this.form.controls['business_group'].setValue(
-      this.vendorData['business_group'] ? '1' : '2'
-    );
+    this.valuesForm = {
+      ...this.vendorData,
+      'tipo_solicitud': 'Vinculación',
+      'uuid': uuidv4()
+    }
 
-    this.form.controls['pep'].setValue(this.vendorData['pep'] ? '1' : '2');
+    const _ciiu = this.infoVendor.vendor_economic_activitis.find( (item:any) => item.ciiu == this.valuesForm.ciiu);
+    this.valuesForm['actividad_economica'] =  _ciiu.economic_activity
 
-    this.form.controls['document'].setValue(
-      {
-        type: this.vendorData['f_document_type_id'],
-        document: this.vendorData['document'],
-        verification: this.vendorData['verification_digit'],
-      }
-    );
-
-    this.setJuridicaSectionsVisible();
-    this.setVerificationCodeVisible()
-    this.setEconomyActivityByCIIU();
     this.setVendorMultipleInfo();
     this.setComplementInfoFinalBenefit();
-    this.addPoliticianPeople(this.inmutableData['exposed_peoploes']);
-    this.setCheckboxInfo();
-    this.setVisbleBussinesGroup();
+    this.setVendorDeclaraciones();
+
+    this.setPoliticExposePerson();
     this.setFilesValues();
 
-    this.setValidationsDeclaraciones();
-
-
-    setTimeout(() => {
-      this.valuesLoaded = true;
-    }, 2000);
-
-
-
+    console.log(this.valuesForm)
 
   }
 
-  buildForm() {
-    const fields_group: any = {};
-
-    this.mainForm.sections.forEach((section) => {
-      section.inputs.forEach((input) => {
-        if (input.data) {
-          fields_group[input.data] = [];
-        }
-
-        if (input.options_key) {
-          input.options = this.lists[input.options_key];
-        }
-
-        if (input.children && input.children.length) {
-          input.children.forEach((inputChild) => {
-            if (inputChild.options_key) {
-              inputChild.options = this.lists[inputChild.options_key];
-            }
-
-            if (inputChild.children && inputChild.children.length) {
-              inputChild.children.forEach((inputLast) => {
-                if (inputLast.options_key) {
-                  inputLast.options = this.lists[inputLast.options_key];
-                }
-              });
-            }
-          });
-        }
-      });
-    });
-
-    this.form = this._fB.group(fields_group);
-
-    this.form.valueChanges
-    .pipe(
-      startWith(this.form.value),
-      pairwise(),
-      map(([oldValues, newValues]: any) => {
-        return Object.keys(newValues).find(
-          (k) => newValues[k] != oldValues[k]
-        );
-      })
-    )
-    .subscribe((formControlName) => {
-      if (this.valuesLoaded && formControlName) {
-        this.handleChangeFormValues(formControlName);
-      }
-
-
-      this.formInValid = this.form.touched && this.form.invalid
-
-    });
+  onSubmitForm(values: any){
+    const formData = this.prepareSubmitData(values);
+    this.onVerify.emit(formData);
   }
 
   confirmSubmit(){
-    this.representantes_legales.markAsDirty()
-    this.representantes_legales?.updateValueAndValidity();
-
-    const messages = [
-      this.representantes_legales.invalid ? 'INFORMACIÓN REPRESENTANTES LEGALES' : null,
-      this.junta_directiva.invalid ? 'INFORMACIÓN JUNTA DIRECTIVA, CONSEJO DE ADMINISTRACIÓN O EQUIVALENTE' : null,
-      this.accionistas.invalid ? 'INFORMACIÓN ACCIONISTAS Y/O SOCIOS' : null,
-      this.beneficiarios_finales.invalid ? 'INFORMACIÓN COMPLEMENTARIA DE BENEFICIARIOS FINALES' : null,
-      this.personas_expuestas.invalid ? 'PERSONAS EXPUESTAS POLÍTICAMENTE' : null
-    ].filter( message => message != null)
-
-    if(messages.length > 0){
-      this.modalMessage = `Hay informacion sin completar en ${messages.length > 1 ? 'las secciones' : 'la sección'} ${messages.join(', ')}, si no se completa esta no sera guardada. ¿Desea continuar?:`;
-      return;
-    }
-
-    this.handleSubmit('save');
-
-  }
-
-  private prepareSubmitData(){
-    const info_users: any = [];
-
-    const otras_empresas = this.form.value['otras_empresas'].rows
-      ? this.form.value['otras_empresas'].rows
-      : this.form.value['otras_empresas'];
-    if (otras_empresas) {
-      otras_empresas.forEach((row: any) => {
-        info_users.push({
-          ...row,
-          document: row.document.document,
-          f_document_type_id: row.document.type,
-          verification_digit: row.document.verification,
-          f_vendor_info_user_type_id: 1,
-        });
-      });
-    }
-
-    const representantes_legales = this.form.value[
-      'informacion_representantes_legales'
-    ]?.rows
-      ? this.form.value['informacion_representantes_legales'].rows
-      : this.form.value['informacion_representantes_legales'];
-    if (representantes_legales) {
-      representantes_legales.forEach((row: any) => {
-        info_users.push({
-          ...row,
-          document: row.document.document,
-          f_document_type_id: row.document.type,
-          verification_digit: row.document.verification,
-          pep: row.informacion_representantes_legales_pep == '1' ? true : null,
-          f_vendor_info_user_type_id: 2,
-        });
-      });
-    }
-
-    const junta_directiva = this.form.value['informacion_junta_directiva']?.rows
-      ? this.form.value['informacion_junta_directiva'].rows
-      : this.form.value['informacion_junta_directiva'];
-    if (junta_directiva) {
-      junta_directiva.forEach((row: any) => {
-        info_users.push({
-          ...row,
-          document: row.document.document,
-          f_document_type_id: row.document.type,
-          verification_digit: row.document.verification,
-          pep: row.informacion_junta_directiva_pep == '1' ? true : null,
-          f_vendor_info_user_type_id: 3,
-        });
-      });
-    }
-
-    const info_accionistas = this.form.value['informacion_accionistas']?.rows
-      ? this.form.value['informacion_accionistas'].rows
-      : this.form.value['informacion_accionistas'];
-
-
-    if (info_accionistas) {
-      info_accionistas.forEach((row: any) => {
-        info_users.push({
-          ...row,
-          document: row.document.document,
-          f_document_type_id: row.document.type,
-          verification_digit: row.document.verification,
-          pep: row.informacion_accionistas_pep == '1' ? true : null,
-          f_vendor_info_user_type_id: 4,
-        });
-      });
-    }
-
-    const info_beneficiarios_finales = this.form.value[
-      'informacion_beneficiarios_finales'
-    ].rows
-      ? this.form.value['informacion_beneficiarios_finales'].rows
-      : this.form.value['informacion_beneficiarios_finales'];
-    if (info_beneficiarios_finales) {
-      info_beneficiarios_finales.forEach((row: any) => {
-        const people_final = row['informacion_beneficiarios_finales_people']
-          .rows
-          ? row['informacion_beneficiarios_finales_people'].rows
-          : row['informacion_beneficiarios_finales_people'];
-        if (people_final) {
-          people_final.forEach((person: any) => {
-            info_users.push({
-              document_parent: row.document,
-              f_document_parent_type_id: row.f_document_type_id,
-              f_vendor_info_user_type_id: 5,
-              ...person,
-              document: person.document?.document,
-              f_document_type_id: person.document?.type,
-              verification_digit: person.document?.verification,
-              pep: person.info_beneficiarios_persona_pep == '1' ? true : null,
-            });
-          });
-        }
-      });
-    }
-
-    const exposed_peoploe = this.personas_expuestas.value.rows.map(
-      (person: any) => {
-        const {
-          people_relationships,
-          document_parent,
-          f_document_parent_type_id,
-          entity,
-          position,
-          binding_date,
-          termination_date,
-        } = person;
-
-        const _people_relationships = people_relationships ? (people_relationships.rows ? people_relationships.rows : people_relationships) : []
-        _people_relationships.forEach( (person:any) => {
-          console.log(person.document)
-          person.f_document_type_id = person.document.type
-          person.verification_digit = person.document.verification
-          person.document = person.document.document
-        })
-
-        console.log(_people_relationships)
-
-        return {
-          document_parent,
-          f_document_parent_type_id,
-          entity,
-          position,
-          binding_date,
-          termination_date,
-          people_relationships: _people_relationships
-        };
-      }
-    );
-
-    const info_additional = [
-      {
-        vendor_inf_add_type_id: 5,
-        value: this.form.value['conflicto_intereses'] == '1' ? true : null,
-        description: this.form.value['desc_conflicto_intereses']
-      },
-      {
-        vendor_inf_add_type_id: 6,
-        value: this.form.value['vinculo_estatal'] == '1' ? true : null,
-        description: this.form.value['desc_vinculo_estatal']
-      },
-      {
-        vendor_inf_add_type_id: 7,
-        value: this.form.value['vinculo_familiar_estatal'] == '1' ? true : null,
-        description: this.form.value['desc_vinculo_familiar_estatal']
-      },
-    ]
-
-
-    const formData = {
-      ...this.form.value,
-      document: this.form.value['document'].document,
-      verification_digit: this.form.value['document'].verification,
-      f_document_type_id: this.form.value['document'].type
-      ? Number(this.form.value['document'].type)
-      : null,
-      f_person_type_id: this.form.value.f_person_type_id
-        ? Number(this.form.value.f_person_type_id)
-        : null,
-      f_vendor_economic_act_id: this.form.value.f_vendor_economic_act_id
-        ? Number(this.form.value.f_vendor_economic_act_id)
-        : null,
-      f_vendor_type_id: this.form.value.f_vendor_type_id
-        ? Number(this.form.value.f_vendor_type_id)
-        : null,
-      business_group: this.form.value.business_group == '1' ? true : null,
-      pep: this.form.value.pep == '1' ? true : null,
-      info_users,
-      exposed_peoploe,
-      info_additional
-    }
-
-    return formData;
-  }
-
-  handleSubmit(action: string) {
-
-    this.modalMessage = null;
-
-    if(action == 'verify'){
-      this.form.markAsDirty();
-      Object.keys(this.form.controls).forEach( (key) => {
-        const control = this.form.get(key);
-        control?.markAsDirty();
-        control?.updateValueAndValidity();
-      })
-
-      if(this.form.invalid) return;
-    }
-
-
-    const formData = this.prepareSubmitData();
-
-    if(action == 'verify'){
-      this.onVerify.emit(formData);
-    }else{
-      this.onSubmit.emit(formData);
-    }
-
-  }
-
-  private handleChangeFormValues(formControlName: string) {
-    const value = this.form.value[formControlName];
-
-    console.log(formControlName, value)
-
-    const handlers = {
-      f_person_type_id: () => this.setTypeIdByTypePerson(value),
-      f_document_type_id: () => this.setVerificationCodeVisible(),
-      f_vendor_economic_act_id: () => this.setEconomyActivityByCIIU(),
-      informacion_accionistas: () => this.addFinalBeneficiaryByActionist(),
-      informacion_junta_directiva: () => this.addPoliticianPeople(),
-      informacion_representantes_legales: () => this.addPoliticianPeople(),
-      informacion_beneficiarios_finales: () => this.addPoliticianPeople(),
-      business_group: () => this.setVisbleBussinesGroup(),
-      pep: () => this.addPoliticianPeople(),
-      cedula_file: () => this.uploadInputFile(value, formControlName),
-      certificado_existencia_file: () => this.uploadInputFile(value, formControlName),
-      cedula_representante_legal_file: () => this.uploadInputFile(value, formControlName),
-      rut_file: () => this.uploadInputFile(value, formControlName),
-      certificacion_bancaria_file: () => this.uploadInputFile(value, formControlName),
-      documento_politicas: () => this.uploadInputFile(value, formControlName),
-      conflicto_intereses: () =>this.setValidationsDeclaraciones(),
-      vinculo_estatal: () =>this.setValidationsDeclaraciones(),
-      vinculo_familiar_estatal: () =>this.setValidationsDeclaraciones(),
-
-
-    };
-
-    if (formControlName in handlers) {
-      handlers[formControlName as keyof typeof handlers].call(this);
-    }
-
-  }
-
-  private uploadInputFile(value: File, formControlName: string){
-    const formData = this.prepareSubmitData();
-    this.onFileSubmit.emit({formControlName, value, formData});
-  }
-
-  private setVisbleBussinesGroup(){
-    const showBussiness = this.form.value['business_group'] == '1';
-
-    this.setVisibleInput(
-      'p_pertenece_grupo_empresarial',
-      showBussiness,
-      SECTIONS_COLOMBIA_FORM.INFORMACION_BASICA
-    );
-
-    this.setVisibleInput(
-      'otras_empresas',
-      showBussiness,
-      SECTIONS_COLOMBIA_FORM.INFORMACION_BASICA
-    );
-  }
-
-  private setTypeIdByTypePerson(typePerson: string) {
-    const person_type = this.inmutableData.person_types.find(
-      (item: any) => item.id == typePerson
-    );
-
-    const tipo_id = person_type
-      ? person_type.document_types.map((item: any) =>
-          this.setSelectBoxOptions(
-            item,
-            'f_person_type_id',
-            'document_type_esp'
-          )
-        )
-      : [];
-
-    this.lists['tipo_id'] = tipo_id;
-
-    this.updateList(
-      'f_document_type_id',
-      tipo_id,
-      SECTIONS_COLOMBIA_FORM.INFORMACION_BASICA
-    );
-
-    this.setJuridicaSectionsVisible();
-  }
-
-  private setValidationsDeclaraciones(){
-
-    const info_addtional_vendor = [
-      'conflicto_intereses',
-      'vinculo_estatal',
-      'vinculo_familiar_estatal',
-    ]
-
-      info_addtional_vendor.forEach( (input:any) => {
-      const value = this.form.value[input];
-
-      if(input){
-        if(this.form.controls[`desc_${input}`]){
-          if(value == '1'){
-            this.form.controls[`desc_${input}`].setValidators(Validators.required);
-            this.form.controls[`desc_${input}`].enable()
-            this.setVisibleInput(`desc_${input}`, true, SECTIONS_COLOMBIA_FORM.DECLARACIONES)
-          }else{
-            this.form.controls[`desc_${input}`].removeValidators(Validators.required);
-            this.form.controls[`desc_${input}`].disable()
-            this.setVisibleInput(`desc_${input}`, false, SECTIONS_COLOMBIA_FORM.DECLARACIONES)
-          }
-        }
-
-      }
-
-
-    });
-
-  }
-
-  private setVendorMultipleInfo() {
-    const vendor_info = this.inmutableData.vendor_info_user.forEach(
-      (info_user: any) => {
-        if (info_user.id == 1) {
-          this.form.controls['otras_empresas'].setValue(
-            info_user.user_person.map((user: any) => ({
-              name: user.name,
-              document: {
-                document: user.document,
-                type: user.f_document_type_id,
-              },
-              quantity: user.quantity,
-              id: user.id,
-            }))
-            ,{emitEvent: false}
-          );
-        }
-
-        if (info_user.id == 2) {
-          this.form.controls['informacion_representantes_legales'].setValue(
-            info_user.user_person.map((user: any) => ({
-              name: user.name,
-              last_name: user.last_name,
-              document: {
-                document: user.document,
-                type: user.f_document_type_id,
-                verification: user.verification_digit,
-              },
-              expedition_date: user.expedition_date,
-              country: user.country,
-              department: user.department,
-              city: user.city,
-              email: user.email,
-              informacion_representantes_legales_pep:
-                user.pep == true ? '1' : '2',
-              id: user.id,
-            })),
-            {emitEvent: false}
-          );
-        }
-
-        if (info_user.id == 3) {
-          this.form.controls['informacion_junta_directiva'].setValue(
-            info_user.user_person.map((user: any) => ({
-              name: user.name,
-              last_name: user.last_name,
-              document: {
-                document: user.document,
-                type: user.f_document_type_id,
-                verification: user.verification_digit,
-              },
-              expedition_date: user.expedition_date,
-              country: user.country,
-              department: user.department,
-              city: user.city,
-              email: user.email,
-              informacion_junta_directiva_pep: user.pep == true ? '1' : '2',
-              id: user.id,
-            })),
-            {emitEvent: false});
-        }
-
-       if (info_user.id == 4) {
-
-          this.form.controls['informacion_accionistas'].setValue(
-            info_user.user_person.map((user: any) => {
-              const isJuridica = Number(user.f_person_type_id) == TYPE_PERSON_COLOMBIA.Juridica;
-              return {
-                f_person_type_id: user.f_person_type_id,
-                name: user.name,
-                percente_participation: user.percente_participation,
-                document: {
-                  document: user.document,
-                  type: user.f_document_type_id,
-                  verification: user.verification_digit,
-                },
-                expedition_date: user.expedition_date,
-                country: user.country,
-                informacion_accionistas_pep_visible: !isJuridica,
-                informacion_accionistas_pep: user.pep == true ? '1' : '2',
-                id: user.id,
-
-              }
-            })
-          , {emitEvent: false});
-        }
-      }
-    );
-  }
-
-  private setCheckboxInfo(){
-
-    const info_addtional_vendor = {
-      5: 'conflicto_intereses',
-      6: 'vinculo_estatal',
-      7: 'vinculo_familiar_estatal',
-    }
-
-    this.inmutableData.info_addtional_vendor.forEach( (info_user:any) => {
-      const value = info_user.value;
-      const input = info_addtional_vendor[info_user.id as keyof typeof info_addtional_vendor]
-
-      if(input){
-        this.form.controls[`desc_${input}`].setValue(info_user.description);
-        this.form.controls[input].setValue(value == true ? '1': '2');
-      }
-
-    });
-
-  }
-
-  private setComplementInfoFinalBenefit() {
-    const informacion_accionistas = this.inmutableData.vendor_info_user.find(
-      (info_user: any) => info_user.id == 4
-    );
-    if (informacion_accionistas && informacion_accionistas.user_person) {
-      const info_final = informacion_accionistas.user_person.filter(
-        (person: any) => {
-          return (
-            person.f_person_type_id == 2 && person.percente_participation >= 5
-          );
-        }
-      );
-
-      this.beneficiarios_finales.setValue(
-        info_final.map((user: any) => ({
-          id: user.id,
-          document: user.document,
-          f_document_type_id: user.f_document_type_id,
-          name: user.name,
-          informacion_beneficiarios_finales_people: user.childrent.map(
-            (child: any) => ({
-              f_person_type_id: child.f_person_type_id,
-              name: child.name,
-
-              document: {
-                document: child.document,
-                type: child.f_document_type_id,
-                verification: child.verification_digit,
-                person: child.f_person_type_id,
-              },
-
-              expedition_date: child.expedition_date,
-              info_beneficiarios_persona_pep: child.pep == true ? '1' : '2',
-              id: child.id,
-            })
-          ),
-        }))
-      );
-    }
-  }
-
-  private addPoliticianPeople(initValues = []) {
-
-    const people: any = [];
-    const current_people =
-      (this.personas_expuestas.value && this.personas_expuestas.value.rows
-        ? this.personas_expuestas.value.rows
-        : this.personas_expuestas.value) || [];
-
-    if (
-      this.form.value['pep'] == '1' &&
-      this.form.value['document'].document &&
-      this.form.value['document'].type
-    ) {
-      people.push({
-        parent_id: 1,
-        id: uuidv4(),
-        document_parent: this.form.value.document.document,
-        name_parent: this.form.value.name,
-        f_document_parent_type_id: this.form.value.document.type,
-      });
-    }
-
-    const informacion_representantes_legales = this.form.value[
-      'informacion_representantes_legales'
-    ]?.rows
-      ? this.form.value['informacion_representantes_legales'].rows
-      : this.form.value['informacion_representantes_legales'];
-    if (informacion_representantes_legales) {
-      informacion_representantes_legales.forEach((item: any) => {
-        if (
-          item['informacion_representantes_legales_pep'] == '1' &&
-          item['document'].document &&
-          item['document'].type
-        ) {
-          people.push({
-            id: uuidv4(),
-            parent_id: 2,
-            document_parent: item['document'].document,
-            f_document_parent_type_id: item['document'].type,
-            name_parent: item['name'],
-            people_relationships: []
-          });
-        }
-      });
-    }
-
-    const informacion_junta_directiva = this.form.value[
-      'informacion_junta_directiva'
-    ]?.rows
-      ? this.form.value['informacion_junta_directiva'].rows
-      : this.form.value['informacion_junta_directiva'];
-    if (informacion_junta_directiva) {
-      informacion_junta_directiva.forEach((item: any) => {
-        if (
-          item['informacion_junta_directiva_pep'] == '1' &&
-          item['document'].document &&
-          item['document'].type
-        ) {
-          people.push({
-            id: uuidv4(),
-            parent_id: 3,
-            document_parent: item['document'].document,
-            f_document_parent_type_id: item['document'].type,
-            name_parent: item['name'],
-            people_relationships: []
-          });
-        }
-      });
-    }
-
-    const informacion_accionistas = this.form.value['informacion_accionistas']?.rows
-      ? this.form.value['informacion_accionistas'].rows
-      : this.form.value['informacion_accionistas'];
-    if (informacion_accionistas) {
-      informacion_accionistas.forEach((item: any) => {
-        if (
-          item['informacion_accionistas_pep'] == '1' &&
-          item['document'].document &&
-          item['document'].type
-        ) {
-          people.push({
-            id: uuidv4(),
-            parent_id: 4,
-            document_parent: item['document'].document,
-            f_document_parent_type_id: item['document'].type,
-            name_parent: item['name'],
-            people_relationships: []
-          });
-        }
-      });
-    }
-
-    const informacion_beneficiarios_finales = this.form.value[
-      'informacion_beneficiarios_finales'
-    ]?.rows
-      ? this.form.value['informacion_beneficiarios_finales'].rows
-      : this.form.value['informacion_beneficiarios_finales'];
-    if (informacion_beneficiarios_finales) {
-      informacion_beneficiarios_finales.forEach((element: any) => {
-        const informacion_beneficiarios_finales_people = element[
-          'informacion_beneficiarios_finales_people'
-        ].rows
-          ? element['informacion_beneficiarios_finales_people'].rows
-          : element['informacion_beneficiarios_finales_people'];
-        informacion_beneficiarios_finales_people.forEach((item: any) => {
-          if (
-            item['info_beneficiarios_persona_pep'] == '1' &&
-            item['document'].document &&
-            item['document'].type
-          ) {
-            people.push({
-              id: uuidv4(),
-              parent_id: 6,
-              document_parent: item['document'].document,
-              f_document_parent_type_id: item['document'].type,
-              name_parent: item['name'],
-              people_relationships: []
-            });
-          }
-        });
-      });
-    }
-
-    if (!people.length) {
-      this.personas_expuestas.setValue({ rows: [] });
-      return;
-    }
-
-    const sort_people = people.sort(
-      (a: any, b: any) => a.parent_id - b.parent_id
-    );
-
-    if (!current_people.length) {
-
-      this.personas_expuestas.setValue({ rows: sort_people.map( (person: any) => {
-        const value:any = initValues.find( (initVal:any) => initVal.document_parent == person.document_parent && initVal.f_document_parent_type_id == person.f_document_parent_type_id)
-        if(value){
-          value.people_relationships.forEach( (data:any) => {
-            data.document = {
-              document: data.document,
-              type: data.f_document_type_id,
-            }
-          })
-          return {...person, ...value}
-        }
-        return person;
-      }) });
-      return;
-    }
-
-    const remove_people = current_people.filter((current: any) => {
-      return !sort_people.find(
-        (person: any) =>
-          current.document_parent == person.document_parent &&
-          current.f_document_parent_type_id == person.f_document_parent_type_id
-      );
-    });
-
-    if (remove_people.length) {
-      const modify_people = current_people.filter((current: any) => {
-        return !remove_people.find(
-          (person: any) =>
-            current.document_parent == person.document_parent &&
-            current.f_document_parent_type_id ==
-              person.f_document_parent_type_id
-        );
-      });
-
-      this.personas_expuestas.setValue({ rows: [...modify_people] });
-      return;
-    }
-
-    const new_people = sort_people.filter((person: any) => {
-      return !current_people.find(
-        (current: any) =>
-          current.document_parent == person.document_parent &&
-          current.f_document_parent_type_id == person.f_document_parent_type_id
-      );
-    });
-
-
-
-    if (new_people.length) {
-      this.personas_expuestas.setValue({
-        rows: [...current_people, ...new_people],
-      });
-      return;
-    }
-
-  }
-
-  private addFinalBeneficiaryByActionist() {
-
-    const info_final = this.form.value['informacion_accionistas']?.rows ? this.form.value['informacion_accionistas'].rows.filter(
-      (person: any) => {
-        return (
-          person.f_person_type_id == 2 && person.percente_participation >= 5
-        );
-      }
-    ): [];
-
-    const currentValue = this.form.value['informacion_beneficiarios_finales']?.rows
-      ? this.form.value['informacion_beneficiarios_finales'].rows
-      : this.form.value['informacion_beneficiarios_finales'];
-
-    this.form.controls['informacion_beneficiarios_finales'].setValue({
-        rows: info_final.map((user: any) => {
-          const exist = currentValue.find( (item:any) => item.id == user.id)
-
-          return {
-            id: exist ? exist.id : uuidv4(),
-            document: user.document.document ? user.document.document : user.document,
-            f_document_type_id: user.document.type ? user.document.type :  user.f_document_type_id,
-            name: user.name,
-            informacion_beneficiarios_finales_people: exist ? exist.informacion_beneficiarios_finales_people : []
-          }
-        }),
-      });
-  }
-
-  private setEconomyActivityByCIIU() {
-    const economyActivity = this.vendorEconomicActivity.find(
-      (item) => item.id == this.form.value['f_vendor_economic_act_id']
-    );
-
-    if (economyActivity) {
-      this.form.controls['actividad_economica'].setValue(
-        economyActivity.economic_activity
-      );
-    }
+    const values = this.dynamicForm?.getFormValue();
+    const formData = this.prepareSubmitData(values);
+    this.onSubmit.emit(formData);
   }
 
   private setFilesValues(){
-    this.inmutableData['document_vendor'].forEach( (document:any) => {
+    this.infoVendor['document_vendor'].forEach( (document:any) => {
 
       if(document.link == null || document.link == undefined){
         return;
@@ -929,160 +131,771 @@ export class ColombiaFormComponent {
         const file_key = info_files[key as unknown as keyof typeof info_files];
 
         if(document.id == Number(key)){
-          this.form.get(file_key)?.setValue(file)
+          this.valuesForm[file_key] = file
         }
 
       })
     })
   }
 
-  private setVerificationCodeVisible(){
-    const showJuridicaSections =
-    Number(this.form.value['f_person_type_id']) ==
-    TYPE_PERSON_COLOMBIA.Juridica;
+  private setVendorMultipleInfo() {
+    this.infoVendor.vendor_info_user.forEach(
+      (info_user: any) => {
+        if (info_user.id == 1) {
+          this.valuesForm['otras_empresas'] =
+            info_user.user_person.length ? info_user.user_person.map((user: any) => ({
+              uuid: uuidv4(),
+              name: user.name,
+              document: user.document,
+              verification_digit: user.verification_digit,
+              f_document_type_id: this.lists.juridica_id.find( (option:any) => option.key == user.f_document_type_id) ? user.f_document_type_id : null ,
+              f_person_type_id: TYPE_PERSON_COLOMBIA.Juridica,
+              quantity: user.quantity,
+              id: user.id,
 
-    this.setVisibleInput(
-      'verification_digit',
-      showJuridicaSections && Number(this.form.value['f_document_type_id']) == 5,
-      SECTIONS_COLOMBIA_FORM.INFORMACION_BASICA
+            })) : [{}]
+        }
+
+        if (info_user.id == 2) {
+          this.valuesForm['informacion_representantes_legales'] =
+          info_user.user_person.length ? info_user.user_person.map((user: any) => ({
+              uuid: uuidv4(),
+              name: user.name,
+              last_name: user.last_name,
+              f_document_type_id: this.lists.natural_id.find( (option:any) => option.key == user.f_document_type_id) ? user.f_document_type_id : null ,
+              document: user.document,
+              verification_digit: user.verification_digit,
+              expedition_date: user.expedition_date,
+              f_person_type_id: TYPE_PERSON_COLOMBIA.Natural,
+              country: user.country,
+              department: user.department,
+              city: user.city,
+              email: user.email,
+              id: user.id,
+              informacion_representantes_legales_pep: user.pep
+            })): [{}]
+        }
+
+        if (info_user.id == 3) {
+          this.valuesForm['informacion_junta_directiva'] =
+          info_user.user_person.length ? info_user.user_person.map((user: any) => ({
+              uuid: uuidv4(),
+              name: user.name,
+              last_name: user.last_name,
+              f_document_type_id: this.lists.natural_id.find( (option:any) => option.key == user.f_document_type_id) ? user.f_document_type_id : null ,
+              document:  user.document,
+              verification_digit: user.verification_digit,
+              f_person_type_id: TYPE_PERSON_COLOMBIA.Natural,
+              expedition_date: user.expedition_date,
+              country: user.country,
+              department: user.department,
+              city: user.city,
+              email: user.email,
+              id: user.id,
+              informacion_junta_directiva_pep: user.pep,
+            })): [{}]
+        }
+
+        if (info_user.id == 4) {
+
+          this.valuesForm['informacion_accionistas'] =
+          info_user.user_person.length ? info_user.user_person.map((user: any) => {
+              return {
+                uuid: uuidv4(),
+                f_person_type_id: user.f_person_type_id,
+                name: user.name,
+                percente_participation: user.percente_participation,
+                document: user.document,
+                verification_digit: user.verification_digit,
+                f_document_type_id: user.f_document_type_id,
+                expedition_date: user.expedition_date,
+                country: user.country,
+                id: user.id,
+                children: user.childrent,
+                informacion_accionistas_pep: user.pep,
+                visible_informacion_accionistas_pep: user.f_person_type_id == TYPE_PERSON_COLOMBIA.Natural,
+              }
+            }): [{
+              visible_informacion_accionistas_pep: false
+            }]
+        }
+      }
     );
+
+
   }
 
-  private setJuridicaSectionsVisible() {
-    const showJuridicaSections =
-      Number(this.form.value['f_person_type_id']) ==
-      TYPE_PERSON_COLOMBIA.Juridica;
-    const showNaturalSections =
-      Number(this.form.value['f_person_type_id']) ==
-      TYPE_PERSON_COLOMBIA.Natural;
+  private setComplementInfoFinalBenefit() {
 
-    this.setVisibleInput(
-      'verification_digit',
-      showJuridicaSections && Number(this.form.value['f_document_type_id']) == 5,
-      SECTIONS_COLOMBIA_FORM.INFORMACION_BASICA
-    );
+    this.valuesForm['informacion_beneficiarios_finales'] = [];
 
-    this.setVisibleInput(
-      'otras_empresas',
-      showJuridicaSections,
-      SECTIONS_COLOMBIA_FORM.INFORMACION_BASICA
-    );
-    this.setVisibleInput(
-      'business_group',
-      showJuridicaSections,
-      SECTIONS_COLOMBIA_FORM.INFORMACION_BASICA
-    );
-    this.setVisibleInput(
-      'p_pertenece_grupo_empresarial',
-      showJuridicaSections,
-      SECTIONS_COLOMBIA_FORM.INFORMACION_BASICA
-    );
-    this.setVisibleInput(
-      'pep',
-      showNaturalSections,
-      SECTIONS_COLOMBIA_FORM.INFORMACION_BASICA
-    );
+    const informacion_accionistas = this.valuesForm['informacion_accionistas'];
 
-    this.setVisibleInput(
-      'cedula_file',
-      showNaturalSections,
-      SECTIONS_COLOMBIA_FORM.ANEXOS
-    );
-    this.setVisibleInput(
-      'certificado_existencia_file',
-      showJuridicaSections,
-      SECTIONS_COLOMBIA_FORM.ANEXOS
-    );
-    this.setVisibleInput(
-      'cedula_representante_legal_file',
-      showJuridicaSections,
-      SECTIONS_COLOMBIA_FORM.ANEXOS
-    );
-
-    this.setVisibleSection(
-      showJuridicaSections,
-      SECTIONS_COLOMBIA_FORM.INFORMACION_REPRESENTANTES_LEGALES
-    );
-    this.setVisibleSection(
-      showJuridicaSections,
-      SECTIONS_COLOMBIA_FORM.INFORMACION_JUNTA_DIRECTIVA
-    );
-    this.setVisibleSection(
-      showJuridicaSections,
-      SECTIONS_COLOMBIA_FORM.INFORMACION_ACCIONISTAS
-    );
-    this.setVisibleSection(
-      showJuridicaSections,
-      SECTIONS_COLOMBIA_FORM.INFORMACION_BENEFICIARIOS_FINALES
-    );
-  }
-
-  private setVisibleInput(
-    inputKey: string,
-    visible: boolean,
-    sectionKey: SECTIONS_COLOMBIA_FORM
-  ) {
-    const sectionIndex = this.mainForm.sections.findIndex(
-      (section) => section.key == sectionKey
-    );
-    const section = this.mainForm.sections[sectionIndex];
-
-    if (section) {
-      const indexInput = section.inputs.findIndex(
-        (input) => input.data == inputKey
+    if (informacion_accionistas) {
+      const info_final = informacion_accionistas.filter(
+        (person: any) => {
+          return (
+            person.f_person_type_id == TYPE_PERSON_COLOMBIA.Juridica && person.percente_participation >= 5
+          );
+        }
       );
-      const input = section.inputs[indexInput];
 
-      if (input) {
-        input.visible = visible;
-        this.mainForm.sections[sectionIndex].inputs[indexInput] = { ...input };
+      info_final.forEach( (infoAccionista: any) => {
+        this.addFinalBeneficiaryByShareholder(infoAccionista);
+      })
+    }
+
+  }
+
+  private setPoliticExposePerson(){
+    const politicExposesPersonList = [];
+
+    if(this.valuesForm['pep'] && this.valuesForm['document'] && this.valuesForm['f_document_type_id']){
+      politicExposesPersonList.push(this.createPoliticExposePerson({...this.valuesForm}, 1))
+    }
+
+    this.valuesForm['informacion_representantes_legales'].forEach( (person:any) => {
+      if(person['informacion_representantes_legales_pep'] && person['document'] && person['f_document_type_id']){
+        politicExposesPersonList.push(this.createPoliticExposePerson({...person}, 2))
+      }
+    });
+
+    this.valuesForm['informacion_junta_directiva'].forEach( (person:any) => {
+      if(person['informacion_junta_directiva_pep'] && person['document'] && person['f_document_type_id']){
+        politicExposesPersonList.push(this.createPoliticExposePerson({...person}, 3))
+      }
+    });
+
+    this.valuesForm['informacion_accionistas'].forEach( (person:any) => {
+      if(person['informacion_accionistas_pep'] && person['document'] && person['f_document_type_id']){
+        politicExposesPersonList.push(this.createPoliticExposePerson({...person}, 4))
+      }
+    });
+
+    this.valuesForm['informacion_beneficiarios_finales'].forEach( (beneficiaries:any) => {
+      beneficiaries['informacion_beneficiarios_finales_people'].forEach( (person: any) => {
+        if(person['info_beneficiarios_persona_pep'] && person['document'] && person['f_document_type_id']){
+          politicExposesPersonList.push(this.createPoliticExposePerson({...person}, 6))
+        }
+      })
+    });
+
+    this.valuesForm['informacion_personas_expuestas'] = politicExposesPersonList.map( (person:any) => {
+      const existPerson = this.infoVendor.exposed_peoploes.find( (_person:any) =>
+        _person.document_parent == person.document_parent &&
+        _person.f_document_parent_type_id == person.f_document_parent_type_id
+      )
+
+      if(existPerson){
+        person = {...person, ...existPerson};
+      }
+
+      return person;
+
+    })
+
+  }
+
+  private createPoliticExposePerson(person: any, parent_id: number){
+    return {
+      parent_id,
+      uuid: person.uuid,
+      document_parent: person.document,
+      name_parent: person.name,
+      f_document_parent_type_id: person.f_document_type_id,
+      people_relationships: [{
+        f_person_type_id: 1
+      }]
+    }
+  }
+
+  private setVendorDeclaraciones(){
+    const info_addtional_vendor = {
+      5: 'conflicto_intereses',
+      6: 'vinculo_estatal',
+      7: 'vinculo_familiar_estatal',
+      8: 'servicios_actividades_prestados',
+      9: 'incluido_sat',
+    }
+
+    this.infoVendor.info_addtional_vendor.forEach( (info_user:any) => {
+      const value = info_user.value;
+      const input = info_addtional_vendor[info_user.id as keyof typeof info_addtional_vendor]
+
+      if(input){
+        this.valuesForm[`desc_${input}`] = info_user.description;
+        this.valuesForm[input] = value;
+      }
+    });
+  }
+
+  private addFinalBeneficiaryByShareholder(infAccionista: any) {
+
+    this.valuesForm['informacion_beneficiarios_finales'].push({
+      id: infAccionista.id,
+      uuid: infAccionista.uuid,
+      document: infAccionista.document,
+      f_document_type_id: infAccionista.f_document_type_id,
+      name: infAccionista.name,
+      informacion_beneficiarios_finales_people: infAccionista.children?.length ? infAccionista.children.map(
+        (child: any) => ({
+          uuid: uuidv4(),
+          f_person_type_id: child.f_person_type_id,
+          name: child.name,
+          document: child.document,
+          f_document_type_id: child.f_document_type_id,
+          verification_digit: child.verification_digit,
+          expedition_date: child.expedition_date,
+          id: child.id,
+          info_beneficiarios_persona_pep: child.pep,
+          visible_info_beneficiarios_persona_pep: child.f_person_type_id == TYPE_PERSON_COLOMBIA.Natural,
+        })
+      ): [{
+        visible_info_beneficiarios_persona_pep: false,
+      }]
+    });
+
+    return this.valuesForm['informacion_beneficiarios_finales'][this.valuesForm['informacion_beneficiarios_finales'].length - 1]
+  }
+
+  private setValuesChangeOtherCompanies(){
+
+    this.otherCompanies?.valueChanges
+    .pipe(
+      startWith(this.otherCompanies?.value),
+      pairwise(),
+      map(([oldValues, newValues]: any) => {
+        return newValues.findIndex(
+          (item:any, k:number) => {
+            return !isEqual(newValues[k], oldValues[k])
+          }
+        );
+      })
+    ).subscribe( (values:any) => {
+      if(values > -1){
+        this.handleOtherCompaniesChange(this.otherCompanies['controls'][values])
+      }
+    });
+  }
+
+  private handleOtherCompaniesChange(row: any){
+
+    /** Action change type person */
+      row.get('document').patchValue({
+        ...row.get('document').value,
+        person: TYPE_PERSON_COLOMBIA.Juridica
+      }, {emitEvent: false, emitModelToViewChange: true});
+  }
+
+  private setValuesChangeLegalRepresent(){
+    this.legalRepresent?.valueChanges
+    .pipe(
+      startWith(this.legalRepresent?.value),
+      pairwise(),
+      map(([oldValues, newValues]: any) => {
+        return newValues.findIndex(
+          (item:any, k:number) => {
+            return !isEqual(newValues[k], oldValues[k])
+          }
+        );
+      })
+    ).subscribe( (values:any) => {
+
+      if(values > -1){
+        this.handleLegalRepresentChange(this.legalRepresent['controls'][values])
+      }
+    });
+  }
+
+  private handleLegalRepresentChange(row: any){
+
+    this.setPublicExposePersonRow(row);
+    this.addPublicExposePerson(row.getRawValue(), 'informacion_representantes_legales_pep', 2);
+
+    /** Action change type person */
+    row.get('document').patchValue({
+      ...row.get('document').value,
+      person: TYPE_PERSON_COLOMBIA.Natural
+    }, {emitEvent: false, emitModelToViewChange: true});
+
+
+  }
+
+  private setValuesChangeBoardDirectors(){
+    this.boardDirectors?.valueChanges
+    .pipe(
+      startWith(this.boardDirectors?.value),
+      pairwise(),
+      map(([oldValues, newValues]: any) => {
+        return newValues.findIndex(
+          (item:any, k:number) => {
+            return !isEqual(newValues[k], oldValues[k])
+          }
+        );
+      })
+    ).subscribe( (values:any) => {
+
+      if(values > -1){
+        this.handleBoardDirectorsChange(this.boardDirectors['controls'][values])
+      }
+    });
+  }
+
+  private handleBoardDirectorsChange(row: any){
+
+
+    this.setPublicExposePersonRow(row);
+    this.addPublicExposePerson(row.getRawValue(), 'informacion_junta_directiva_pep', 3);
+
+    /** Action change type person */
+    row.get('document').patchValue({
+      ...row.get('document').value,
+      person: TYPE_PERSON_COLOMBIA.Natural
+    }, {emitEvent: false, emitModelToViewChange: true});
+  }
+
+  private setValuesChangeShareholder(){
+    this.shareholderInformation?.valueChanges
+    .pipe(
+      startWith(this.shareholderInformation?.value),
+      pairwise(),
+      map(([oldValues, newValues]: any) => {
+        return newValues.findIndex(
+          (item:any, k:number) => {
+            return !isEqual(newValues[k], oldValues[k])
+          }
+        );
+      })
+    ).subscribe( (values:any) => {
+
+      if(values > -1){
+        this.handleShareholderChange(this.shareholderInformation['controls'][values])
+      }
+    });
+  }
+
+  private handleShareholderChange(row: any){
+
+    const beneficiaryInfoIndex = this.finalBeneficiaryInfo?.controls.findIndex( (info:any) => info.value.uuid == row.value.uuid);
+    const beneficiaryInfo = this.finalBeneficiaryInfo?.controls[beneficiaryInfoIndex];
+    const hasComplementInfo = Number(row.value.f_person_type_id) == TYPE_PERSON_COLOMBIA.Juridica && Number(row.value.percente_participation) >= 5;
+
+    this.setPublicExposePersonRow(row);
+    this.addPublicExposePerson(row.getRawValue(), 'informacion_accionistas_pep', 4);
+
+    /** Action change type person */
+    if(row.value.f_person_type_id){
+      row.get('document').patchValue({
+        ...row.get('document').value,
+        person: row.value.f_person_type_id
+      }, {emitEvent: false, emitModelToViewChange: true});
+    }
+
+    row.get('visible_informacion_accionistas_pep').setValue(
+      row.value.f_person_type_id == TYPE_PERSON_COLOMBIA.Natural, {emitEvent: false, emitModelToViewChange: true}
+    )
+
+
+    /** Action add / remove final beneficiary information */
+    if(hasComplementInfo && !beneficiaryInfo){
+
+      const questionsRaw = this.dynamicForm?.questionsForm
+        ?.find( question => question.key == SECTIONS_COLOMBIA_FORM.INFORMACION_BENEFICIARIOS_FINALES)
+        ?.children
+
+      if(questionsRaw){
+        const newRowQuestions = this.questionService.getArrayGroupQuestions(questionsRaw, this.lists, SECTIONS_COLOMBIA_FORM.INFORMACION_BENEFICIARIOS_FINALES);
+        const formRow = this.questionService.addNewRowArrayGroupQuestion(this.finalBeneficiaryInfo, newRowQuestions)
+        formRow.patchValue({
+          document: row.value.document?.document,
+          f_document_type_id: row.value.document?.type,
+          name: row.value.name,
+          uuid: row.value.uuid,
+          [`init_informacion_beneficiarios_finales_people`]: [{}]
+        });
+
+        this.finalBeneficiaryInfo.push(formRow)
+      }
+
+      this.setValuesChangeFinalBeneficiary();
+
+      return;
+    }
+
+
+    if(!hasComplementInfo && beneficiaryInfo){
+      this.finalBeneficiaryInfo.removeAt(beneficiaryInfoIndex);
+      return;
+    }
+
+    if(beneficiaryInfo){
+      beneficiaryInfo.patchValue({
+        name: row.value.name,
+        document: row.value.document.document,
+        f_document_type_id: row.value.document.type,
+     })
+    }
+
+  }
+
+  private setValuesChangeFinalBeneficiary(){
+    this.finalBeneficiaryInfo['controls'].forEach( (rowControl:any) => {
+      const formArray = rowControl.get('informacion_beneficiarios_finales_people');
+
+      formArray?.valueChanges
+        .pipe(
+          startWith(formArray?.value),
+          pairwise(),
+          map(([oldValues, newValues]: any) => {
+            return newValues.findIndex(
+              (item:any, k:number) => {
+                return !isEqual(newValues[k], oldValues[k])
+              }
+            );
+          })
+        )
+        .subscribe( (values:any) => {
+          if(values > -1){
+            this.handleFinalBeneficiaryChange(formArray['controls'][values])
+          }
+      });
+    });
+  }
+
+  private handleFinalBeneficiaryChange(row: any){
+
+    this.setPublicExposePersonRow(row);
+    this.addPublicExposePerson(row.getRawValue(), 'info_beneficiarios_persona_pep', 6);
+
+    /** Action change type person */
+    if(row.value.f_person_type_id){
+      row.get('document').patchValue({
+        ...row.get('document').value,
+        person: row.value.f_person_type_id
+      }, {emitEvent: false, emitModelToViewChange: true});
+    }
+
+    row.get('visible_info_beneficiarios_persona_pep').setValue(
+      row.value.f_person_type_id == TYPE_PERSON_COLOMBIA.Natural, {emitEvent: false, emitModelToViewChange: true}
+    )
+  }
+
+  private setValuesChangePublicExposedPeople(){
+    this.publicExposedPeople?.valueChanges
+    .pipe(
+      startWith(this.publicExposedPeople?.value),
+      pairwise(),
+      map(([oldValues, newValues]: any) => {
+        return newValues.findIndex(
+          (item:any, k:number) => {
+            return !isEqual(newValues[k], oldValues[k])
+          }
+        );
+      })
+    ).subscribe( (values:any) => {
+      if(values > -1){
+        this.handlePublicExposedPeopleChange(this.publicExposedPeople['controls'][values])
+      }
+    });
+
+
+  }
+
+  private handlePublicExposedPeopleChange(row: any){
+
+    row.get('people_relationships').controls.forEach( (control:any) => {
+       /** Action change type person */
+       control.get('document').patchValue({
+        ...control.get('document').value,
+        person: 1
+      }, {emitEvent: false, emitModelToViewChange: true});
+
+    })
+
+
+
+  }
+
+
+  private setValuesChangeAttachments(){
+    const formGroup = this.dynamicForm?.formGroup;
+    const filesInForm = [
+      "cedula_file",
+      "certificado_existencia_file",
+      "cedula_representante_legal_file",
+      "rut_file",
+      "certificacion_bancaria_file",
+      "documento_politicas"
+    ]
+
+    formGroup?.valueChanges
+      .pipe(
+        startWith(formGroup.value),
+        pairwise(),
+        map(([oldValues, newValues]: any) => {
+          return Object.keys(newValues).find(
+            (k) => newValues[k] != oldValues[k] && filesInForm.includes(k)
+          );
+        })
+      )
+      .subscribe( (value:any) => {
+        if(value){
+          this.handleAttachmentsChanges(formGroup.value[value], value);
+        }
+      });
+
+  }
+
+  private handleAttachmentsChanges(value: any, formControlName: string){
+    const values = this.dynamicForm?.getFormValue();
+    const formData = this.prepareSubmitData(values);
+    this.onFileSubmit.emit({formControlName, value, formData})
+  }
+
+  private setValuesChangeCIIU(){
+    const ciiu = this.dynamicForm?.formGroup.get('f_vendor_economic_act_id')
+    ciiu?.valueChanges
+    .subscribe( (value:any) => {
+      const _ciiu = this.infoVendor.vendor_economic_activitis.find( (item:any) => item.id == Number(value));
+      this.dynamicForm?.formGroup.get('actividad_economica')?.setValue(_ciiu.economic_activity,  {emitEvent: false, emitModelToViewChange: true})
+    });
+  }
+
+  private setValuesBasicInfo(){
+
+    const changeExposedPeople = (value: any) => {
+      const beneficiaryInfoIndex = this.publicExposedPeople?.controls.findIndex( (info:any) => info.value.parent_id == 1);
+      const beneficiaryInfo = this.publicExposedPeople?.controls[beneficiaryInfoIndex];
+
+      if(beneficiaryInfo){
+        beneficiaryInfo.patchValue({
+            name_parent: value.name,
+            document_parent: value.document.document,
+            f_document_parent_type_id: value.document.type,
+        })
       }
     }
+
+    const document = this.dynamicForm?.formGroup.get('document')
+    const name = this.dynamicForm?.formGroup.get('name')
+    const pep = this.dynamicForm?.formGroup.get('pep')
+
+    document?.valueChanges.subscribe( (value:any) => changeExposedPeople({name: name?.value, document: value}));
+    name?.valueChanges.subscribe( (value:any) => changeExposedPeople({name: value, document: document?.value}));
+    pep?.valueChanges.subscribe( (value:any) => this.addPublicExposePerson(this.dynamicForm?.getFormValue(), 'pep', 1));
   }
 
-  private setVisibleSection(
-    visible: boolean,
-    sectionKey: SECTIONS_COLOMBIA_FORM
-  ) {
-    const sectionIndex = this.mainForm.sections.findIndex(
-      (section) => section.key == sectionKey
-    );
-    const section = this.mainForm.sections[sectionIndex];
+  private setPublicExposePersonRow(row: any){
+    const exposedPeopleInfoIndex = this.publicExposedPeople?.controls.findIndex( (info:any) => info.value.uuid == row.value.uuid);
+    const exposedPeopleInfo = this.publicExposedPeople?.controls[exposedPeopleInfoIndex];
 
-    if (section) {
-      section.visible = visible;
-      this.mainForm.sections[sectionIndex] = { ...section };
+    if(exposedPeopleInfo){
+      exposedPeopleInfo.patchValue({
+          name_parent: row.value.name,
+          document_parent: row.value.document.document,
+          f_document_parent_type_id: row.value.document.type,
+      })
     }
   }
 
-  private updateList(
-    inputKey: string,
-    newList: ISelectBoxOption[],
-    sectionKey: SECTIONS_COLOMBIA_FORM
-  ) {
-    const sectionIndex = this.mainForm.sections.findIndex(
-      (section) => section.key == sectionKey
-    );
-    const section = this.mainForm.sections[sectionIndex];
+  private addPublicExposePerson(person: any, pepIndex: string, parent_id: number){
 
-    if (section) {
-      const indexInput = section.inputs.findIndex(
-        (input) => input.data == inputKey
-      );
-      const input = section.inputs[indexInput];
+    console.log(this.publicExposedPeople?.controls, person)
 
-      if (input) {
-        input.options = newList;
-        this.mainForm.sections[sectionIndex].inputs[indexInput] = { ...input };
+    const exposedPersonInfoIndex = this.publicExposedPeople?.controls.findIndex( (info:any) => person.uuid ? info.value.uuid == person.uuid: info.value.parent_id == 1);
+    console.log(exposedPersonInfoIndex)
+    const exposedPersonInfo = this.publicExposedPeople?.controls[exposedPersonInfoIndex];
+    console.log(person, pepIndex)
+    const pepValue = Number(person[pepIndex])
+
+    if(pepValue == 1 && !exposedPersonInfo){
+
+      const questionsRaw = this.dynamicForm?.questionsForm
+        ?.find( question => question.key == SECTIONS_COLOMBIA_FORM.INFORMACION_PERSONAS_EXPUESTAS)
+        ?.children
+
+        console.log(questionsRaw)
+
+        if(questionsRaw){
+          const newRowQuestions = this.questionService.getArrayGroupQuestions(questionsRaw, this.lists, SECTIONS_COLOMBIA_FORM.INFORMACION_PERSONAS_EXPUESTAS);
+          const formRow = this.questionService.addNewRowArrayGroupQuestion(this.publicExposedPeople, newRowQuestions)
+
+          formRow.patchValue({
+            document_parent: person.document?.document,
+            f_document_parent_type_id: person.document?.type,
+            name_parent: person.name,
+            uuid: person.uuid,
+            parent_id: parent_id,
+            [`init_people_relationships`]: [{}]
+          });
+
+          this.publicExposedPeople.push(formRow)
+        }
+
+      console.log(this.publicExposedPeople.getRawValue())
+      return;
+    }
+
+    console.log(pepValue, exposedPersonInfo)
+    if(pepValue != 1 && exposedPersonInfo){
+      this.publicExposedPeople.removeAt(exposedPersonInfoIndex);
+      return;
+    }
+  }
+
+  private prepareSubmitData(values: any){
+    const info_users: any = [];
+
+    values['otras_empresas']?.forEach((row: any) => {
+      info_users.push({
+        ...row,
+        document: row.document.document,
+        f_document_type_id: Number(row.document.type),
+        f_vendor_info_user_type_id: 1,
+      });
+    });
+
+    values['informacion_representantes_legales']?.forEach((row: any) => {
+      info_users.push({
+        ...row,
+        document: row.document.document,
+        f_document_type_id: Number(row.document.type),
+        verification_digit: row.document.verification,
+        pep: row['informacion_representantes_legales_pep'] == '1' ? true : null,
+        f_vendor_info_user_type_id: 2,
+      });
+    });
+
+    values['informacion_junta_directiva']?.forEach((row: any) => {
+      info_users.push({
+        ...row,
+        document: row.document.document,
+        f_document_type_id: Number(row.document.type),
+        verification_digit: row.document.verification,
+        pep: row['informacion_junta_directiva_pep'] == '1' ? true : null,
+        f_vendor_info_user_type_id: 3,
+      });
+    });
+
+    values['informacion_accionistas']?.forEach((row: any) => {
+      info_users.push({
+        ...row,
+        document: row.document.document,
+        f_document_type_id: Number(row.document.type),
+        verification_digit: row.document.verification,
+        pep: row['informacion_accionistas_pep'] == '1' ? true : null,
+        f_vendor_info_user_type_id: 4,
+      });
+    });
+
+    values['informacion_beneficiarios_finales']?.forEach((row: any) => {
+      row['informacion_beneficiarios_finales_people']?.forEach((person: any) => {
+        info_users.push({
+          document_parent: row.document,
+          f_document_parent_type_id: Number(row.f_document_type_id),
+          f_vendor_info_user_type_id: 5,
+          ...person,
+          document: person.document?.document,
+          f_document_type_id: Number(person.document?.type),
+          verification_digit: person.document?.verification,
+          pep: person['info_beneficiarios_persona_pep'] == '1' ? true : null,
+        });
+      });
+    });
+
+    const exposed_peoploe = values['informacion_personas_expuestas'].map(
+      (person: any) => {
+        const {
+          people_relationships,
+          document_parent,
+          f_document_parent_type_id,
+          entity,
+          position,
+          binding_date,
+          termination_date,
+        } = person;
+
+        people_relationships.forEach( (person:any) => {
+          person.f_document_type_id = person.document.type
+          person.verification_digit = person.document.verification
+          person.document = person.document.document
+        })
+
+        return {
+          document_parent,
+          f_document_parent_type_id,
+          entity,
+          position,
+          binding_date,
+          termination_date,
+          people_relationships: people_relationships
+        };
       }
+    );
+
+    console.log(exposed_peoploe)
+
+    const info_additional = [
+      {
+        vendor_inf_add_type_id: 5,
+        value: values['conflicto_intereses'] == '1' ? true : null,
+        description: values['desc_conflicto_intereses']
+      },
+      {
+        vendor_inf_add_type_id: 6,
+        value: values['vinculo_estatal'] == '1' ? true : null,
+        description: values['desc_vinculo_estatal']
+      },
+      {
+        vendor_inf_add_type_id: 7,
+        value: values['vinculo_familiar_estatal'] == '1' ? true : null,
+        description: values['desc_vinculo_familiar_estatal']
+      },
+      {
+        vendor_inf_add_type_id: 8,
+        value: values['servicios_actividades_prestados'] == '1' ? true : null,
+      },
+      {
+        vendor_inf_add_type_id: 9,
+        value: values['incluido_sat'] == '1' ? true : null,
+      },
+    ]
+
+    const  {
+      otras_empresas,
+      informacion_representantes_legales,
+      informacion_junta_directiva,
+      informacion_accionistas,
+      informacion_beneficiarios_finales,
+      ..._values
+     } = values;
+
+    const formData = {
+      ..._values,
+      document: _values['document']?.document,
+      verification_digit: _values['document']?.verification,
+      f_document_type_id: _values['document']?.type
+        ? Number(_values['document'].type)
+        : null,
+      f_person_type_id: _values.f_person_type_id
+        ? Number(_values.f_person_type_id)
+        : null,
+      f_vendor_economic_act_id: _values.f_vendor_economic_act_id
+        ? Number(_values.f_vendor_economic_act_id)
+        : null,
+      f_vendor_type_id: _values.f_vendor_type_id
+        ? Number(_values.f_vendor_type_id)
+        : null,
+      business_group: _values.business_group == '1' ? true : null,
+      board_of_directors: _values.board_of_directors == '1' ? true : null,
+      pep: _values.pep == '1' ? true : null,
+      info_users,
+      info_additional,
+      exposed_peoploe
     }
+
+    return formData;
   }
 
-  private setSelectBoxOptions(item: any, key: string, value: string) {
-    const option: ISelectBoxOption = {
-      key: item[key],
-      value: item[value],
-    };
-    return option;
-  }
+
 }

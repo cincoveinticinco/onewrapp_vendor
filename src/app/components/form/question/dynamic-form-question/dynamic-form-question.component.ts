@@ -56,6 +56,7 @@ export class DynamicFormQuestionComponent {
         'documentInvalid': 'Número de Id es inválido',
         'pattern': 'El valor del campo es inválido',
         'min': 'El valor debe ser mayor a 5',
+        'max': 'El valor debe ser menor o igual a 100',
         'minlength': 'El valor del campo es inválido',
         'maxlength': 'El valor del campo es inválido'
       }[typeError];

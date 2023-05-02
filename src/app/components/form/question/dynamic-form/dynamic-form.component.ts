@@ -33,14 +33,24 @@ export class DynamicFormComponent {
   ngOnInit() {
     this.questions = this.sections?.map( (section:any) => section.questions)?.flat(1);
     this.form = this.qcs.toFormGroup(this.questions as QuestionBase<string>[]);
+
+    console.log(this.sections)
   }
 
   onSubmit() {
     this.submitted = true;
     this.form.updateValueAndValidity();
 
+    console.log(this.form)
+
+    const invalid = Object.keys(this.form['controls']).filter( (c:any) => this.form['controls'][c].status == "INVALID")
+    console.log(invalid)
+
+
     if(this.form.valid){
       this.submitForm.emit(this.form.getRawValue())
+    }else{
+      this.goToInputError();
     }
   }
 
@@ -49,8 +59,10 @@ export class DynamicFormComponent {
   }
 
   handleQuestionValueChange(event: any){
-    const question_affected = this.questions?.filter( question => event.question.actions?.questions.includes(question.key));
 
+    if(!event.question.actions) return;
+
+    const question_affected = this.questions?.filter( question => event.question.actions?.questions.includes(question.key));
     switch(event.question.actions.action){
       case 'showNHide':
         question_affected?.forEach( question => {
@@ -63,7 +75,20 @@ export class DynamicFormComponent {
         })
 
       return;
+
     }
 
+
+  }
+
+  goToInputError(){
+    const bodyRect = document.body.getBoundingClientRect();
+    const errorElement = document.querySelector('app-dynamic-question .ng-invalid');
+
+    if(errorElement){
+      const rect = errorElement.getBoundingClientRect();
+      const offset   = rect.top - bodyRect.top;
+      window.scrollTo(0, offset - 30)
+    }
   }
 }

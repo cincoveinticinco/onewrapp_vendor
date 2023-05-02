@@ -1,5 +1,6 @@
-<div [formGroup]="form">
-  <label *ngIf="question.label" [attr.for]="question.key" [ngClass]="{'full-label': question.size == 8}">{{question.label}}</label>
+<ng-container [formGroup]="form">
+<div >
+  <label *ngIf="question.label" [attr.for]="id" [ngClass]="{'full-label': question.size == 8}">{{question.label}}</label>
 
   <div [ngSwitch]="question.controlType">
 
@@ -23,10 +24,18 @@
       [id]="id"
       [type]="question.type">
 
+    <input
+      *ngSwitchCase="TypeControlQuestion.Percentage"
+      [formControlName]="question.key"
+      [id]="id"
+      [type]="question.type">
+
     <select
       *ngSwitchCase="TypeControlQuestion.Dropdown"
+      (ngModelChange)="handleChangeValue(question)"
       [id]="id"
       [formControlName]="question.key">
+      <option>Seleccione una opción</option>
       <option *ngFor="let opt of question.options" [value]="opt.key">{{opt.value}}</option>
     </select>
 
@@ -46,14 +55,15 @@
     </ng-container>
 
     <ng-container *ngSwitchCase="TypeControlQuestion.ArrayGroup">
-      <app-arraybox-question [form]="form" [arrayQuestion]="questionForm" [questions]="question.children" ></app-arraybox-question>
+      <app-arraybox-question (ngModelChange)="handleChangeValue(question)" [form]="form" [arrayQuestion]="questionForm" [questions]="question.children" ></app-arraybox-question>
     </ng-container>
 
 
   </div>
 
   <ng-container *ngIf="question.controlType != TypeControlQuestion.ArrayGroup">
-    <div class="error-message" *ngIf="!isValid">{{ messageError }}</div>
+    <div class="error-message" *ngIf="!isValid" [title]="messageError">{{ messageError }}</div>
   </ng-container>
 
 </div>
+</ng-container>

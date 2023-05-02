@@ -16,6 +16,7 @@ export type QuestionBaseParams<T> = {
   children?: any;
   actions?: any;
   visible?: boolean;
+  dataVisible?: boolean;
   options?: {key: string, value: string}[];
 }
 
@@ -35,6 +36,7 @@ export class QuestionBase<T> {
   children: QuestionBase<string>[];
   actions?: any;
   visible?: boolean;
+  dataVisible?: boolean;
   options: {key: string, value: string}[];
 
   constructor(options: QuestionBaseParams<T> = {}) {
@@ -52,6 +54,7 @@ export class QuestionBase<T> {
     this.options = options.options || [];
     this.children = options.children || [];
     this.actions =  options.actions;
+    this.dataVisible =  !!options.dataVisible;
     this.visible = !!options.visible
   }
 }

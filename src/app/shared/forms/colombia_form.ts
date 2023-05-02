@@ -31,25 +31,25 @@ export const COLOMBIA_FORM: IForm = {
           type: TypeInputForm.Paragraph,
           visible: true,
           disabled: false,
-          content: 'TIS PRODUCTIONS COLOMBIA SAS (en adelante “TIS”) está comprometida con el respeto a las leyes y los negocios responsables, por lo que el apoyo de nuestros clientes, proveedores, contratistas y contrapartes en el cumplimiento de este compromiso es fundamental. Apreciada contraparte el diligenciamiento del presente formulario nos permite realizar el proceso de conocimiento de contrapartes y debida diligencia, de acuerdo con la normativa legal vigente en materia de prevención de Lavado de Activos, Financiación del Terrorismo, Financiamiento de la Proliferación de Armas de Destrucción Masiva, Corrupción, Soborno Trasnacional o Fraude (en adelante “LA/FT/FPADM/C/ST/F”), donde exige que toda persona natural o jurídica que quiera tener o tenga algún tipo de vinculo con la Compañía debe suministrar los datos personales y empresariales que permitan tener una identificación, clara, transparente, confiable y total de la contraparte.'
+          value: 'TIS PRODUCTIONS COLOMBIA SAS (en adelante “TIS”) está comprometida con el respeto a las leyes y los negocios responsables, por lo que el apoyo de nuestros clientes, proveedores, contratistas y contrapartes en el cumplimiento de este compromiso es fundamental. Apreciada contraparte el diligenciamiento del presente formulario nos permite realizar el proceso de conocimiento de contrapartes y debida diligencia, de acuerdo con la normativa legal vigente en materia de prevención de Lavado de Activos, Financiación del Terrorismo, Financiamiento de la Proliferación de Armas de Destrucción Masiva, Corrupción, Soborno Trasnacional o Fraude (en adelante “LA/FT/FPADM/C/ST/F”), donde exige que toda persona natural o jurídica que quiera tener o tenga algún tipo de vinculo con la Compañía debe suministrar los datos personales y empresariales que permitan tener una identificación, clara, transparente, confiable y total de la contraparte.'
         },
         {
           type: TypeInputForm.Paragraph,
           visible: true,
           disabled: false,
-          content: 'Por favor tener presente las siguientes consideraciones:'
+          value: 'Por favor tener presente las siguientes consideraciones:'
         },
         {
           type: TypeInputForm.Paragraph,
           visible: true,
           disabled: false,
-          content: 'Personas naturales: firmar el documento  y estar acompañado de copia de los documentos requeridos en el punto VIII. ANEXOS.'
+          value: 'Personas naturales: firmar el documento  y estar acompañado de copia de los documentos requeridos en el punto VIII. ANEXOS.'
         },
         {
           type: TypeInputForm.Paragraph,
           visible: true,
           disabled: false,
-          content: 'Personas jurídicas: el formulario debe ser firmado por el representante legal y estar acompañado de copia de los documentos requeridos en el punto VIII. ANEXOS. '
+          value: 'Personas jurídicas: el formulario debe ser firmado por el representante legal y estar acompañado de copia de los documentos requeridos en el punto VIII. ANEXOS. '
         },
         {
           label: 'Tipo de Solicitud',
@@ -104,43 +104,14 @@ export const COLOMBIA_FORM: IForm = {
           type: TypeInputForm.Document,
           size: 4,
           data: 'document',
-          data_list: ['f_document_type_id', 'document'],
+          dataDocumentType: 'f_document_type_id',
+          dataDocumentVerification: 'verification_digit',
+          dataDocumentPerson: 'f_person_type_id',
           options_key_list: ['tipo_persona'],
           required: true,
           options_key: 'tipo_id',
           disabled: false
         },
-        /*
-        {
-          label: 'Tipo ID',
-          visible: true,
-          type: TypeInputForm.SelectBox,
-          size: 1,
-          data: 'f_document_type_id',
-          required: true,
-          options_key: 'tipo_id',
-          disabled: false
-        },
-        {
-          label: 'Número de ID',
-          visible: true,
-          type: TypeInputForm.Text,
-          size: 2,
-          data: 'document',
-          required: true,
-          disabled: false
-        },
-        {
-          label: 'DV',
-          visible: true,
-          type: TypeInputForm.SelectBox,
-          options_key: 'verification_digit',
-          size: 1,
-          data: 'verification_digit',
-          required: true,
-          disabled: false
-        },
-        */
         {
           label: 'Fecha matrícula o expedición ID',
           visible: true,
@@ -249,7 +220,8 @@ export const COLOMBIA_FORM: IForm = {
           data: 'actividad_economica',
           required: true,
           readonly: true,
-          disabled: false
+          disabled: false,
+          break: true
         },
         {
           label: '¿Es una persona expuesta políticamente (PEP)?',
@@ -273,7 +245,7 @@ export const COLOMBIA_FORM: IForm = {
           type: TypeInputForm.Paragraph,
           visible: true,
           data: 'p_pertenece_grupo_empresarial',
-          content: 'Indicar las empresas que lo conforman y la calidad que ostentan dentro del grupo, esto es, si es matriz (M), filial (F) o subsidiaria (S):',
+          value: 'Indicar las empresas que lo conforman y la calidad que ostentan dentro del grupo, esto es, si es matriz (M), filial (F) o subsidiaria (S):',
           align: '',
           disabled: false
         },
@@ -299,34 +271,14 @@ export const COLOMBIA_FORM: IForm = {
               type: TypeInputForm.Document,
               size: 4,
               data: 'document',
-              data_list: ['f_document_type_id', 'document'],
+              dataDocumentType: 'f_document_type_id',
+              dataDocumentVerification: 'verification_digit',
+              dataDocumentPerson: 'f_person_type_id',
               options_key_list: ['tipo_persona'],
-              required: true,
-              options_key: 'tipo_id',
-              disabled: false,
-              hideVerification: true
-            },
-            /*
-            {
-              label: 'Tipo ID',
-              visible: true,
-              type: TypeInputForm.SelectBox,
-              size: 1,
-              data: 'f_document_type_id',
               required: true,
               options_key: 'juridica_id',
               disabled: false
             },
-            {
-              label: 'Número de ID',
-              visible: true,
-              type: TypeInputForm.Text,
-              size: 2,
-              data: 'document',
-              required: true,
-              disabled: false
-            },
-            */
             {
               label: 'Calidad',
               visible: true,
@@ -379,33 +331,14 @@ export const COLOMBIA_FORM: IForm = {
             type: TypeInputForm.Document,
             size: 4,
             data: 'document',
-            data_list: ['f_document_type_id', 'document'],
+            dataDocumentType: 'f_document_type_id',
+            dataDocumentVerification: 'verification_digit',
+            dataDocumentPerson: 'f_person_type_id',
             options_key_list: ['tipo_persona'],
             required: true,
-            options_key: 'natural_id',
+            options_key: 'tipo_id',
             disabled: false
           },
-          /*
-          {
-            label: 'Tipo ID',
-            visible: true,
-            type: TypeInputForm.SelectBox,
-            size: 1,
-            data: 'f_document_type_id',
-            required: true,
-            options_key: 'natural_id',
-            disabled: false
-          },
-          {
-            label: 'Número de ID',
-            visible: true,
-            type: TypeInputForm.Text,
-            size: 3,
-            data: 'document',
-            required: true,
-            disabled: false
-          },
-          */
           {
             label: 'Fecha expedición ID',
             visible: true,
@@ -470,7 +403,17 @@ export const COLOMBIA_FORM: IForm = {
       title: 'INFORMACIÓN JUNTA DIRECTIVA, CONSEJO DE ADMINISTRACIÓN O EQUIVALENTE',
       label: 'Información Junta Directiva',
       visible: true,
-      inputs: [{
+      inputs: [
+        {
+          label: '¿Tiene Junta Directiva, Consejo de Administración o equivalente?',
+          visible: true,
+          type: TypeInputForm.ChooseOption,
+          size: 8,
+          data: 'board_of_directors',
+          required: true,
+          disabled: false
+        },
+        {
         type: TypeInputForm.ArrayGroup,
         visible: true,
         addButonText: 'AGREGAR MIEMBRO',
@@ -501,33 +444,14 @@ export const COLOMBIA_FORM: IForm = {
             type: TypeInputForm.Document,
             size: 4,
             data: 'document',
-            data_list: ['f_document_type_id', 'document'],
-            options_key_list: ['natural_id'],
+            dataDocumentType: 'f_document_type_id',
+            dataDocumentVerification: 'verification_digit',
+            dataDocumentPerson: 'f_person_type_id',
+            options_key_list: ['tipo_persona'],
             required: true,
-            options_key: 'natural_id',
+            options_key: 'tipo_id',
             disabled: false
           },
-          /*
-          {
-            label: 'Tipo ID',
-            visible: true,
-            type: TypeInputForm.SelectBox,
-            size: 1,
-            disabled: false,
-            options_key: 'natural_id',
-            data: 'f_document_type_id',
-            required: true,
-          },
-          {
-            label: 'Número de ID',
-            visible: true,
-            type: TypeInputForm.Text,
-            size: 3,
-            disabled: false,
-            data: 'document',
-            required: true,
-          },
-          */
           {
             label: 'Fecha expedición ID',
             visible: true,
@@ -596,9 +520,8 @@ export const COLOMBIA_FORM: IForm = {
         {
           type: TypeInputForm.Paragraph,
           visible: true,
-          content: 'Personas naturales o jurídicas con participación igual o superior al cinco por ciento (5%)”',
+          value: 'Personas naturales o jurídicas con participación igual o superior al cinco por ciento (5%)”',
           disabled: false,
-          data: 'informacion_accionistas',
           align: ''
         },
         {
@@ -642,43 +565,14 @@ export const COLOMBIA_FORM: IForm = {
               type: TypeInputForm.Document,
               size: 4,
               data: 'document',
-              data_list: ['f_document_type_id', 'document'],
+              dataDocumentType: 'f_document_type_id',
+              dataDocumentVerification: 'verification_digit',
+              dataDocumentPerson: 'f_person_type_id',
               options_key_list: ['tipo_persona'],
               required: true,
               options_key: 'tipo_id',
               disabled: false
             },
-            /*
-            {
-              label: 'Tipo ID',
-              visible: true,
-              type: TypeInputForm.SelectBox,
-              size: 1,
-              disabled: false,
-              options_key: 'todos_tipo_id',
-              data: 'f_document_type_id',
-              required: true,
-            },
-            {
-              label: 'Número de ID',
-              visible: true,
-              type: TypeInputForm.Text,
-              size: 2,
-              disabled: false,
-              data: 'document',
-              required: true,
-            },
-            {
-              label: 'DV',
-              visible: true,
-              type: TypeInputForm.SelectBox,
-              size: 1,
-              disabled: false,
-              options_key: 'verification_digit',
-              data: 'verification_digit',
-              required: true,
-            },
-            */
             {
               label: 'Fecha matrícula o expedición ID',
               visible: true,
@@ -704,7 +598,16 @@ export const COLOMBIA_FORM: IForm = {
               size: 12,
               disabled: false,
               data: 'informacion_accionistas_pep',
+              dataVisible: true,
               required: true,
+            },
+            {
+              visible: false,
+              type: TypeInputForm.Text,
+              size: 12,
+              disabled: false,
+              data: 'visible_informacion_accionistas_pep',
+              required: false,
             },
           ]
         }
@@ -719,9 +622,8 @@ export const COLOMBIA_FORM: IForm = {
         {
           type: TypeInputForm.Paragraph,
           visible: true,
-          content: 'Si alguno de los accionistas y/o socios con participación superior o igual al cinco por ciento (5%) es una persona jurídica, indicar en el presente capitulo la información de la persona o personas naturales Beneficiario Final. Se considerará Beneficiario Final: 1) Persona natural que, actuando individual o conjuntamente, sea titular, directa o indirectamente, del cinco por ciento (5%), o más del capital o los derechos de voto de la persona jurídica, y/o se beneficie en cinco por ciento (5%), o más de los activos, rendimientos o utilidades de la persona jurídica; y 2) Persona natural que, actuando individual o conjuntamente, ejerza control sobre la persona jurídica, por cualquier otro medio diferente a los establecidos en el numeral anterior',
+          value: 'Si alguno de los accionistas y/o socios con participación superior o igual al cinco por ciento (5%) es una persona jurídica, indicar en el presente capitulo la información de la persona o personas naturales Beneficiario Final. Se considerará Beneficiario Final: 1) Persona natural que, actuando individual o conjuntamente, sea titular, directa o indirectamente, del cinco por ciento (5%), o más del capital o los derechos de voto de la persona jurídica, y/o se beneficie en cinco por ciento (5%), o más de los activos, rendimientos o utilidades de la persona jurídica; y 2) Persona natural que, actuando individual o conjuntamente, ejerza control sobre la persona jurídica, por cualquier otro medio diferente a los establecidos en el numeral anterior',
           disabled: false,
-          data: 'informacion_beneficiarios_finales',
           align: ''
         },
         {
@@ -733,14 +635,6 @@ export const COLOMBIA_FORM: IForm = {
           required: true,
           startEmpty: true,
           children: [
-            {
-              label: 'uuid',
-              visible: false,
-              type: TypeInputForm.Text,
-              size: 2,
-              data: 'id',
-              disabled: true
-            },
             {
               label: 'Tipo ID',
               visible: true,
@@ -811,43 +705,14 @@ export const COLOMBIA_FORM: IForm = {
                   type: TypeInputForm.Document,
                   size: 4,
                   data: 'document',
-                  data_list: ['f_document_type_id', 'document'],
+                  dataDocumentType: 'f_document_type_id',
+                  dataDocumentVerification: 'verification_digit',
+                  dataDocumentPerson: 'f_person_type_id',
                   options_key_list: ['tipo_persona'],
                   required: true,
                   options_key: 'tipo_id',
                   disabled: false
                 },
-                /*
-                {
-                  label: 'Tipo ID',
-                  visible: true,
-                  type: TypeInputForm.SelectBox,
-                  size: 1,
-                  disabled: false,
-                  options_key: 'todos_tipo_id',
-                  data: 'f_document_type_id',
-                  required: true,
-                },
-                {
-                  label: 'Número de ID',
-                  visible: true,
-                  type: TypeInputForm.Text,
-                  size: 2,
-                  disabled: false,
-                  data: 'document',
-                  required: true,
-                },
-                {
-                  label: 'DV',
-                  visible: true,
-                  type: TypeInputForm.SelectBox,
-                  size: 1,
-                  disabled: false,
-                  options_key: 'verification_digit',
-                  data: 'verification_digit',
-                  required: true,
-                },
-                */
                 {
                   label: 'Fecha matrícula o expedición ID',
                   visible: true,
@@ -863,8 +728,17 @@ export const COLOMBIA_FORM: IForm = {
                   type: TypeInputForm.ChooseOption,
                   size: 12,
                   disabled: false,
+                  dataVisible: true,
                   data: 'info_beneficiarios_persona_pep',
                   required: true,
+                },
+                {
+                  visible: false,
+                  type: TypeInputForm.Text,
+                  size: 12,
+                  disabled: false,
+                  data: 'visible_info_beneficiarios_persona_pep',
+                  required: false,
                 },
               ]
             }
@@ -881,7 +755,7 @@ export const COLOMBIA_FORM: IForm = {
         {
           type: TypeInputForm.Paragraph,
           visible: true,
-          content: 'Diligenciar la información de las personas que indicó, en apartados anteriores, ostentan la calidad de PEP “(…) Se considerarán como Personas Expuestas Políticamente (PEP) los servidores públicos de cualquier sistema de nomenclatura y clasificación de empleos de la administración pública nacional y territorial, cuando tengan asignadas o delegadas funciones de: expedición de normas o regulaciones, dirección general, formulación de políticas institucionales y adopción de planes, programas y proyectos, manejo directo de bienes, dineros o valores del Estado, administración de justicia o facultades administrativo sancionatorias, y los articulares que tengan a su cargo la dirección o manejo de recursos en los movimientos o partidos políticos. Estas funciones podrán ser ejercidas a través de ordenación de gasto, contratación pública, gerencia de proyectos de inversión, pagos, liquidaciones, administración de bienes muebles e inmuebles (…)La calidad de Personas Expuestas Políticamente (PEP) se mantendrá en el tiempo durante el ejercicio del cargo y por dos (2) años más desde la dejación, renuncia, despido o declaración de insubsistencia del nombramiento, o de cualquier otra forma de desvinculación, o terminación del contrato(…)”.',
+          value: 'Diligenciar la información de las personas que indicó, en apartados anteriores, ostentan la calidad de PEP “(…) Se considerarán como Personas Expuestas Políticamente (PEP) los servidores públicos de cualquier sistema de nomenclatura y clasificación de empleos de la administración pública nacional y territorial, cuando tengan asignadas o delegadas funciones de: expedición de normas o regulaciones, dirección general, formulación de políticas institucionales y adopción de planes, programas y proyectos, manejo directo de bienes, dineros o valores del Estado, administración de justicia o facultades administrativo sancionatorias, y los articulares que tengan a su cargo la dirección o manejo de recursos en los movimientos o partidos políticos. Estas funciones podrán ser ejercidas a través de ordenación de gasto, contratación pública, gerencia de proyectos de inversión, pagos, liquidaciones, administración de bienes muebles e inmuebles (…)La calidad de Personas Expuestas Políticamente (PEP) se mantendrá en el tiempo durante el ejercicio del cargo y por dos (2) años más desde la dejación, renuncia, despido o declaración de insubsistencia del nombramiento, o de cualquier otra forma de desvinculación, o terminación del contrato(…)”.',
           align: '',
           disabled: false
         },
@@ -989,7 +863,7 @@ export const COLOMBIA_FORM: IForm = {
                   label: 'Tipo parentesco',
                   visible: true,
                   type: TypeInputForm.SelectBox,
-                  size: 2,
+                  size: 1,
                   options_key: 'parentesco',
                   data: 'f_vendor_relationship_id',
                   required: true,
@@ -1007,35 +881,16 @@ export const COLOMBIA_FORM: IForm = {
                 {
                   visible: true,
                   type: TypeInputForm.Document,
-                  size: 3,
+                  size: 4,
                   data: 'document',
-                  data_list: ['f_document_type_id', 'document'],
+                  dataDocumentType: 'f_document_type_id',
+                  dataDocumentVerification: 'verification_digit',
+                  dataDocumentPerson: 'f_person_type_id',
                   options_key_list: ['tipo_persona'],
                   required: true,
                   options_key: 'natural_id',
                   disabled: false
                 },
-                /*
-                {
-                  label: 'Tipo ID',
-                  visible: true,
-                  type: TypeInputForm.SelectBox,
-                  size: 1,
-                  options_key: 'natural_id',
-                  data: 'f_document_type_id',
-                  required: true,
-                  disabled: false
-                },
-                {
-                  label: 'Número de ID',
-                  visible: true,
-                  type: TypeInputForm.Text,
-                  size: 2,
-                  data: 'document',
-                  required: true,
-                  disabled: false
-                },
-                */
               ]
             }
           ]
@@ -1052,67 +907,67 @@ export const COLOMBIA_FORM: IForm = {
         {
           type: TypeInputForm.Paragraph,
           visible: true,
-          content: 'De manera voluntaria, obrando de buena fe y conforme a mi conocimiento actual declaro que:',
+          value: 'De manera voluntaria, obrando de buena fe y conforme a mi conocimiento actual declaro que:',
           disabled: false
         },
         {
           type: TypeInputForm.Paragraph,
           visible: true,
-          content: 'De manera voluntaria, obrando de buena fe realizo las siguiente declaraciones:',
+          value: 'De manera voluntaria, obrando de buena fe realizo las siguiente declaraciones:',
           disabled: false
         },
         {
           type: TypeInputForm.Paragraph,
           visible: true,
-          content: 'i) Todo lo aquí consignado es cierto, veraz, correcto, exacto, actualizado, completo y comprobable, admitiendo que cualquier omisión o inexactitud en estos documentos podrá ocasionar el rechazo de esta y la devolución de la documentación, como también la cancelación de mi inscripción o registro. Que informaré cualquier circunstancia que modifique la presente declaración y que actualizaré los datos e información personal y financiera que sean requeridos cuando se solicite al menos una vez por año.',
+          value: 'i) Todo lo aquí consignado es cierto, veraz, correcto, exacto, actualizado, completo y comprobable, admitiendo que cualquier omisión o inexactitud en estos documentos podrá ocasionar el rechazo de esta y la devolución de la documentación, como también la cancelación de mi inscripción o registro. Que informaré cualquier circunstancia que modifique la presente declaración y que actualizaré los datos e información personal y financiera que sean requeridos cuando se solicite al menos una vez por año.',
           disabled: false
         },
         {
           type: TypeInputForm.Paragraph,
           visible: true,
-          content: 'ii) Mis ingresos o bienes o los de la persona jurídica que represento o los de sus representantes legales, miembros de junta directiva, empleados de cumplimiento, revisores fiscales, auditores externos, accionista y/o socios con participación igual o superior al cinco por ciento (5%) y beneficiarios finales, no provienen de ninguna actividad ilícita o actividad LA/FT/FPADM/C/ST/F contemplada en el Código Penal Colombiano o en cualquier norma que lo sustituya, adicione o modifique. En consecuencia, declaro que los ingresos o bienes están ligados al desarrollo normal de actividades lícitas propias del objeto social en el caso de personas jurídicas o del ejercicio de profesión u oficio en el caso de personas naturales.',
+          value: 'ii) Mis ingresos o bienes o los de la persona jurídica que represento o los de sus representantes legales, miembros de junta directiva, empleados de cumplimiento, revisores fiscales, auditores externos, accionista y/o socios con participación igual o superior al cinco por ciento (5%) y beneficiarios finales, no provienen de ninguna actividad ilícita o actividad LA/FT/FPADM/C/ST/F contemplada en el Código Penal Colombiano o en cualquier norma que lo sustituya, adicione o modifique. En consecuencia, declaro que los ingresos o bienes están ligados al desarrollo normal de actividades lícitas propias del objeto social en el caso de personas jurídicas o del ejercicio de profesión u oficio en el caso de personas naturales.',
           disabled: false
         },
         {
           type: TypeInputForm.Paragraph,
           visible: true,
-          content: 'iii) Como persona natural o que la persona jurídica que represento, sus representante legales, miembros de junta directiva, empleados de cumplimiento, revisores fiscales, auditores externos, accionista y/o socios con participación igual o superior al cinco por ciento (5%) y beneficiarios finales no han efectuado transacciones u operaciones destinadas a la realización o financiamiento de actividades ilícitas o LA/FT/FPADM/C/ST/F contempladas en el Código Penal Colombiano o en cualquier norma que lo sustituya, adicione, o modifique, o a favor de personas relacionadas con dichas actividades.',
+          value: 'iii) Como persona natural o que la persona jurídica que represento, sus representante legales, miembros de junta directiva, empleados de cumplimiento, revisores fiscales, auditores externos, accionista y/o socios con participación igual o superior al cinco por ciento (5%) y beneficiarios finales no han efectuado transacciones u operaciones destinadas a la realización o financiamiento de actividades ilícitas o LA/FT/FPADM/C/ST/F contempladas en el Código Penal Colombiano o en cualquier norma que lo sustituya, adicione, o modifique, o a favor de personas relacionadas con dichas actividades.',
           disabled: false
         },
         {
           type: TypeInputForm.Paragraph,
           visible: true,
-          content: 'iv) Como persona natural o que la persona jurídica que represento, sus representante legales, miembros de junta directiva, empleados de cumplimiento, revisores fiscales, auditores externos, accionista y/o socios con participación igual o superior al cinco por ciento (5%) y beneficiarios finales, no se encuentran en listas vinculantes para Colombia de conformidad con el derecho internacional (listas de las Naciones Unidas) o en la lista emitida por la Oficina de Activos Extranjeros del Departamento del Tesoro de los Estados Unidos (Lista OFAC), o en la lista de organizaciones terroristas emitida por el Consejo de Seguridad Nacional, así como en listas o bases de datos nacionales o internacionales relacionadas con actividades ilícitas, Fraude, Corrupción o Soborno (listas del Banco Mundial y del Banco Interamericano de Desarrollo), estando TIS autorizada o sus empresas relacionadas facultadas a efectuar las verificaciones que considere pertinentes en bases de datos, listas de control, o informaciones públicas nacionales o internacionales incluso mediante el uso de terceros, quienes pueden transferir y procesar dicha información, con el propósito de su verificación.',
+          value: 'iv) Como persona natural o que la persona jurídica que represento, sus representante legales, miembros de junta directiva, empleados de cumplimiento, revisores fiscales, auditores externos, accionista y/o socios con participación igual o superior al cinco por ciento (5%) y beneficiarios finales, no se encuentran en listas vinculantes para Colombia de conformidad con el derecho internacional (listas de las Naciones Unidas) o en la lista emitida por la Oficina de Activos Extranjeros del Departamento del Tesoro de los Estados Unidos (Lista OFAC), o en la lista de organizaciones terroristas emitida por el Consejo de Seguridad Nacional, así como en listas o bases de datos nacionales o internacionales relacionadas con actividades ilícitas, Fraude, Corrupción o Soborno (listas del Banco Mundial y del Banco Interamericano de Desarrollo), estando TIS autorizada o sus empresas relacionadas facultadas a efectuar las verificaciones que considere pertinentes en bases de datos, listas de control, o informaciones públicas nacionales o internacionales incluso mediante el uso de terceros, quienes pueden transferir y procesar dicha información, con el propósito de su verificación.',
           disabled: false
         },
         {
           type: TypeInputForm.Paragraph,
           visible: true,
-          content: 'v) No existe en mi contra o contra la persona jurídica que represento, ni en contra de sus representante legales, miembros de junta directiva, empleados de cumplimiento, revisores fiscales, auditores externos, accionista y/o socios con participación igual o superior al cinco por ciento (5%) y beneficiarios finales una sentencia judicial en firme por la comisión de delitos dolosos relacionados con Lavado de Activos, Financiación del Terrorismo; Fraude, Corrupción o Soborno; o Soborno Transnacional; o que se encuentren vinculados a investigaciones penales por delitos dolosos relacionados con Lavado de Activos, Financiación del Terrorismo, Fraude, Corrupción o Soborno; o Soborno Transnacional estando TIS facultada para efectuar las verificaciones que considere pertinentes en bases de datos y en informaciones públicas nacionales o internacionales para gestionar el riesgo legal o reputacional.',
+          value: 'v) No existe en mi contra o contra la persona jurídica que represento, ni en contra de sus representante legales, miembros de junta directiva, empleados de cumplimiento, revisores fiscales, auditores externos, accionista y/o socios con participación igual o superior al cinco por ciento (5%) y beneficiarios finales una sentencia judicial en firme por la comisión de delitos dolosos relacionados con Lavado de Activos, Financiación del Terrorismo; Fraude, Corrupción o Soborno; o Soborno Transnacional; o que se encuentren vinculados a investigaciones penales por delitos dolosos relacionados con Lavado de Activos, Financiación del Terrorismo, Fraude, Corrupción o Soborno; o Soborno Transnacional estando TIS facultada para efectuar las verificaciones que considere pertinentes en bases de datos y en informaciones públicas nacionales o internacionales para gestionar el riesgo legal o reputacional.',
           disabled: false
         },
         {
           type: TypeInputForm.Paragraph,
           visible: true,
-          content: 'vi) dando cumplimiento a las disposiciones de la ley 1581 de 2012, sus decretos reglamentarios y demás normas que lo sustituyan o modifiquen, por lo cual se dictan normas generales para la protección de datos personales y teniendo en cuenta que dicha ley tiene por objeto desarrollar el derecho constitucional que tienen las personas a conocer, actualizar y rectificar la información que se haya recogido sobre ellas en bases de datos o archivos. Declaro que conozco que TIS hace entrega del presente documento con el objetivo que sea autorizado el tratamiento de la información aquí depositada, autorizo y acepto expresamente que TIS, realice el tratamiento de los datos personales proporcionados en este formulario, de acuerdo a las políticas de tratamiento de datos publicadas en https://www.tisproductions.com/ con el fin de: creación y/o actualización de información de la contraparte, cumplir obligaciones relacionadas con prevención de los riesgos LA/FT/ FPADM/C/ST/F, formalización, consultas en listas, celebración y ejecución de contratos, y demás finaliddes señaladas en sus políticas de tratamiento. "',
+          value: 'vi) dando cumplimiento a las disposiciones de la ley 1581 de 2012, sus decretos reglamentarios y demás normas que lo sustituyan o modifiquen, por lo cual se dictan normas generales para la protección de datos personales y teniendo en cuenta que dicha ley tiene por objeto desarrollar el derecho constitucional que tienen las personas a conocer, actualizar y rectificar la información que se haya recogido sobre ellas en bases de datos o archivos. Declaro que conozco que TIS hace entrega del presente documento con el objetivo que sea autorizado el tratamiento de la información aquí depositada, autorizo y acepto expresamente que TIS, realice el tratamiento de los datos personales proporcionados en este formulario, de acuerdo a las políticas de tratamiento de datos publicadas en https://www.tisproductions.com/ con el fin de: creación y/o actualización de información de la contraparte, cumplir obligaciones relacionadas con prevención de los riesgos LA/FT/ FPADM/C/ST/F, formalización, consultas en listas, celebración y ejecución de contratos, y demás finaliddes señaladas en sus políticas de tratamiento. "',
           disabled: false
         },
         {
           type: TypeInputForm.Paragraph,
           visible: true,
-          content: 'vii)',
+          value: 'vii)',
           disabled: false
         },
         {
           type: TypeInputForm.Paragraph,
           visible: true,
-          content: 'a. Como persona natural o que la persona jurídica que represento, sus representante legales, miembros de junta directiva, empleados de cumplimiento, revisores fiscales, auditores externos, accionista y/o socios con participación igual o superior al cinco por ciento (5%) y beneficiarios finales, a la fecha de firma de este formulario, no tienen conflictos de intereses, y no poseen información que actualmente implique o que eventualmente pueda configurar una situación de conflicto de Intereses con TIS, de la siguiente manera: - Ninguno de los anteriomente mencionados tienen relación de parentesco dentro del tercer grado de consanguinidad, primero de afinidad o primero civil, con algún empleado, directivo, administrador o accionista de TIS. - Ninguno de los anteriormente mencionados han sido parte ni son parte, en proceso judicial, administrativo, disciplinario o arbitral alguno o de cualquier otra índole, en el cual TIS, sus empleados, directivos, administradores o accionistas también sean parte, bien sea en su calidad de demandantes, demandados o llamados en garantía. - No conozco cualquier otra situación que pueda generar una situación de conflicto de Intereses con TIS. además reconozco y acepto mi obligación de informar a TIS, cualquier situación que pueda configurar un conflicto de Intereses con posterioridad a la fecha de firma del presente formulario."',
+          value: 'a. Como persona natural o que la persona jurídica que represento, sus representante legales, miembros de junta directiva, empleados de cumplimiento, revisores fiscales, auditores externos, accionista y/o socios con participación igual o superior al cinco por ciento (5%) y beneficiarios finales, a la fecha de firma de este formulario, no tienen conflictos de intereses, y no poseen información que actualmente implique o que eventualmente pueda configurar una situación de conflicto de Intereses con TIS, de la siguiente manera: - Ninguno de los anteriomente mencionados tienen relación de parentesco dentro del tercer grado de consanguinidad, primero de afinidad o primero civil, con algún empleado, directivo, administrador o accionista de TIS. - Ninguno de los anteriormente mencionados han sido parte ni son parte, en proceso judicial, administrativo, disciplinario o arbitral alguno o de cualquier otra índole, en el cual TIS, sus empleados, directivos, administradores o accionistas también sean parte, bien sea en su calidad de demandantes, demandados o llamados en garantía. - No conozco cualquier otra situación que pueda generar una situación de conflicto de Intereses con TIS. además reconozco y acepto mi obligación de informar a TIS, cualquier situación que pueda configurar un conflicto de Intereses con posterioridad a la fecha de firma del presente formulario."',
           disabled: false
         },
         {
           type: TypeInputForm.Paragraph,
           visible: true,
-          content: 'b. Declaro los siguientes conflictos de intereses:',
+          value: 'b. Declaro los siguientes conflictos de intereses:',
           disabled: false
         },
         {
@@ -1136,13 +991,13 @@ export const COLOMBIA_FORM: IForm = {
         {
           type: TypeInputForm.Paragraph,
           visible: true,
-          content: 'viii)',
+          value: 'viii)',
           disabled: false
         },
         {
           type: TypeInputForm.Paragraph,
           visible: true,
-          content: 'a. Algún tipo de vinculo con entidades estatales o de gobierno',
+          value: 'a. Algún tipo de vinculo con entidades estatales o de gobierno',
           disabled: false
         },
         {
@@ -1166,7 +1021,7 @@ export const COLOMBIA_FORM: IForm = {
         {
           type: TypeInputForm.Paragraph,
           visible: true,
-          content: 'b. Tiene familiares con algún vinculo con entidades estatales o de gobierno.',
+          value: 'b. Tiene familiares con algún vinculo con entidades estatales o de gobierno.',
           disabled: false
         },
         {
@@ -1198,7 +1053,7 @@ export const COLOMBIA_FORM: IForm = {
         {
           type: TypeInputForm.Paragraph,
           visible: true,
-          content: 'Por favor adjunte los siguientes archivos en formato PDF.',
+          value: 'Por favor adjunte los siguientes archivos en formato PDF.',
           align: '',
           disabled: false
         },
@@ -1250,7 +1105,7 @@ export const COLOMBIA_FORM: IForm = {
         {
           type: TypeInputForm.Paragraph,
           visible: true,
-          content: 'Descargue aquí el Formulario de Declaración de Cumplimiento de Políticas, Autorización de Tratamiento de Datos Personales y Autorización de Consulta y Reporte de TIS. Por favor fírmelo y luego súbalo.',
+          value: 'Descargue aquí el Formulario de Declaración de Cumplimiento de Políticas, Autorización de Tratamiento de Datos Personales y Autorización de Consulta y Reporte de TIS. Por favor fírmelo y luego súbalo.',
           textlink: 'aquí',
           data: 'documento_politicas_link',
           link: 'assets/files/declaracion_cumplimiento_politicas.pdf',

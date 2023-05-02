@@ -1,5 +1,6 @@
 import { ViewportScroller } from '@angular/common';
 import { Component, Input } from '@angular/core';
+import { FormGroup } from '@angular/forms';
 import { IFormSection } from 'src/app/shared/interfaces/form';
 
 @Component({
@@ -9,9 +10,20 @@ import { IFormSection } from 'src/app/shared/interfaces/form';
 })
 export class SideMenuComponent {
 
-  @Input() sections: IFormSection[] = [];
+  @Input() sections: any[]  = [];
+  @Input() form?: FormGroup;
 
   constructor(private viewportScrolling: ViewportScroller){}
+
+  ngOnInit(): void {
+
+    setTimeout( () => this.checkSectionsColor(), 100)
+
+    this.form?.valueChanges.subscribe( values => {
+      setTimeout( () => this.checkSectionsColor(), 10)
+    })
+
+  }
 
   goToSection(key:string = ''){
     if(key == ''){
@@ -20,5 +32,14 @@ export class SideMenuComponent {
     }
     this.viewportScrolling.scrollToAnchor(key);
   }
+
+  checkSectionsColor(){
+    this.sections.forEach( section => {
+      const errorElement = document.querySelector(`#${section.key} .ng-invalid`);
+      section.checkSectionsColor =  errorElement ? 'fail-section': 'success-section';
+    })
+  }
+
+
 
 }

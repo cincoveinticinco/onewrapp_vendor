@@ -27,4 +27,12 @@
       color: var(--primary-color);
     }
   }
+
+  .fail-section a{
+    color: var(--alert-color);
+  }
+
+  .success-section a{
+    color: var(--success-color);
+  }
 }

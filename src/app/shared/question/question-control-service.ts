@@ -20,12 +20,15 @@ export class QuestionControlService {
       const validators = []
 
       if(question.required){
-        if(question.controlType != TypeControlQuestion.File)
-          validators.push(Validators.required)
+        validators.push(Validators.required)
       }
 
       if(question.controlType == TypeControlQuestion.Document){
         validators.push(documentValidator)
+      }
+
+      if(question.controlType == TypeControlQuestion.Percentage){
+        validators.push(Validators.min(5), Validators.max(100))
       }
 
       if(question.controlType == TypeControlQuestion.ArrayGroup || question.controlType == TypeControlQuestion.HiddenArrayGroup){

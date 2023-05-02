@@ -52,6 +52,13 @@ export class ArrayboxQuestionComponent{
     return value;
   }
 
+  getFormControlValue(value: any, indexControl: string){
+    const formGroup = this.asFormGroup(value)
+    const control = formGroup.get(indexControl)
+
+    return control?.value
+  }
+
   setValues(){
 
     if(this.arrayQuestion?.parent){
@@ -69,6 +76,8 @@ export class ArrayboxQuestionComponent{
       Object.keys(value).forEach( key => {
         inits_values[`init_${key}`] = value[key]
       })
+
+
 
       row.patchValue(inits_values, {emitEvent: false});
       this.formArray.push(row, {emitEvent: false});

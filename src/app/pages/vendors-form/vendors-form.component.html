@@ -1,5 +1,8 @@
 <ng-template #loader>
-  <div>Loading...</div>
+  <div class="loader">
+    <div class="custom-loader"></div>
+  </div>
+
 </ng-template>
 
 
@@ -21,17 +24,10 @@
       *ngSwitchCase="CountyForm.Mexico"
       [infoVendor]="inmutableData"
       (onVerify)="verifyVendor($event)"
-      (onSubmit)="submit($event)">
+      (onSubmit)="submit($event)"
+      (onFileSubmit)="submitFile($event)">
     </app-mexico-form>
 
-    <!--app-mexico-form
-      *ngSwitchCase="CountyForm.Mexico"
-      [infoVendor]="inmutableData"
-      (onSubmit)="submit($event)"
-      (onFileSubmit)="submitFile($event)"
-      (onVerify)="verifyVendor($event)"
-      >
-    </app-mexico-form-->
   </ng-container>
 
 
