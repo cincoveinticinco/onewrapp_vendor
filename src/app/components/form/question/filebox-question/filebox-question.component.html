@@ -1,0 +1,23 @@
+<label
+  *ngIf="!value"class="content-file-input"
+  appArrastarnsoltar
+  [extensiones_permitidas]="['pdf', 'PDF']"
+  (onChangeFile)="onDragFileChange($event)"
+  >
+  <span>Arrastar y soltar o <a>buscar</a></span>
+  <input  type="file" accept=".pdf" (change)="onFileChange($event)">
+</label>
+
+<div *ngIf="value" class="content-file-filled">
+  <span *ngIf="value.url; else noURL"><a [href]="value.url" target="_blank">{{ value.name }}</a></span>
+  <ng-template #noURL>
+    <span>{{ value.name }}</span>
+  </ng-template>
+
+
+  <button class="delete-button" (click)="clearFile()">
+    <span class="material-symbols-outlined">
+      delete
+    </span>
+  </button>
+</div>

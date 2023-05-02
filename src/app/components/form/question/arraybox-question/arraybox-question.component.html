@@ -1,0 +1,30 @@
+<ng-container [formGroup]="form">
+<div [ngClass]="{'content-row-array': !arrayQuestion?.fixElements}"  >
+  <ng-container [formArrayName]="arrayQuestion?.key!">
+    <div class="content-row" *ngFor="let row of formArray.controls; let i = index">
+      <ng-container [formGroupName]="i">
+        <div *ngIf="arrayQuestion?.title" class="form-title">
+          {{ arrayQuestion?.title }}
+        </div>
+        <ng-container  *ngFor="let question of questionsForm">
+          <ng-container *ngIf="question.dataVisible ? getFormControlValue(formArray.controls[i], 'visible_'+question.key) : question.visible">
+            <div class="content-col" [ngClass]="'m-'+(question.size || 8)" [ngStyle]="{'padding': question.controlType == TypeControlQuestion.Document ? '0' : null}">
+              <app-dynamic-question [question]="question" [form]="asFormGroup(formArray.controls[i])"></app-dynamic-question>
+            </div>
+            <div *ngIf="question.break" class="break-row"></div>
+          </ng-container>
+        </ng-container>
+      </ng-container>
+      <button type="button" *ngIf="!arrayQuestion?.fixElements" class="delete-button floating-element" (click)="deleteRow(i)">
+        <span class="material-symbols-outlined">
+          delete
+        </span>
+      </button>
+    </div>
+  </ng-container>
+
+</div>
+<div *ngIf="arrayQuestion?.addButonText" class="content-row">
+  <button type="button" class="form-button" (click)="addRow()">{{ arrayQuestion?.addButonText }}</button>
+</div>
+</ng-container>

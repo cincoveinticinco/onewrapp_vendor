@@ -31,6 +31,12 @@ import { ArrastarnsoltarDirective } from './shared/directives/arrastarnsoltar.di
 import { GraciasComponent } from './pages/gracias/gracias.component';
 import { InputDocumentComponent } from './components/form/question/input-document/input-document.component';
 import { ModalComponent } from './components/modal/modal.component';
+import { DynamicFormQuestionComponent } from './components/form/question/dynamic-form-question/dynamic-form-question.component';
+import { DynamicFormComponent } from './components/form/question/dynamic-form/dynamic-form.component';
+import { FileboxQuestionComponent } from './components/form/question/filebox-question/filebox-question.component';
+import { DocumentboxQuestionComponent } from './components/form/question/documentbox-question/documentbox-question.component';
+import { ArrayboxQuestionComponent } from './components/form/question/arraybox-question/arraybox-question.component';
+import { QuestionControlService } from './shared/question/question-control-service';
 
 
 @NgModule({
@@ -58,13 +64,18 @@ import { ModalComponent } from './components/modal/modal.component';
     GraciasComponent,
     InputDocumentComponent,
     ModalComponent,
+    DynamicFormQuestionComponent,
+    DynamicFormComponent,
+    FileboxQuestionComponent,
+    DocumentboxQuestionComponent,
+    ArrayboxQuestionComponent,
   ],
   imports: [
     BrowserModule,
     HttpClientModule,
     AppRoutingModule,
-    ReactiveFormsModule,
     FormsModule,
+    ReactiveFormsModule,
     NoopAnimationsModule,
     MatAutocompleteModule,
 
@@ -76,7 +87,8 @@ import { ModalComponent } from './components/modal/modal.component';
     },
     {
       provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true
-    }
+    },
+    QuestionControlService
   ],
   bootstrap: [AppComponent]
 })
