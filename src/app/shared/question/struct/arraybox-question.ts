@@ -17,7 +17,7 @@ export class ArrayBoxQuestion extends QuestionBase<any> {
     } = {}){
 
     super(options);
-    this.fixElements = options.fixElements || false;
+    this.fixElements = !!options.fixElements;
     this.title = options.title || '';
     this.addButonText = options.addButonText || '';
     this.parent = options.parent || '';

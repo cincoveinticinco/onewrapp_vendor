@@ -57,6 +57,8 @@ export class UploadS3Service {
 				const done = e.position || e.loaded, total = e.totalSize || e.total;
 				observer.next({ done: false, progress: Math.floor(done / total * 1000) / 10, key: nameFile });
 			}, false);
+
+
 			if (xhr.upload) {
 				xhr.upload.onprogress = function (e: any) {
 					var done = e.position || e.loaded, total = e.totalSize || e.total;

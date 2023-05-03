@@ -6,6 +6,7 @@ export type QuestionBaseParams<T> = {
   label?: string;
   required?: boolean;
   disabled?: boolean;
+  readonly?: boolean;
   order?: number;
   controlType?: TypeControlQuestion;
   type?: string;
@@ -26,6 +27,7 @@ export class QuestionBase<T> {
   label: string;
   required: boolean;
   disabled: boolean;
+  readonly: boolean;
   order: number;
   controlType: TypeControlQuestion;
   type: string;
@@ -45,6 +47,7 @@ export class QuestionBase<T> {
     this.label = options.label || '';
     this.required = !!options.required;
     this.disabled = !!options.disabled;
+    this.readonly = !!options.readonly;
     this.order = options.order === undefined ? 1 : options.order;
     this.controlType = options.controlType || TypeControlQuestion.Text;
     this.type = options.type || '';

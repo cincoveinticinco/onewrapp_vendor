@@ -65,11 +65,14 @@ export class ColombiaFormComponent {
     this.setValuesBasicInfo();
 
     setTimeout( () => {
-      this.setValuesChangeShareholder();
-      this.setValuesChangeFinalBeneficiary();
-      this.setValuesChangeOtherCompanies();
-      this.setValuesChangeLegalRepresent();
-      this.setValuesChangeBoardDirectors();
+      if(this.vendorData.f_person_type_id == TYPE_PERSON_COLOMBIA.Juridica){
+        this.setValuesChangeShareholder();
+        this.setValuesChangeFinalBeneficiary();
+        this.setValuesChangeOtherCompanies();
+        this.setValuesChangeLegalRepresent();
+        this.setValuesChangeBoardDirectors();
+      }
+
       this.setValuesChangePublicExposedPeople()
       this.setValuesChangeAttachments();
 
@@ -93,7 +96,11 @@ export class ColombiaFormComponent {
     }
 
     const _ciiu = this.infoVendor.vendor_economic_activitis.find( (item:any) => item.ciiu == this.valuesForm.ciiu);
-    this.valuesForm['actividad_economica'] =  _ciiu.economic_activity
+    this.valuesForm['actividad_economica'] =  _ciiu?.economic_activity
+
+    if(this.valuesForm['f_person_type_id'] == TYPE_PERSON_COLOMBIA.Juridica){
+      this.valuesForm['pep'] = null;
+    }
 
     this.setVendorMultipleInfo();
     this.setComplementInfoFinalBenefit();
@@ -101,8 +108,6 @@ export class ColombiaFormComponent {
 
     this.setPoliticExposePerson();
     this.setFilesValues();
-
-    console.log(this.valuesForm)
 
   }
 
@@ -153,7 +158,9 @@ export class ColombiaFormComponent {
               quantity: user.quantity,
               id: user.id,
 
-            })) : [{}]
+            })) : [{
+              uuid: uuidv4()
+            }]
         }
 
         if (info_user.id == 2) {
@@ -173,7 +180,9 @@ export class ColombiaFormComponent {
               email: user.email,
               id: user.id,
               informacion_representantes_legales_pep: user.pep
-            })): [{}]
+            })): [{
+              uuid: uuidv4()
+            }]
         }
 
         if (info_user.id == 3) {
@@ -193,7 +202,9 @@ export class ColombiaFormComponent {
               email: user.email,
               id: user.id,
               informacion_junta_directiva_pep: user.pep,
-            })): [{}]
+            })): [{
+              uuid: uuidv4()
+            }]
         }
 
         if (info_user.id == 4) {
@@ -216,6 +227,7 @@ export class ColombiaFormComponent {
                 visible_informacion_accionistas_pep: user.f_person_type_id == TYPE_PERSON_COLOMBIA.Natural,
               }
             }): [{
+              uuid: uuidv4(),
               visible_informacion_accionistas_pep: false
             }]
         }
@@ -249,6 +261,7 @@ export class ColombiaFormComponent {
 
   private setPoliticExposePerson(){
     const politicExposesPersonList = [];
+
 
     if(this.valuesForm['pep'] && this.valuesForm['document'] && this.valuesForm['f_document_type_id']){
       politicExposesPersonList.push(this.createPoliticExposePerson({...this.valuesForm}, 1))
@@ -287,7 +300,7 @@ export class ColombiaFormComponent {
       )
 
       if(existPerson){
-        person = {...person, ...existPerson};
+        person = {...person, ...existPerson, parent_id: person.parent_id};
       }
 
       return person;
@@ -457,6 +470,7 @@ export class ColombiaFormComponent {
   private setValuesChangeShareholder(){
     this.shareholderInformation?.valueChanges
     .pipe(
+      debounceTime(150),
       startWith(this.shareholderInformation?.value),
       pairwise(),
       map(([oldValues, newValues]: any) => {
@@ -495,6 +509,12 @@ export class ColombiaFormComponent {
       row.value.f_person_type_id == TYPE_PERSON_COLOMBIA.Natural, {emitEvent: false, emitModelToViewChange: true}
     )
 
+    if(row.value.f_person_type_id == TYPE_PERSON_COLOMBIA.Juridica){
+      row.get('informacion_accionistas_pep').setValue('2', {emitEvent: false, emitModelToViewChange: true}
+      )
+    }
+
+
 
     /** Action add / remove final beneficiary information */
     if(hasComplementInfo && !beneficiaryInfo){
@@ -511,9 +531,10 @@ export class ColombiaFormComponent {
           f_document_type_id: row.value.document?.type,
           name: row.value.name,
           uuid: row.value.uuid,
-          [`init_informacion_beneficiarios_finales_people`]: [{}]
+          [`init_informacion_beneficiarios_finales_people`]: [{
+            uuid: uuidv4()
+          }]
         });
-
         this.finalBeneficiaryInfo.push(formRow)
       }
 
@@ -649,7 +670,7 @@ export class ColombiaFormComponent {
   private handleAttachmentsChanges(value: any, formControlName: string){
     const values = this.dynamicForm?.getFormValue();
     const formData = this.prepareSubmitData(values);
-    this.onFileSubmit.emit({formControlName, value, formData})
+    this.onFileSubmit.emit({formControlName, value: value?.file, formData})
   }
 
   private setValuesChangeCIIU(){
@@ -657,7 +678,7 @@ export class ColombiaFormComponent {
     ciiu?.valueChanges
     .subscribe( (value:any) => {
       const _ciiu = this.infoVendor.vendor_economic_activitis.find( (item:any) => item.id == Number(value));
-      this.dynamicForm?.formGroup.get('actividad_economica')?.setValue(_ciiu.economic_activity,  {emitEvent: false, emitModelToViewChange: true})
+      this.dynamicForm?.formGroup.get('actividad_economica')?.setValue(_ciiu?.economic_activity,  {emitEvent: false, emitModelToViewChange: true})
     });
   }
 
@@ -700,12 +721,8 @@ export class ColombiaFormComponent {
 
   private addPublicExposePerson(person: any, pepIndex: string, parent_id: number){
 
-    console.log(this.publicExposedPeople?.controls, person)
-
     const exposedPersonInfoIndex = this.publicExposedPeople?.controls.findIndex( (info:any) => person.uuid ? info.value.uuid == person.uuid: info.value.parent_id == 1);
-    console.log(exposedPersonInfoIndex)
     const exposedPersonInfo = this.publicExposedPeople?.controls[exposedPersonInfoIndex];
-    console.log(person, pepIndex)
     const pepValue = Number(person[pepIndex])
 
     if(pepValue == 1 && !exposedPersonInfo){
@@ -713,8 +730,6 @@ export class ColombiaFormComponent {
       const questionsRaw = this.dynamicForm?.questionsForm
         ?.find( question => question.key == SECTIONS_COLOMBIA_FORM.INFORMACION_PERSONAS_EXPUESTAS)
         ?.children
-
-        console.log(questionsRaw)
 
         if(questionsRaw){
           const newRowQuestions = this.questionService.getArrayGroupQuestions(questionsRaw, this.lists, SECTIONS_COLOMBIA_FORM.INFORMACION_PERSONAS_EXPUESTAS);
@@ -732,11 +747,9 @@ export class ColombiaFormComponent {
           this.publicExposedPeople.push(formRow)
         }
 
-      console.log(this.publicExposedPeople.getRawValue())
       return;
     }
 
-    console.log(pepValue, exposedPersonInfo)
     if(pepValue != 1 && exposedPersonInfo){
       this.publicExposedPeople.removeAt(exposedPersonInfoIndex);
       return;
@@ -750,6 +763,7 @@ export class ColombiaFormComponent {
       info_users.push({
         ...row,
         document: row.document.document,
+        verification_digit: row.document.verification,
         f_document_type_id: Number(row.document.type),
         f_vendor_info_user_type_id: 1,
       });
@@ -832,8 +846,6 @@ export class ColombiaFormComponent {
         };
       }
     );
-
-    console.log(exposed_peoploe)
 
     const info_additional = [
       {

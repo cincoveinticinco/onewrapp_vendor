@@ -10,6 +10,10 @@ export function documentValidator(control: AbstractControl): {[key: string]: any
       return { 'documentRequired': true };
     }
 
+    if(control.value.type == 5 && !control.value.verification) {
+      return { 'dvRequired': true };
+    }
+
     if(control.value.type == 7 || control.value.type == 10) {
       if(!VALIDATORS_PATTERNS.numbers.test(control.value.document)){
         return { 'documentInvalid': true };

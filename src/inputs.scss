@@ -46,6 +46,15 @@ input:disabled{
   padding-left: 0;
 }
 
+select[readonly=true]{
+  border: none;
+  -webkit-appearance: none;
+  appearance: none;
+  padding: 0;
+  opacity: 1;
+  color: var(--font-color);
+}
+
 select.label-select{
   background-color: transparent;
   border: none;

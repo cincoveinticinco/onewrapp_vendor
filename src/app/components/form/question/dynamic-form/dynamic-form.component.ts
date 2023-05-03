@@ -33,8 +33,6 @@ export class DynamicFormComponent {
   ngOnInit() {
     this.questions = this.sections?.map( (section:any) => section.questions)?.flat(1);
     this.form = this.qcs.toFormGroup(this.questions as QuestionBase<string>[]);
-
-    console.log(this.sections)
   }
 
   onSubmit() {
@@ -42,10 +40,6 @@ export class DynamicFormComponent {
     this.form.updateValueAndValidity();
 
     console.log(this.form)
-
-    const invalid = Object.keys(this.form['controls']).filter( (c:any) => this.form['controls'][c].status == "INVALID")
-    console.log(invalid)
-
 
     if(this.form.valid){
       this.submitForm.emit(this.form.getRawValue())
