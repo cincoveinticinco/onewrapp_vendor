@@ -4,7 +4,6 @@
     <div class="content-row" *ngFor="let row of formArray.controls; let i = index">
       <ng-container [formGroupName]="i">
         <div *ngIf="arrayQuestion?.title" class="form-title">
-          {{ arrayQuestion?.title }}
         </div>
         <ng-container  *ngFor="let question of questionsForm">
           <ng-container *ngIf="question.dataVisible ? getFormControlValue(formArray.controls[i], 'visible_'+question.key) : question.visible">

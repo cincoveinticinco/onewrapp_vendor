@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { FormArray, FormControl, FormGroup } from '@angular/forms';
 import { values } from 'lodash';
-import { Observable, debounceTime, map, pairwise, startWith } from 'rxjs';
+import { Observable, debounceTime, distinctUntilChanged, map, pairwise, startWith, throttleTime } from 'rxjs';
 import { DynamicFormComponent } from 'src/app/components/form/question/dynamic-form/dynamic-form.component';
 import { QuestionService } from 'src/app/services/question.service';
 import { SECTIONS_MEXICO_FORM, TYPE_PERSON_MEXICO } from 'src/app/shared/forms/mexico_form';
@@ -57,11 +57,15 @@ export class MexicoFormComponent {
   ngAfterViewInit(): void {
 
     setTimeout( () => {
-      this.setValuesChangeShareholder();
-      this.setValuesChangeFinalBeneficiary();
-      this.setValuesChangeOtherCompanies();
-      this.setValuesChangeLegalRepresent();
-      this.setValuesChangeBoardDirectors();
+
+      if(this.vendorData.f_person_type_id == TYPE_PERSON_MEXICO.Moral){
+        this.setValuesChangeShareholder();
+        this.setValuesChangeFinalBeneficiary();
+        this.setValuesChangeOtherCompanies();
+        this.setValuesChangeLegalRepresent();
+        this.setValuesChangeBoardDirectors();
+      }
+
 
       this.setValuesChangeAttachments();
     }, 1000)
@@ -98,6 +102,7 @@ export class MexicoFormComponent {
 
   onSubmitForm(values: any){
     const formData = this.prepareSubmitData(values);
+    console.log(formData)
     this.onVerify.emit(formData);
   }
 
@@ -358,6 +363,7 @@ export class MexicoFormComponent {
   private setValuesChangeShareholder(){
     this.shareholderInformation?.valueChanges
     .pipe(
+      debounceTime(150),
       startWith(this.shareholderInformation?.value),
       pairwise(),
       map(([oldValues, newValues]: any) => {
@@ -368,7 +374,7 @@ export class MexicoFormComponent {
         );
       })
     ).subscribe( (values:any) => {
-
+      //console.log(values)
       if(values > -1){
         this.handleShareholderChange(this.shareholderInformation['controls'][values])
       }
@@ -389,6 +395,11 @@ export class MexicoFormComponent {
       }, {emitEvent: false, emitModelToViewChange: true});
     }
 
+    row.get('document').markAsTouched()
+
+
+
+
     /** Action add / remove final beneficiary information */
     if(hasComplementInfo && !beneficiaryInfo){
 
@@ -404,7 +415,9 @@ export class MexicoFormComponent {
           f_document_type_id: row.value.document?.type,
           name: row.value.name,
           uuid: row.value.uuid,
-          [`init_informacion_beneficiarios_finales_people`]: [{}]
+          [`init_informacion_beneficiarios_finales_people`]: [{
+            uuid: uuidv4()
+          }]
         });
 
         this.finalBeneficiaryInfo.push(formRow)

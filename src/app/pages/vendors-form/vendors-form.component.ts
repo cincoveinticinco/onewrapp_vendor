@@ -1,4 +1,5 @@
 import { formatDate } from '@angular/common';
+import { HttpEventType } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, of, map, forkJoin, mergeMap, switchMap } from 'rxjs';
@@ -105,27 +106,31 @@ export class VendorsFormComponent {
           id: fileIdDocument,
           file: value,
         })),
-        switchMap(
-          async (uploadFile: any) => {
+        switchMap((uploadFile: any) => {
             if (!uploadFile.url) {
-              return of(uploadFile);
+              return of({blobFile: null, uploadFile});
             }
 
-            const blobFile = await uploadFile.file.arrayBuffer();
-
-            return this.s3Service.uploadFileUrlPresigned(<File>blobFile, uploadFile.url, uploadFile.file.type)
-            .pipe(
-              catchError((_) => of({ ...value, url: '' })),
-              map(() => uploadFile)
-            );
-
+            return new Promise( resolve => {
+              uploadFile.file.arrayBuffer().then((blobFile:File) => resolve({blobFile, uploadFile}));
+            });
           }
         ),
-        switchMap( response => response.pipe(map( value => value))),
+        switchMap( (blobUpdateFile: any) => {
+          const { blobFile,  uploadFile} = blobUpdateFile;
+          if(!blobFile){
+            return of(uploadFile);
+          }
+          return this.s3Service.uploadFileUrlPresigned(<File>blobFile, uploadFile.url, uploadFile.file.type)
+          .pipe(
+            catchError((_) => of({ ...value, url: '' })),
+            map((value) => value.type == HttpEventType.Response ? uploadFile : null)
+          );
+        }),
         switchMap(
           (uploadFile: any) =>{
-            console.log(uploadFile)
 
+            if(!uploadFile) return of(false);
 
             return this.vendorService.updateVendorDocument({
               vendor_document_type_id: Number(uploadFile.id),
@@ -138,7 +143,8 @@ export class VendorsFormComponent {
         map((response) => response)
       )
       .subscribe((value) => {
-        this.submit(formData)
+        if(value)
+          this.submit(formData)
       });
   }
 
@@ -150,7 +156,7 @@ export class VendorsFormComponent {
       ...formData,
     };
 
-    this.vendorService.updateVendorInfo(_data).subscribe((data) => {
+   this.vendorService.updateVendorInfo(_data).subscribe((data) => {
       this.loading = false;
       this.router.navigate(['upload-form']);
     });

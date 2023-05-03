@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { DropdownQuestion } from '../shared/question/struct/dropdown-question';
 import { QuestionBase } from '../shared/question/struct/question-base';
 import { TextboxQuestion } from '../shared/question/struct/textbox-question';
-import { MEXICO_FORM } from '../shared/forms/mexico_form';
+import { MEXICO_FORM, SECTIONS_MEXICO_FORM, TYPE_PERSON_MEXICO } from '../shared/forms/mexico_form';
 import { IInputForm, TypeInputForm } from '../shared/interfaces/input_form';
 import { TypeControlQuestion } from '../shared/question/interfaces/type-control-question';
 import { ParagraphQuestion } from '../shared/question/struct/paragraph-question';
@@ -51,6 +51,7 @@ export class QuestionService {
       visible: input.visible,
       parent: input.parent,
       dataVisible: input.dataVisible,
+      readonly: input.readonly,
       options: input.options as {key: string, value: string}[]
     }
 
@@ -94,6 +95,8 @@ export class QuestionService {
       const questions: QuestionBase<string>[] = [];
 
       section.inputs.forEach( input => {
+
+        if(!section.visible) return;
 
         if(values[input.data!]){
           input.value = values[input.data!]
@@ -180,8 +183,6 @@ export class QuestionService {
       sections.push({ ...section, questions});
     });
 
-    console.log(sections)
-
     return sections;
   }
 
@@ -231,9 +232,20 @@ export class QuestionService {
     const flatQuestions = QUESTIONS_FORM.sections.map( (section:any) => section.inputs)?.flat(1);
     const sections : any = [];
 
+    const actionSection = QUESTIONS_FORM.sections.filter( x =>
+      ['informacion_representantes_legales','informacion_junta_directiva', 'informacion_accionistas', 'informacion_beneficiarios_finales'].includes(x.key));
+
+      actionSection.forEach(section => {
+        if(values['f_person_type_id'] == TYPE_PERSON_MEXICO.Fisica){
+          section.visible = false;
+        }
+     })
+
     QUESTIONS_FORM.sections.forEach( section => {
       const questions: QuestionBase<string>[] = [];
       section.inputs.forEach( input => {
+
+        if(!section.visible) return;
 
         if(values[input.data!]){
           input.value = values[input.data!]
@@ -263,6 +275,30 @@ export class QuestionService {
               actionInput.required = actionInput.visible;
             }
           })
+        }
+
+        if(values['f_person_type_id'] == TYPE_PERSON_MEXICO.Fisica){
+          if(section.key == SECTIONS_MEXICO_FORM.INFORMACION_BASICA){
+            section.inputs.forEach((input:any) => {
+              if(
+                  ['business_group',
+                    'p_pertenece_grupo_empresarial',
+                    'otras_empresas',
+                  ].includes(input.data)){
+                input.visible = false
+                input.required = false
+              }
+            })
+          }
+
+          if(section.key == SECTIONS_MEXICO_FORM.ANEXOS){
+            section.inputs.forEach((input:any) => {
+              if(['acta_constitutiva_file'].includes(input.data)){
+                input.visible = false
+                input.required = false
+              }
+            })
+          }
         }
 
 

@@ -29,7 +29,7 @@ export class DocumentboxQuestionComponent implements ControlValueAccessor, Valid
       person: [''],
       type: [''],
       document: [''],
-      verification: [''],
+      verification: ['', Validators.required],
       list: ['']
     });
 
@@ -47,6 +47,10 @@ export class DocumentboxQuestionComponent implements ControlValueAccessor, Valid
 
   registerOnValidatorChange?(fn: () => void): void {
     this.onValidation = fn;
+  }
+
+  onBlur(){
+    this.onTouched()
   }
 
   ngOnInit(): void {
@@ -68,8 +72,6 @@ export class DocumentboxQuestionComponent implements ControlValueAccessor, Valid
   }
 
   private setSelectLists(){
-
-
 
     const person = Number(this.form.get('person')?.value)
 
@@ -93,6 +95,11 @@ export class DocumentboxQuestionComponent implements ControlValueAccessor, Valid
       this.typeList = this.lists[this.form.get('list')?.value]
     }
 
+
+    if(!this.typeList?.find( (item:any) => item.key == this.form.get('type')?.value)){
+      this.form.get('type')?.setValue('')
+      this.value = this.form.value
+    }
 
   }
 

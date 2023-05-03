@@ -1,18 +1,18 @@
 <div class="content-row" [formGroup]="form">
   <div class="content-col m-2">
     <label>Tipo ID</label>
-    <select required [id]="'type_' + id" formControlName="type">
+    <select required [id]="'type_' + id" formControlName="type" (blur)="onBlur()">
       <option>Seleccione una opción</option>
       <option *ngFor="let opt of typeList" [value]="opt.key">{{opt.value}}</option>
     </select>
   </div>
   <div class="content-col m-4" [ngClass]="{'m-6': hideVerification}">
     <label>Número de ID</label>
-    <input required formControlName="document" [id]="'document_' + id" type="text">
+    <input required formControlName="document" [id]="'document_' + id" type="text" (blur)="onBlur()">
   </div>
   <div class="content-col m-2" *ngIf="!hideVerification">
     <label>DV</label>
-    <select [id]="'verification_' + id" formControlName="verification">
+    <select [id]="'verification_' + id" formControlName="verification" (blur)="onBlur()">
       <option>Seleccione una opción</option>
       <option *ngFor="let opt of verificationList" [value]="opt.key">{{opt.value}}</option>
     </select>

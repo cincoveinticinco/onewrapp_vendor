@@ -53,12 +53,15 @@ export class DynamicFormQuestionComponent {
         'documentRequired': 'Número de Id es requerido',
         'typeRequired': 'Tipo de Id es requerido',
         'documentLengthInvalid': `Número de Id debe tener ${controErrors[typeError].type == 10 ? 13 : 14} dígitos`,
+        'dvRequired': 'Código de verificación requerido',
         'documentInvalid': 'Número de Id es inválido',
         'pattern': 'El valor del campo es inválido',
         'min': 'El valor debe ser mayor a 5',
         'max': 'El valor debe ser menor o igual a 100',
         'minlength': 'El valor del campo es inválido',
-        'maxlength': 'El valor del campo es inválido'
+        'maxlength': 'El valor del campo es inválido',
+        'dateFromRangeInvalid': 'La fecha de vinculación debe ser menor a la desvinculación',
+        'dateToRangeInvalid': 'La fecha de desvinculación debe ser mayor a la vinculación'
       }[typeError];
 
 
@@ -79,6 +82,24 @@ export class DynamicFormQuestionComponent {
     this.changeValue.emit({
       question, value: this.getValue
     })
+  }
+
+  updateDataRanges() {
+    if(['binding_date', 'termination_date'].includes(this.question.key)){
+      this.form.controls[this.question.key]?.valueChanges.subscribe( value => {
+        if(this.question.key == 'binding_date'){
+          this.form.controls['termination_date']?.updateValueAndValidity({emitEvent: false})
+        }else{
+          this.form.controls['binding_date']?.updateValueAndValidity({emitEvent: false})
+        }
+      });
+
+    }
+  }
+
+  ngOnInit(): void {
+    this.updateDataRanges();
+
   }
 
   constructor(){

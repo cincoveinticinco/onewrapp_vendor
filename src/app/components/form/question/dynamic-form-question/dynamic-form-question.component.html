@@ -33,6 +33,7 @@
     <select
       *ngSwitchCase="TypeControlQuestion.Dropdown"
       (ngModelChange)="handleChangeValue(question)"
+      [attr.readonly]="question.readonly"
       [id]="id"
       [formControlName]="question.key">
       <option>Seleccione una opción</option>
