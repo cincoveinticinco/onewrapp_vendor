@@ -632,7 +632,7 @@ export const COLOMBIA_FORM: IForm = {
           fixElements: true,
           disabled: false,
           data: 'informacion_beneficiarios_finales',
-          required: true,
+          required: false,
           startEmpty: true,
           children: [
             {

@@ -41,6 +41,13 @@ export class DynamicFormComponent {
 
     console.log(this.form)
 
+    Object.keys(this.form.controls).forEach( key => {
+      if(this.form.get(key)?.invalid){
+        console.log(key, this.form.get(key))
+      }
+
+    })
+
     if(this.form.valid){
       this.submitForm.emit(this.form.getRawValue())
     }else{

@@ -60,6 +60,24 @@
               "aot": true,
               "optimization": true
             },
+            "staging": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kb",
+                  "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "2kb",
+                  "maximumError": "4kb"
+                }
+              ],
+              "outputHashing": "all",
+              "buildOptimizer": true,
+              "aot": true,
+              "optimization": true
+            },
             "development": {
               "buildOptimizer": false,
               "optimization": false,
