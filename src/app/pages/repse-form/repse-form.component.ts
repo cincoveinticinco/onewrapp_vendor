@@ -258,8 +258,9 @@ export class RepseFormComponent {
       return;
     }
 
+    const fileName = this.vendorService.normalizeString(value.name)
     this.s3Service
-      .getPresignedPutURL(value.name, vendor_id)
+      .getPresignedPutURL(fileName, vendor_id)
       .pipe(
         catchError((error) =>
           of({ id: fileIdDocument, file: value, key: '', url: '' })
@@ -291,7 +292,7 @@ export class RepseFormComponent {
             return this.vendorService.updateVendorDocument({
               vendor_document_type_id: Number(uploadFile.id),
               link: uploadFile.url
-                ? `${vendor_id}/${uploadFile.file.name}`
+                ? `${vendor_id}/${fileName}`
                 : '',
             })
           }

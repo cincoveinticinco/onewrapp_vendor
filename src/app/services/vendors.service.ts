@@ -17,6 +17,10 @@ export class VendorsService {
 
   constructor(private http: HttpClient) { }
 
+  normalizeString(strAccents:string) {
+    return strAccents.replace(/\s/g, '_').normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+  }
+
   getSelectBoxList(){
     return this._selectBoxList;
   }

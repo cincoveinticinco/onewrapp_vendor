@@ -94,9 +94,9 @@ export class VendorsFormComponent {
     }
 
 
-
+    const nameFile = this.vendorService.normalizeString(value.name)
     this.s3Service
-      .getPresignedPutURL(value.name, this.inmutableData['vendor'].id)
+      .getPresignedPutURL(nameFile, this.inmutableData['vendor'].id)
       .pipe(
         catchError((error) =>
           of({ id: fileIdDocument, file: value, key: '', url: '' })
@@ -135,14 +135,14 @@ export class VendorsFormComponent {
             return this.vendorService.updateVendorDocument({
               vendor_document_type_id: Number(uploadFile.id),
               link: uploadFile.url
-                ? `${this.inmutableData['vendor'].id}/${uploadFile.file.name}`
+                ? `${this.inmutableData['vendor'].id}/${nameFile}`
                 : '',
             })
           }
         ),
         map((response) => response)
       )
-      .subscribe((value) => {
+      .subscribe((value:any) => {
         if(value)
           this.submit(formData)
       });
@@ -220,4 +220,6 @@ export class VendorsFormComponent {
       });
     });
   }
+
+
 }

@@ -1,3 +1,4 @@
+import { HttpEventType } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -104,9 +105,9 @@ export class UploadFormComponent {
       }
       return;
     }
-
+    const fileName = this.vendorService.normalizeString(value.name)
     this.s3Service
-      .getPresignedPutURL(value.name, vendor_id)
+      .getPresignedPutURL(fileName, vendor_id)
       .pipe(
         catchError((error) =>
           of({ id: fileIdDocument, file: value, key: '', url: '' })
@@ -116,32 +117,37 @@ export class UploadFormComponent {
           id: fileIdDocument,
           file: value,
         })),
-        switchMap(
-          async (uploadFile: any) => {
-            if (!uploadFile.url) {
-              return of(uploadFile);
-            }
-
-            const blobFile = await uploadFile.file.arrayBuffer();
-
-            return this.s3Service.uploadFileUrlPresigned(<File>blobFile, uploadFile.url, uploadFile.file.type)
-            .pipe(
-              catchError((_) => of({ ...value, url: '' })),
-              map(() => uploadFile)
-            );
-
+        switchMap((uploadFile: any) => {
+          if (!uploadFile.url) {
+            return of({blobFile: null, uploadFile});
           }
-        ),
-        switchMap( response => response.pipe(map( value => value))),
+
+          return new Promise( resolve => {
+            uploadFile.file.arrayBuffer().then((blobFile:File) => resolve({blobFile, uploadFile}));
+          });
+        }
+      ),
+      switchMap( (blobUpdateFile: any) => {
+        const { blobFile,  uploadFile} = blobUpdateFile;
+        if(!blobFile){
+          return of(uploadFile);
+        }
+        return this.s3Service.uploadFileUrlPresigned(<File>blobFile, uploadFile.url, uploadFile.file.type)
+        .pipe(
+          catchError((_) => of({ ...value, url: '' })),
+          map((value) => value.type == HttpEventType.Response ? uploadFile : null)
+        );
+      }),
+        //switchMap( response => response.pipe(map( value => value))),
         switchMap(
           (uploadFile: any) =>{
-            console.log(uploadFile)
+            if(!uploadFile) return of(false);
 
 
             return this.vendorService.updateVendorDocument({
               vendor_document_type_id: Number(uploadFile.id),
               link: uploadFile.url
-                ? `${vendor_id}/${uploadFile.file.name}`
+                ? `${vendor_id}/${fileName}`
                 : '',
             })
           }
@@ -149,7 +155,8 @@ export class UploadFormComponent {
         map((response) => response)
       )
       .subscribe((value) => {
-        this.loading = false;
+        setTimeout( () => {this.loading = false}, 3500)
+
       });
   }
 

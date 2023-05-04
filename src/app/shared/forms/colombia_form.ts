@@ -766,7 +766,7 @@ export const COLOMBIA_FORM: IForm = {
           disabled: false,
           startEmpty: true,
           data: 'informacion_personas_expuestas',
-          required: true,
+          required: false,
           children: [
             {
               label: 'Parent ID',
