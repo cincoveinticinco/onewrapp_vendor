@@ -3,6 +3,22 @@
     <img src="assets/images/logotis.jpg">
   </div>
   <div class="header-title">{{ title }}</div>
+  <div class="show-for-mobile">
+    <div class="header-buttons">
+      <button class="header-button" (click)="logout()">
+        <span class="material-symbols-outlined"> logout </span>
+      </button>
+      <button class="header-button" (click)="toggleShowSide()">
+        <span class="material-symbols-outlined"> menu </span>
+      </button>
+    </div>
+
+  </div>
 </header>
 
-<button class="tiny-button" (click)="logout()">Cerrar sesión</button>
+<ng-container *ngIf="sections && form">
+  <app-side-menu [ngClass]="{'hideSide': !showSide}" [sections]="sections" [form]="form"></app-side-menu>
+</ng-container>
+
+<button class="hide-for-mobile tiny-button" (click)="logout()">Cerrar sesión</button>
+

@@ -1,5 +1,9 @@
+<button (click)="confirmSubmit()" class="save-button tiny-button" type="button" >Guardar</button>
 <nav>
   <ul class="section-list">
+    <li class="section-item show-for-mobile">
+      <button (click)="confirmSubmit()" class="inline-button" type="button" >Guardar</button>
+    </li>
     <li class="section-item"><a (click)="goToSection()">Inicio</a></li>
     <ng-container *ngFor="let section of sections">
       <li class="section-item" [ngClass]="section.checkSectionsColor" *ngIf="section.label && section.visible" ><a (click)="goToSection(section.key)">{{ section.label | lowercase }}</a></li>

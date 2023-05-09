@@ -6,7 +6,9 @@
 
 
 <div *ngIf="!loading; else loader" class="main-content">
-  <app-header [title]="titleForm"></app-header>
+  <app-header
+    [title]="titleForm"
+  ></app-header>
   <h1>REGISTRO ÚNICO DE CONTRAPARTES</h1>
 
   <ng-container [ngSwitch]="countryForm">

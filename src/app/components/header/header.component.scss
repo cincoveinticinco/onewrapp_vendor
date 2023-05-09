@@ -13,9 +13,16 @@ header{
 
 }
 
-button{
+.header-buttons{
+  display: flex;
+}
+
+
+button.tiny-button{
   position: fixed;
   top: 20px;
   right: 20px;
 }
+
+
 

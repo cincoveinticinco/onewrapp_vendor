@@ -1,6 +1,7 @@
 import { ViewportScroller } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { FormGroup } from '@angular/forms';
+import { HeaderServiceService } from 'src/app/services/header-service.service';
 import { IFormSection } from 'src/app/shared/interfaces/form';
 
 @Component({
@@ -13,7 +14,7 @@ export class SideMenuComponent {
   @Input() sections: any[]  = [];
   @Input() form?: FormGroup;
 
-  constructor(private viewportScrolling: ViewportScroller){}
+  constructor(private viewportScrolling: ViewportScroller, private headerService: HeaderServiceService){}
 
   ngOnInit(): void {
 
@@ -38,6 +39,10 @@ export class SideMenuComponent {
       const errorElement = document.querySelector(`#${section.key} .ng-invalid`);
       section.checkSectionsColor =  errorElement ? 'fail-section': 'success-section';
     })
+  }
+
+  confirmSubmit(){
+    this.headerService.fireSaveHeader();
   }
 
 

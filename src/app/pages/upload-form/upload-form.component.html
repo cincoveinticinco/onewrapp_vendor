@@ -18,7 +18,7 @@
             <p>Gracias por diligenciar el formulario. Por favor descárguelo, imprímalo y fírmelo. Luego adjúntelo en formato PDF</p>
           </div>
           <div class="content-col m-8">
-            <button type="button" class="form-button" (click)="downloadVendorPDF()">DESCARGAR FORMULARIO PARA FIRMA</button>
+            <a  class="button form-button" [href]="downloadLink" target="_blank">DESCARGAR FORMULARIO PARA FIRMA</a>
           </div>
           <div class="content-col m-8">
             <app-question

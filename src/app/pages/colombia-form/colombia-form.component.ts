@@ -13,6 +13,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { isEqual } from 'lodash';
 import { info_files } from 'src/app/shared/forms/files_types';
 import { CountryVendor } from 'src/app/shared/interfaces/country_vendors';
+import { HeaderServiceService } from 'src/app/services/header-service.service';
 
 
 @Component({
@@ -55,7 +56,7 @@ export class ColombiaFormComponent {
     return this.dynamicForm?.formGroup.get('informacion_personas_expuestas') as FormArray;
   }
 
-  constructor(private questionService: QuestionService) {
+  constructor(private questionService: QuestionService, private headerService: HeaderServiceService) {
 
   }
 
@@ -85,6 +86,11 @@ export class ColombiaFormComponent {
 
     this.setValuesForm();
     this.questions$ = this.questionService.getQuestions(this.lists, this.valuesForm, CountryVendor.Colombia);
+
+    this.headerService.onSaveHeader()
+      .subscribe((data: any) => {
+        this.confirmSubmit()
+      })
   }
 
   setValuesForm() {

@@ -17,6 +17,7 @@ export class UploadFormComponent {
   form: FormGroup;
   loading: boolean = false;
   inmutableData: any = {};
+  downloadLink: string = '';
 
 
 
@@ -42,6 +43,23 @@ export class UploadFormComponent {
       const value = values['file'];
       this.submitFile({formControlName: this.fileQuestion.data, value});
     })
+
+    const vendor_id = localStorage.getItem('id_vendor');
+
+    if(vendor_id){
+      this.loading = true
+      this.vendorService.getVendorPDF({vendor_id})
+        .subscribe( (data:any) => {
+          this.downloadLink = data.url_aws;
+          this.loading = false
+          /*const link = document.createElement('a');
+          link.download = "Vendor PDF";
+          link.href = data.url_aws;
+          link.target = '_blank';
+          link.click()*/
+        })
+      return;
+    }
 
   }
 

@@ -115,7 +115,7 @@ export class InputTokenComponent implements ControlValueAccessor, Validator{
     const nextInput = this.tokenDigit.get(index + 1)
     if(!nextInput) return;
 
-    setTimeout( () => {nextInput.nativeElement.focus()})
+    setTimeout( () => {nextInput.nativeElement.focus()}, 100)
   }
 
   ngOnInit(): void {

@@ -1,5 +1,5 @@
-<app-side-menu [sections]="sections" [form]="form"></app-side-menu>
-<section class="content" >
+<!--app-side-menu [sections]="sections" [form]="form"></app-side-menu-->
+<section class="section-content" >
   <form (ngSubmit)="onSubmit()" [formGroup]="form" [ngClass]="{'ng-submitted':submitted}">
 
     <div *ngFor="let section of sections" [id]="section.key">

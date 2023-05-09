@@ -2,6 +2,8 @@
   <div *ngFor="let digit of token.controls; let i = index" class="input-token" >
     <input
       #tokenDigit
+      pattern="\d*"
+      inputmode="numeric"
       [formControl]="getControlByIndex(i)"
       maxlength="1"
       minlength="1"

@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormGroup } from '@angular/forms';
+import { HeaderServiceService } from 'src/app/services/header-service.service';
 import { TypeControlQuestion } from 'src/app/shared/question/interfaces/type-control-question';
 import { QuestionControlService } from 'src/app/shared/question/question-control-service';
 import { QuestionBase } from 'src/app/shared/question/struct/question-base';
@@ -28,11 +29,15 @@ export class DynamicFormComponent {
     return this.questions;
   }
 
-  constructor(private qcs: QuestionControlService) {}
+  constructor(private qcs: QuestionControlService, private headerService: HeaderServiceService) {}
 
   ngOnInit() {
+
     this.questions = this.sections?.map( (section:any) => section.questions)?.flat(1);
     this.form = this.qcs.toFormGroup(this.questions as QuestionBase<string>[]);
+
+    this.headerService.setSectionList(this.sections);
+    this.headerService.setMainForm(this.form)
   }
 
   onSubmit() {
