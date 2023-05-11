@@ -13,8 +13,28 @@
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  
 </head>
 <body class="mat-typography">
+  <div id="no-support" style="display: none;">
+    <img class="title-logo" src="assets/images/logotis.jpg">
+    <h2>REGISTRO ÚNICO DE CONTRAPARTES</h2>
+    
+    <div class="alert-message">
+      Esta página no es soportada por este navegador. Se recomienda usar este sitio web con versiones actuales de Google Chrome, Mozilla Firefox, Safari o Microsoft Edge.
+    </div>
+  </div>
   <app-root></app-root>
+  <script>
+    function isIEBrowser(){
+      return /MSIE|Trident/.test(window.navigator.userAgent)
+    }
+
+    if(isIEBrowser()){
+      document.getElementById('no-support').style.display = 'block'
+    }else{
+      document.getElementById('no-support').remove()
+    }
+  </script>
 </body>
 </html>

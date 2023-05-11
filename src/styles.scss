@@ -27,6 +27,20 @@
   box-sizing: border-box;
 }
 
+#no-support{
+  position: absolute;
+  right: 50%;
+  bottom: 50%;
+  width: 500px;
+  margin-right: -250px;
+  text-align: center;
+}
+
+#no-support .alert-message{
+  background-color: #fe5050;
+  color: white;
+}
+
 html{
   scroll-behavior: smooth;
 }
