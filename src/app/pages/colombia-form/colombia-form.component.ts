@@ -770,7 +770,7 @@ export class ColombiaFormComponent {
         ...row,
         document: row.document.document,
         verification_digit: row.document.verification,
-        f_document_type_id: Number(row.document.type),
+        f_document_type_id: row.document.type,
         f_vendor_info_user_type_id: 1,
       });
     });
@@ -779,7 +779,7 @@ export class ColombiaFormComponent {
       info_users.push({
         ...row,
         document: row.document.document,
-        f_document_type_id: Number(row.document.type),
+        f_document_type_id: row.document.type,
         verification_digit: row.document.verification,
         pep: row['informacion_representantes_legales_pep'] == '1' ? true : null,
         f_vendor_info_user_type_id: 2,
@@ -790,7 +790,7 @@ export class ColombiaFormComponent {
       info_users.push({
         ...row,
         document: row.document.document,
-        f_document_type_id: Number(row.document.type),
+        f_document_type_id: row.document.type,
         verification_digit: row.document.verification,
         pep: row['informacion_junta_directiva_pep'] == '1' ? true : null,
         f_vendor_info_user_type_id: 3,
@@ -801,7 +801,7 @@ export class ColombiaFormComponent {
       info_users.push({
         ...row,
         document: row.document.document,
-        f_document_type_id: Number(row.document.type),
+        f_document_type_id: row.document.type,
         verification_digit: row.document.verification,
         pep: row['informacion_accionistas_pep'] == '1' ? true : null,
         f_vendor_info_user_type_id: 4,
@@ -812,11 +812,11 @@ export class ColombiaFormComponent {
       row['informacion_beneficiarios_finales_people']?.forEach((person: any) => {
         info_users.push({
           document_parent: row.document,
-          f_document_parent_type_id: Number(row.f_document_type_id),
+          f_document_parent_type_id: row.f_document_type_id,
           f_vendor_info_user_type_id: 5,
           ...person,
           document: person.document?.document,
-          f_document_type_id: Number(person.document?.type),
+          f_document_type_id: person.document?.type,
           verification_digit: person.document?.verification,
           pep: person['info_beneficiarios_persona_pep'] == '1' ? true : null,
         });

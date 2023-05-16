@@ -25,4 +25,14 @@ button.tiny-button{
 }
 
 
+@media only screen and (max-width: 768px) {
+
+  header{
+    position: sticky;
+    top: 0;
+    background: white;
+    z-index: 10;
+  }
+}
+
 
