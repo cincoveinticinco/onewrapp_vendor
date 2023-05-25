@@ -196,7 +196,7 @@ export const MEXICO_FORM: IForm = {
           type: TypeInputForm.Text,
           size: 3,
           data: 'web_site',
-          required: true,
+          required: false,
           disabled: false
         },
         {
