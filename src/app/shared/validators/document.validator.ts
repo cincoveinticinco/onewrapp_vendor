@@ -20,7 +20,7 @@ export function documentValidator(control: AbstractControl): {[key: string]: any
       }
     }
 
-    if(control.value.type == 7 && control.value.document.length != 14) {
+    if(control.value.type == 7 && control.value.document.length != 13) {
       return { 'documentLengthInvalid': {type: 7, length: control.value.document.length} };
     }
 

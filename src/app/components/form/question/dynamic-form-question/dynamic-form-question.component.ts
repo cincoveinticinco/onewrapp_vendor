@@ -52,7 +52,7 @@ export class DynamicFormQuestionComponent {
         'required': `${this.question.label}  es requerido`,
         'documentRequired': 'Número de Id es requerido',
         'typeRequired': 'Tipo de Id es requerido',
-        'documentLengthInvalid': `Número de Id debe tener ${controErrors[typeError].type == 10 ? 13 : 14} dígitos`,
+        'documentLengthInvalid': `Número de Id debe tener ${controErrors[typeError].type == 10 ? 13 : 13} dígitos`,
         'dvRequired': 'Código de verificación requerido',
         'documentInvalid': 'Número de Id es inválido',
         'pattern': 'El valor del campo es inválido',

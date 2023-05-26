@@ -171,7 +171,7 @@ export class InputDocumentComponent implements ControlValueAccessor, Validator{
 
 
     if(Number(this.form.get('type')?.value) == 7){
-      this.form.get('document')?.setValidators([Validators.minLength(14), Validators.maxLength(14), Validators.pattern(VALIDATORS_PATTERNS.numbers)]);
+      this.form.get('document')?.setValidators([Validators.minLength(13), Validators.maxLength(13), Validators.pattern(VALIDATORS_PATTERNS.numbers)]);
       return;
     }
 

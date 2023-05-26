@@ -120,7 +120,7 @@ export class DocumentboxQuestionComponent implements ControlValueAccessor, Valid
 
 
     if(Number(this.form.get('type')?.value) == 7){
-      this.form.get('document')?.setValidators([Validators.required, Validators.pattern(VALIDATORS_PATTERNS.numbers),Validators.minLength(14), Validators.maxLength(14) ]);
+      this.form.get('document')?.setValidators([Validators.required, Validators.pattern(VALIDATORS_PATTERNS.numbers),Validators.minLength(13), Validators.maxLength(13) ]);
       this.form.get('document')?.updateValueAndValidity();
       return;
     }
