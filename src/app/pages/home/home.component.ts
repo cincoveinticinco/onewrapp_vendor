@@ -15,6 +15,7 @@ export class HomeComponent implements OnInit {
   token: string = '';
   vendorId: string = '';
   countryVendor?: CountryVendor;
+  isNational: boolean = false;
   vendorEmail: string = '';
 
   error: string = '';
@@ -70,7 +71,13 @@ export class HomeComponent implements OnInit {
         return;
       }
 
-      this.router.navigate(['repse-form']);
+      if(this.countryVendor == CountryVendor.Mexico && this.isNational){
+        this.router.navigate(['repse-form']);
+        return;
+      }
+
+      this.router.navigate(['complete-form']);
+
     });
 
   }
@@ -86,9 +93,12 @@ export class HomeComponent implements OnInit {
         localStorage.setItem('id_vendor', vendor)
 
         this.vendorService.getVendorCity(this.vendorId)
-          .subscribe( (countryId: CountryVendor) => {
-            this.countryVendor = countryId;
-            console.log(this.countryVendor)
+          .subscribe( (data: any) => {
+            console.log(data)
+            this.countryVendor = data.country_id;
+            this.isNational = data.is_nacional;
+
+            console.log(this.countryVendor, this.isNational)
           })
       });
   }

@@ -45,8 +45,8 @@ export class VendorsService {
   }
 
   getVendorCity(idVendor: string){
-    return this.http.post<CountryVendor>(`${environment.API_URL}finance/getCountryVendor`, {id: idVendor})
-    .pipe(map( (response: any ) => response.country_id))
+    return this.http.post<any>(`${environment.API_URL}finance/getCountryVendor`, {id: idVendor})
+    .pipe(map( (response: any ) => response))
   }
 
   updateVendorInfo(formData: any){

@@ -20,6 +20,7 @@ export class RepseFormComponent {
   loading: boolean = false;
   inmutableData: any = {};
   countryForm: CountryVendor = CountryVendor.Mexico;
+  isNational: boolean = false;
   titleForm: string = '';
 
   readonly REPSE_FORM = REPSE_FORM;
@@ -52,6 +53,7 @@ export class RepseFormComponent {
       };
 
       this.countryForm = this.vendorData.country_id
+      this.isNational = this.vendorData.is_nacional
 
       if(this.countryForm == CountryVendor.Colombia){
         this.router.navigate(['complete-form']);
